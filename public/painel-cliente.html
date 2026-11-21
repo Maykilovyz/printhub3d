@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Meus pedidos · PrintHub 3D</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono&display=swap">
   <link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
@@ -19,12 +19,9 @@
 
   <main class="pagina">
     <div class="cabecalho-painel">
-      <div><span class="rotulo">Painel do cliente</span><h1>Meus pedidos</h1></div>
-      <a class="botao principal" href="/novo-pedido.html">Novo pedido</a>
+      <h1>Meus pedidos</h1>
+      <a class="botao principal" href="/novo-pedido.html">+ Novo pedido</a>
     </div>
-
-    <!-- Resumo: um número por etapa -->
-    <div class="resumo" id="resumo"></div>
 
     <!-- Os pedidos aparecem agrupados pelo que o cliente precisa fazer -->
     <div id="grupos"><p class="vazio">Carregando…</p></div>
@@ -36,32 +33,26 @@
 
     // Grupos na ordem de prioridade para o cliente
     const GRUPOS = [
-      { titulo: "Escolha um orçamento", dica: "Fabricantes responderam. Compare e aceite um.", status: ["com_orcamento"] },
-      { titulo: "Aguardando orçamentos", dica: "Os fabricantes estão analisando.", status: ["aberto"] },
-      { titulo: "Em andamento", dica: "Orçamento aceito ou peça em produção.", status: ["aceito", "em_producao"] },
-      { titulo: "Entregues", dica: "", status: ["entregue"] },
+      { titulo: "Escolha um orçamento", status: ["com_orcamento"] },
+      { titulo: "Aguardando orçamentos", status: ["aberto"] },
+      { titulo: "Em andamento", status: ["aceito", "em_producao"] },
+      { titulo: "Entregues", status: ["entregue"] },
     ];
 
     async function carregar() {
       try {
         const pedidos = await api("/pedidos");
 
-        document.querySelector("#resumo").innerHTML = GRUPOS.map((g) => {
-          const n = pedidos.filter((p) => g.status.includes(p.status)).length;
-          return `<div class="resumo-item ${g.status[0] === "com_orcamento" && n ? "chamar" : ""}">
-            <span class="resumo-num mono">${n}</span><span>${g.titulo}</span></div>`;
-        }).join("");
-
         if (!pedidos.length) {
           document.querySelector("#grupos").innerHTML =
-            `<p class="vazio">Você ainda não fez pedidos.<br>Clique em <b>Novo pedido</b>, descreva a peça e os fabricantes mandam orçamento.</p>`;
+            `<p class="vazio">Nenhum pedido ainda.<br>Toque em <b>+ Novo pedido</b> para começar.</p>`;
           return;
         }
 
         document.querySelector("#grupos").innerHTML = GRUPOS.map((g) => {
           const lista = pedidos.filter((p) => g.status.includes(p.status));
           if (!lista.length) return "";
-          return `<section class="grupo"><div><h2>${g.titulo}</h2>${g.dica ? `<p class="apagado">${g.dica}</p>` : ""}</div>
+          return `<section class="grupo"><h2>${g.titulo} <span class="num">${lista.length}</span></h2>
             <ul class="lista">${lista.map((p) => {
               const n = p.orcamentos?.[0]?.count ?? 0;
               return itemPedido(p, n ? `${n} orçamento${n > 1 ? "s" : ""}` : "");

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Oficina · PrintHub 3D</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono&display=swap">
   <link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body class="tema-oficina">
@@ -19,19 +19,19 @@
 
   <main class="pagina">
     <div class="cabecalho-painel">
-      <div><span class="rotulo">Painel do fabricante</span><h1>Oficina</h1></div>
+      <h1>Oficina</h1>
     </div>
 
     <!-- Aviso para preencher a cidade (o Google não informa) -->
     <form class="cartao aviso-cidade" id="form-cidade" hidden>
-      <div><h3>Onde fica sua oficina?</h3><p class="apagado">Os clientes veem a cidade junto com o seu orçamento.</p></div>
+      <h3>Onde fica sua oficina?</h3>
       <div class="chat-form"><input id="cidade" placeholder="Ex.: Campinas, SP" aria-label="Cidade" required><button class="botao principal">Salvar</button></div>
     </form>
 
     <div class="abas" role="tablist">
-      <button role="tab" data-aba="aba-disponiveis" aria-selected="true">Pedidos disponíveis <span class="contador" id="n-disponiveis"></span></button>
-      <button role="tab" data-aba="aba-orcados" aria-selected="false">Meus orçamentos <span class="contador" id="n-orcados"></span></button>
-      <button role="tab" data-aba="aba-trabalhos" aria-selected="false">Em produção <span class="contador" id="n-trabalhos"></span></button>
+      <button role="tab" data-aba="aba-disponiveis" aria-selected="true">Novos <span class="contador" id="n-disponiveis"></span></button>
+      <button role="tab" data-aba="aba-orcados" aria-selected="false">Orçados <span class="contador" id="n-orcados"></span></button>
+      <button role="tab" data-aba="aba-trabalhos" aria-selected="false">Trabalhos <span class="contador" id="n-trabalhos"></span></button>
       <button role="tab" data-aba="aba-equipe" aria-selected="false" id="btn-equipe" hidden>Equipe</button>
     </div>
 
@@ -43,14 +43,13 @@
     <section class="aba" id="aba-equipe" hidden>
       <div class="duas-colunas">
         <form class="cartao" id="form-convite">
-          <div><h2>Convidar fabricante</h2>
-            <p class="apagado">Digite o e-mail Google da pessoa. Quando ela entrar com esse e-mail, a conta já abre como fabricante.</p></div>
+          <div><h2>Convidar</h2>
+            <p class="apagado">A pessoa entra com este e-mail Google e já vira fabricante.</p></div>
           <div class="chat-form"><input id="convite-email" type="email" placeholder="nome@gmail.com" aria-label="E-mail do convidado" required><button class="botao principal">Convidar</button></div>
           <p class="erro-msg" id="convite-erro" role="alert"></p>
           <div><h3>Convites</h3><ul class="lista-simples" id="lista-convites"></ul></div>
         </form>
-        <section class="cartao"><div><h2>Fabricantes ativos</h2>
-            <p class="apagado">Remover o cargo transforma a conta em cliente e apaga os orçamentos pendentes dela. Quem tem trabalho em andamento só pode ser removido depois da entrega.</p></div>
+        <section class="cartao"><h2>Equipe</h2>
           <p class="erro-msg" id="equipe-erro" role="alert"></p>
           <ul class="lista-simples" id="lista-fabricantes"></ul></section>
       </div>

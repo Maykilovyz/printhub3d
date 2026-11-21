@@ -18,13 +18,12 @@ async function carregarPedidos() {
 
     // Separa a mesma lista em três abas
     preencher("disponiveis", pedidos.filter((p) => abertos(p) && !p.ja_orcei),
-      "Nenhum pedido novo para orçar agora.",
-      (p) => { const n = p.orcamentos?.[0]?.count ?? 0; return n ? `${n} concorrente${n > 1 ? "s" : ""}` : "Seja o primeiro"; });
+      "Nenhum pedido novo agora.",
+      (p) => { const n = p.orcamentos?.[0]?.count ?? 0; return n ? `${n} orçamento${n > 1 ? "s" : ""}` : ""; });
     preencher("orcados", pedidos.filter((p) => abertos(p) && p.ja_orcei),
-      "Você não tem orçamentos esperando resposta.", () => "Aguardando o cliente");
+      "Nenhum orçamento esperando resposta.", () => "");
     preencher("trabalhos", pedidos.filter((p) => p.fabricante_id === eu.id),
-      "Quando um cliente aceitar seu orçamento, o trabalho aparece aqui.",
-      (p) => (p.status === "entregue" ? "Concluído" : "Abra para atualizar"));
+      "Orçamentos aceitos aparecem aqui.", () => "");
   } catch (e) {
     document.querySelector("#lista-disponiveis").innerHTML = `<li class="vazio">${esc(e.message)}</li>`;
   }
@@ -60,7 +59,7 @@ async function carregarEquipe() {
       ${f.dono
         ? `<span class="etiqueta s-com_orcamento">Dono</span>`
         : `<span class="linha-acoes">
-             <button type="button" class="botao pequeno" data-remover="${f.id}">Remover cargo</button>
+             <button type="button" class="botao pequeno" data-remover="${f.id}">Remover</button>
              <span class="confirmar" hidden>
                <span class="apagado">Virar cliente?</span>
                <button type="button" class="botao pequeno perigo" data-confirmar="${f.id}">Remover</button>

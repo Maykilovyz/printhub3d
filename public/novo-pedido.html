@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Novo pedido · PrintHub 3D</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono&display=swap">
   <link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
@@ -18,49 +18,53 @@
   </div></header>
 
   <main class="pagina">
-    <div><a href="/painel.html">← Meus pedidos</a><h1 style="margin-top:8px">Novo pedido</h1>
-      <p class="apagado">Descreva com suas palavras. Se não souber algum detalhe técnico, o fabricante orienta.</p></div>
+    <a class="voltar" href="/painel.html">← Voltar</a>
+    <h1>Novo pedido</h1>
 
     <form class="cartao" id="form">
-      <div class="campo"><span class="lbl">1. Para que é a peça?</span>
-        <div class="categorias" id="categorias"></div>
+      <!-- Bloco 1: o que é -->
+      <div class="secao-form">
+        <h2>A peça</h2>
+        <div class="categorias" id="categorias" role="radiogroup" aria-label="Categoria"></div>
+        <div class="campo"><label for="titulo">Título</label>
+          <input id="titulo" name="titulo" required placeholder="Ex.: Maquete de prédio, escala 1:200"></div>
+        <div class="campo"><label for="descricao">Descrição</label>
+          <textarea id="descricao" name="descricao" required placeholder="Para que vai usar e o nível de detalhe."></textarea></div>
       </div>
 
-      <div class="campo"><label for="titulo">2. Título</label>
-        <input id="titulo" name="titulo" required placeholder="Ex.: Maquete de edifício residencial, escala 1:200"></div>
-
-      <div class="campo"><label for="descricao">3. O que você precisa?</label>
-        <textarea id="descricao" name="descricao" required placeholder="Conte para que vai usar, o nível de detalhe e o que pode ficar de fora."></textarea></div>
-
-      <div class="grade">
-        <div class="campo"><span class="lbl">4. Dimensões aproximadas (mm)</span>
-          <div class="dimensoes">
-            <input name="largura_mm" type="number" min="1" placeholder="Larg." aria-label="Largura em mm" class="mono">
-            <input name="profundidade_mm" type="number" min="1" placeholder="Prof." aria-label="Profundidade em mm" class="mono">
-            <input name="altura_mm" type="number" min="1" placeholder="Alt." aria-label="Altura em mm" class="mono">
+      <!-- Bloco 2: detalhes (tudo opcional, o fabricante orienta) -->
+      <div class="secao-form">
+        <h2>Detalhes <span class="apagado" style="font:400 14px var(--corpo)">opcional</span></h2>
+        <div class="grade">
+          <div class="campo"><span class="lbl">Medidas (mm)</span>
+            <div class="dimensoes">
+              <input name="largura_mm" type="number" min="1" placeholder="L" aria-label="Largura em mm" class="mono">
+              <input name="profundidade_mm" type="number" min="1" placeholder="P" aria-label="Profundidade em mm" class="mono">
+              <input name="altura_mm" type="number" min="1" placeholder="A" aria-label="Altura em mm" class="mono">
+            </div>
           </div>
+          <div class="campo"><label for="quantidade">Quantidade</label><input id="quantidade" name="quantidade" type="number" min="1" value="1" class="mono"></div>
+          <div class="campo"><label for="prazo">Preciso até</label><input id="prazo" name="prazo" type="date"></div>
         </div>
-        <div class="campo"><label for="quantidade">Quantidade</label><input id="quantidade" name="quantidade" type="number" min="1" value="1" class="mono"></div>
-        <div class="campo"><label for="prazo">Preciso até</label><input id="prazo" name="prazo" type="date"></div>
+        <div class="campo"><span class="lbl">Material</span>
+          <div class="opcoes" id="materiais"></div>
+          <span class="dica" id="dica-material"></span>
+        </div>
+        <div class="campo"><span class="lbl">Cor</span>
+          <div class="opcoes" id="cores"></div>
+        </div>
       </div>
 
-      <div class="campo"><span class="lbl">Material</span>
-        <div class="opcoes" id="materiais"></div>
-        <span class="dica" id="dica-material"></span>
+      <!-- Bloco 3: referências -->
+      <div class="secao-form">
+        <h2>Arquivos <span class="apagado" style="font:400 14px var(--corpo)">opcional</span></h2>
+        <div class="campo">
+          <input id="anexos" name="anexos" type="file" multiple accept=".stl,.obj,.3mf,.jpg,.jpeg,.png,.webp,.pdf" aria-label="Imagens ou arquivo 3D">
+          <span class="dica">Fotos, croquis ou arquivo 3D. Até 5 arquivos.</span></div>
       </div>
 
-      <div class="campo"><label for="cor">Cor</label>
-        <select id="cor" name="cor">
-          <option>Tanto faz</option><option>Branco</option><option>Cinza</option><option>Preto</option>
-          <option>Bege</option><option>Azul</option><option>Vermelho</option><option>Outra (explico na descrição)</option>
-        </select></div>
-
-      <div class="campo"><label for="anexos">5. Imagens ou arquivo 3D (opcional)</label>
-        <input id="anexos" name="anexos" type="file" multiple accept=".stl,.obj,.3mf,.jpg,.jpeg,.png,.webp,.pdf">
-        <span class="dica">Até 5 arquivos de 20 MB: <span class="mono">.stl .obj .3mf .jpg .png .pdf</span>. Sem arquivo 3D? Fotos e croquis já ajudam.</span></div>
-
-      <p class="erro-msg" id="erro"></p>
-      <div class="acoes"><a class="botao" href="/painel.html">Cancelar</a><button class="botao principal" id="enviar">Enviar solicitação</button></div>
+      <p class="erro-msg" id="erro" role="alert"></p>
+      <div class="acoes"><a class="botao fantasma" href="/painel.html">Cancelar</a><button class="botao principal" id="enviar">Enviar pedido</button></div>
     </form>
   </main>
 
@@ -77,23 +81,31 @@
       ["Saúde e educação", "Modelos anatômicos e didáticos"],
       ["Arte e cosplay", "Miniaturas, adereços, figuras"],
     ];
+    // Dica curta de cada material, para quem não entende de impressão 3D
     const MATERIAIS = {
-      "Deixar o fabricante sugerir": "Boa escolha se você não conhece os materiais.",
-      "PLA": "Rígido e barato. Ideal para maquetes e protótipos visuais.",
-      "PETG": "Mais resistente a impacto e calor. Bom para peças de uso.",
+      "Não sei": "O fabricante sugere o melhor.",
+      "PLA": "Rígido e barato. Bom para maquetes.",
+      "PETG": "Resistente a impacto e calor.",
       "ABS": "Aguenta calor e pode ser lixado.",
-      "Resina": "Detalhe muito fino. Ótimo para miniaturas.",
+      "Resina": "Detalhe muito fino.",
     };
+    // Cores com uma bolinha de amostra
+    const CORES = [["Tanto faz", ""], ["Branco", "#F4F4F2"], ["Cinza", "#8E959B"], ["Preto", "#222"],
+                   ["Bege", "#D8C3A0"], ["Azul", "#2F5DA8"], ["Vermelho", "#C23B32"]];
 
-    document.querySelector("#categorias").innerHTML = CATEGORIAS.map(([nome, desc], i) =>
-      `<label><input type="radio" name="categoria" value="${nome}" ${i === 0 ? "checked" : ""}><strong>${nome}</strong><small>${desc}</small></label>`
+    document.querySelector("#categorias").innerHTML = CATEGORIAS.map(([nome], i) =>
+      `<label><input type="radio" name="categoria" value="${nome}" ${i === 0 ? "checked" : ""}>${nome}</label>`
     ).join("");
     document.querySelector("#materiais").innerHTML = Object.keys(MATERIAIS).map((m, i) =>
-      `<label><input type="radio" name="material" value="${m}" ${i === 0 ? "checked" : ""}><span>${m}</span></label>`
+      `<label><input type="radio" name="material" value="${m === "Não sei" ? "Fabricante sugere" : m}" data-dica="${m}" ${i === 0 ? "checked" : ""}><span>${m}</span></label>`
+    ).join("");
+    document.querySelector("#cores").innerHTML = CORES.map(([nome, hex], i) =>
+      `<label><input type="radio" name="cor" value="${nome}" ${i === 0 ? "checked" : ""}>${hex
+        ? `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${hex};border:1px solid rgba(0,0,0,.15);margin-right:6px;vertical-align:-1px"></span>` : ""}${nome}</label>`
     ).join("");
 
     const dica = document.querySelector("#dica-material");
-    const mostrarDica = () => (dica.textContent = MATERIAIS[document.querySelector("input[name=material]:checked").value]);
+    const mostrarDica = () => (dica.textContent = MATERIAIS[document.querySelector("input[name=material]:checked").dataset.dica]);
     document.querySelector("#materiais").onchange = mostrarDica;
     mostrarDica();
 
@@ -111,7 +123,7 @@
       } catch (err) {
         erro.textContent = err.message;
         botao.disabled = false;
-        botao.textContent = "Enviar solicitação";
+        botao.textContent = "Enviar pedido";
       }
     };
   </script>

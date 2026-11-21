@@ -144,6 +144,35 @@ rotas.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// DELETE /api/pedidos/:id  -> cliente exclui o próprio pedido
+// Só quando ninguém está trabalhando nele: aberto, com orçamentos ainda
+// não aceitos, ou já entregue. Aceito/em produção não pode.
+const PODE_EXCLUIR = ["aberto", "com_orcamento", "entregue"];
+rotas.delete("/:id", exigirTipo("cliente"), async (req, res, next) => {
+  try {
+    const { pedido } = await carregarPedidoSePermitido(req.params.id, req.usuario);
+    if (!pedido || pedido.cliente_id !== req.usuario.id) {
+      return res.status(404).json({ erro: "Pedido não encontrado." });
+    }
+    if (!PODE_EXCLUIR.includes(pedido.status)) {
+      return res.status(409).json({ erro: "Este pedido está com um fabricante. Converse com ele pelo chat antes de excluir." });
+    }
+
+    // 1) Apaga os arquivos do Storage (o banco não apaga arquivos sozinho)
+    const { data: anexos } = await supabase.from("anexos").select("caminho").eq("pedido_id", pedido.id);
+    if (anexos?.length) {
+      const { error } = await supabase.storage.from("anexos").remove(anexos.map((a) => a.caminho));
+      if (error) throw error;
+    }
+
+    // 2) Apaga o pedido. Anexos, orçamentos e mensagens saem junto (on delete cascade)
+    const { error } = await supabase.from("pedidos").delete().eq("id", pedido.id);
+    if (error) throw error;
+
+    res.json({ ok: true });
+  } catch (e) { next(e); }
+});
+
 // PATCH /api/pedidos/:id/status  -> fabricante escolhido avança a produção
 //   aceito -> em_producao -> entregue
 const PROXIMO = { aceito: "em_producao", em_producao: "entregue" };

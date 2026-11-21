@@ -78,11 +78,12 @@ const data = (s) => (s ? new Date(s.length === 10 ? s + "T12:00" : s).toLocaleDa
 
 // Monta um item da lista de pedidos (usado nos dois painéis)
 function itemPedido(p, extra) {
+  // Só o essencial: título, status, categoria/prazo e um detalhe opcional
   return `<li><a href="/pedido.html?id=${p.id}">
     <strong>${esc(p.titulo)}</strong>
     <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status]}</span>
-    <span class="apagado" style="font-size:14px">${esc(p.categoria)} · ${p.quantidade} un. · prazo ${data(p.prazo)}</span>
-    <span class="apagado" style="font-size:14px;text-align:right">${extra || ""}</span>
+    <span class="sub">${esc(p.categoria)}${p.prazo ? " · até " + data(p.prazo) : ""}</span>
+    <span class="lado">${extra || ""}</span>
   </a></li>`;
 }
 
