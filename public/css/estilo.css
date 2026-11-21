@@ -2,7 +2,7 @@
    PrintHub 3D - Estilo do site
    Visual: cantos arredondados, botões em pílula, sombras suaves.
    Cores e fontes ficam em variáveis no :root para mudar fácil.
-   Cliente = azul cobalto · Fabricante (Oficina) = laranja filamento
+   Cliente = azul cobalto · Fabricante (Oficina) = roxo
    ============================================================= */
 :root {
   /* Fundo e texto */
@@ -48,10 +48,10 @@
   }
 }
 
-/* Oficina do fabricante: troca só a cor de destaque */
-.tema-oficina { --destaque: #E0661A; --destaque-texto: #FFFFFF; --destaque-suave: #FDEADB; }
+/* Oficina do fabricante: troca só a cor de destaque (roxo) */
+.tema-oficina { --destaque: #7A3FD1; --destaque-texto: #FFFFFF; --destaque-suave: #F0E8FC; }
 @media (prefers-color-scheme: dark) {
-  .tema-oficina { --destaque: #FF9A52; --destaque-texto: #2B1300; --destaque-suave: #3D2716; }
+  .tema-oficina { --destaque: #B48CF2; --destaque-texto: #1E0B3A; --destaque-suave: #2D2148; }
 }
 
 /* ===================== Base ===================== */
@@ -76,9 +76,6 @@ a:hover { text-decoration: underline; }
 .topo-dentro { max-width: 980px; margin: 0 auto; padding: 14px 20px; display: flex; gap: 16px; align-items: center; justify-content: space-between; }
 .marca { font-family: var(--titulo); font-weight: 800; font-size: 20px; color: var(--texto); display: flex; align-items: center; gap: 8px; }
 .marca:hover { text-decoration: none; }
-.marca::before { content: ""; width: 26px; height: 26px; border-radius: 9px; background: var(--destaque);
-  /* "camadas" de impressão 3D no logotipo */
-  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.28) 0 2px, transparent 2px 5px); }
 .marca-sub { font-family: var(--corpo); font-weight: 700; font-size: 12px; color: var(--destaque);
   background: var(--destaque-suave); border-radius: var(--pilula); padding: 3px 10px; }
 .perfil { display: flex; gap: 10px; align-items: center; font-size: 14px; }
