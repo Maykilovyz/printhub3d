@@ -17,6 +17,23 @@ const app = express();
 // Permite ler JSON enviado pelo navegador (ex.: dados do login)
 app.use(express.json());
 
+// O app Android (Capacitor) abre as páginas a partir de "https://localhost".
+// Para o navegador do app poder chamar esta API, liberamos (CORS) só essa origem.
+// O site não precisa disso, porque ele e a API estão no mesmo endereço.
+const ORIGENS_DO_APP = ["https://localhost", "capacitor://localhost"];
+app.use("/api", (req, res, next) => {
+  const origem = req.headers.origin;
+  if (ORIGENS_DO_APP.includes(origem)) {
+    res.set("Access-Control-Allow-Origin", origem);
+    res.set("Vary", "Origin");
+    res.set("Access-Control-Allow-Headers", "Authorization, Content-Type");
+    res.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    // Antes de algumas chamadas o navegador pergunta "posso?" (OPTIONS). Respondemos que sim.
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+  }
+  next();
+});
+
 // Entrega os arquivos do site (HTML, CSS, JS) que estão em /public
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -26,6 +43,8 @@ app.get("/api/config", (req, res) => {
   res.json({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseChavePublica: process.env.SUPABASE_PUBLISHABLE_KEY || null,
+    // ID do cliente "Aplicativo da Web" do Google. O app Android usa no login nativo.
+    googleClientId: process.env.GOOGLE_WEB_CLIENT_ID || null,
   });
 });
 

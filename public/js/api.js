@@ -3,6 +3,18 @@
 // "api()" conversa com o servidor e já manda o token de login.
 // =============================================================
 
+// Estamos dentro do app Android? O Capacitor cria "window.Capacitor" no app.
+// No site isso não existe, então NO_APP fica false.
+const NO_APP = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+
+// Endereço do servidor. No site é vazio: "/api/..." vai para o próprio site.
+// No app as páginas ficam guardadas no celular, então precisamos do endereço
+// completo do servidor publicado no Render (o mesmo banco do site).
+const SERVIDOR = NO_APP ? "https://printhub3d-hqb0.onrender.com" : "";
+
+// Elementos marcados com data-so-app só aparecem no app (ex.: botão "Tirar foto")
+if (NO_APP) document.querySelectorAll("[data-so-app]").forEach((el) => (el.hidden = false));
+
 // O token e o usuário ficam salvos no navegador (localStorage)
 const sessao = {
   token: () => localStorage.getItem("token"),
@@ -31,7 +43,7 @@ async function api(caminho, opcoes = {}) {
     cabecalhos["Content-Type"] = "application/json";
     opcoes.body = JSON.stringify(opcoes.body);
   }
-  const resposta = await fetch("/api" + caminho, { ...opcoes, headers: cabecalhos });
+  const resposta = await fetch(SERVIDOR + "/api" + caminho, { ...opcoes, headers: cabecalhos });
   const dados = await resposta.json().catch(() => ({}));
 
   if (resposta.status === 401) { sessao.sair(); return; } // token vencido

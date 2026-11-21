@@ -69,6 +69,29 @@ flowchart LR
 
 ---
 
+## 1c. Login com Google no app Android
+
+O Google não deixa fazer login dentro de um app (WebView). No app usamos a janelinha **nativa** do Android para escolher a conta. O resto é igual ao site.
+
+```mermaid
+sequenceDiagram
+    actor U as Usuário
+    participant A as App (index.html)
+    participant AN as Android (Credential Manager)
+    participant SA as Supabase Auth
+    participant S as Servidor (rotas/usuarios.js)
+
+    U->>A: Toca em "Entrar com Google"
+    A->>AN: SocialLogin.login (com nonce resumido)
+    AN-->>A: idToken do Google
+    A->>SA: signInWithIdToken(idToken, nonce)
+    SA-->>A: Sessão do Supabase
+    A->>S: POST /api/usuarios/google (igual ao site)
+    S-->>A: Token do PrintHub + tipo da conta
+```
+
+---
+
 ## 2. Arquitetura do sistema
 
 ```mermaid
@@ -76,6 +99,11 @@ flowchart LR
     subgraph Navegador["Navegador do usuário"]
         HTML["Páginas HTML + CSS<br/>(pasta public)"]
         JS["JavaScript<br/>api.js / pedido.js"]
+    end
+
+    subgraph Celular["App Android (Capacitor)"]
+        APPHTML["As mesmas páginas<br/>(cópia da pasta public)"]
+        NATIVO["Login nativo do Google<br/>+ câmera"]
     end
 
     subgraph Render["Servidor no Render"]
@@ -95,7 +123,11 @@ flowchart LR
     ROTAS -- "lê e grava dados" --> DB
     ROTAS -- "envia arquivos / gera link" --> ST
     EXP -- "entrega os arquivos do site" --> HTML
+    APPHTML --> NATIVO
+    APPHTML -- "fetch https://...onrender.com/api + token<br/>(CORS liberado só para o app)" --> EXP
 ```
+
+**O app e o site usam o mesmo servidor e o mesmo banco.** A diferença é que no app as páginas já estão dentro do celular (vêm no .apk), então só os dados passam pela internet. Por isso um pedido criado no app aparece no site e vice-versa.
 
 **Explicando em uma frase:** o navegador nunca fala direto com o banco. Ele sempre pede ao servidor, e o servidor confere quem é a pessoa (token) e o que ela pode fazer antes de mexer no banco.
 

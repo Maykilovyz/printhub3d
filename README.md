@@ -43,6 +43,9 @@ PrintHub3D/
 │   ├── pedido.html        ← detalhes, orçamentos e chat
 │   ├── css/estilo.css
 │   └── js/ (api.js, entrar.js, pedido.js, painel-fabricante.js)
+├── app-android/           ← app Android (Capacitor) que usa as páginas de public/
+│   ├── capacitor.config.json  ← nome do app, id e de onde vêm as páginas
+│   └── android/           ← projeto Android gerado (Gradle)
 ├── supabase/schema.sql    ← cria as tabelas
 ├── supabase/migracao-02-google-convites.sql ← login Google + convites
 └── docs/diagramas.md      ← diagramas para a apresentação
@@ -117,11 +120,50 @@ Abra http://localhost:3000. Para testar o fluxo inteiro, entre com o Google do d
    ```
 3. Em https://render.com: **New → Web Service → conecte o repositório**.
    - Runtime: **Node** · Build command: `npm install` · Start command: `npm start` · Plano: **Free**.
-   - Em **Environment Variables**, adicione `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_PUBLISHABLE_KEY`, `DONO_EMAIL` e `JWT_SECRET` (os mesmos valores do `.env`).
+   - Em **Environment Variables**, adicione `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`, `SUPABASE_PUBLISHABLE_KEY`, `GOOGLE_WEB_CLIENT_ID`, `DONO_EMAIL` e `JWT_SECRET` (os mesmos valores do `.env`).
    - Depois de publicar, coloque o link do Render em **Site URL** e **Redirect URLs** do Supabase (Passo 1b).
 4. Clique em **Create Web Service**. Em uns 3 minutos o Render mostra o link `https://printhub3d-xxxx.onrender.com`.
 
 > **Dica para o dia da apresentação:** no plano grátis o Render "dorme" depois de 15 minutos sem uso, e a primeira abertura demora uns 50 segundos. Abra o link uns 2 minutos antes de apresentar.
+
+---
+
+## App Android
+
+O app fica na pasta `app-android/` e é feito com **Capacitor**: ele coloca as mesmas páginas da pasta `public/` dentro de um app Android. As páginas ficam no celular e os dados vêm da **mesma API do Render** (`https://printhub3d-hqb0.onrender.com/api`), então app e site usam o mesmo banco: um pedido criado no app aparece no site e vice-versa.
+
+O que muda no código para o app funcionar:
+- `public/js/api.js`: descobre se está no app (`NO_APP`) e, se estiver, usa o endereço completo do servidor (`SERVIDOR`).
+- `server.js`: libera o CORS só para a origem do app (`https://localhost`).
+- `public/js/entrar.js`: no app, o "Entrar com Google" usa o login nativo do Android (plugin `@capgo/capacitor-social-login`), porque o Google bloqueia login dentro de app.
+- `public/novo-pedido.html`: no app aparece o campo "Ou tire uma foto agora", que abre a câmera.
+
+### Configurar o login com Google do app (uma vez)
+
+1. Gere o APK uma vez (abaixo) e pegue a impressão digital **SHA-1** da chave de debug:
+   ```bash
+   ~/Android/jdk/bin/keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android | grep SHA1
+   ```
+2. **Google Cloud → Credenciais → Criar credenciais → ID do cliente OAuth**, tipo **Android**:
+   nome do pacote `com.printhub3d.app` e o SHA-1 do passo 1. (Esse ID não vai no código: ele só autoriza o app.)
+3. Copie o **ID do cliente "Aplicativo da Web"** (o que já existe, do Passo 1b) para a variável `GOOGLE_WEB_CLIENT_ID` no `.env` e no Render.
+4. Nada muda no Supabase: o provedor Google já aceita tokens desse mesmo ID da Web.
+
+### Gerar o APK de debug
+
+Precisa de **Java 21** e do **Android SDK**. Neste computador eles estão em `~/Android/jdk` e `~/Android/Sdk`. Em cada terminal novo:
+```bash
+export JAVA_HOME=~/Android/jdk ANDROID_HOME=~/Android/Sdk
+```
+Depois:
+```bash
+cd app-android && npm install && npm run apk
+```
+O APK sai em `app-android/android/app/build/outputs/apk/debug/app-debug.apk`. Mande para o celular (cabo, Drive, WhatsApp) e instale (o Android pede para permitir "instalar apps desconhecidos").
+
+Sempre que mudar algo em `public/`, rode `npm run apk` de novo: ele copia as páginas para o app antes de gerar.
+
+> O app conversa com o servidor do Render. Se o Render estiver "dormindo", o primeiro login no app demora uns 50 segundos.
 
 ---
 

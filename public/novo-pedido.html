@@ -61,6 +61,11 @@
         <div class="campo">
           <input id="anexos" name="anexos" type="file" multiple accept=".stl,.obj,.3mf,.jpg,.jpeg,.png,.webp,.pdf" aria-label="Imagens ou arquivo 3D">
           <span class="dica">Fotos, croquis ou arquivo 3D. Até 5 arquivos.</span></div>
+        <!-- Só no app: abre a câmera do celular. "capture" pede a câmera traseira. -->
+        <div class="campo" data-so-app hidden>
+          <label for="foto">Ou tire uma foto agora</label>
+          <input id="foto" name="anexos" type="file" accept="image/*" capture="environment">
+        </div>
       </div>
 
       <p class="erro-msg" id="erro" role="alert"></p>
