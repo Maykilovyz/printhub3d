@@ -105,7 +105,7 @@ a:hover { text-decoration: underline; }
   transition: transform .12s ease, filter .12s ease, background .12s ease; white-space: nowrap; }
 .botao:hover { text-decoration: none; filter: brightness(.97); }
 .botao:active { transform: scale(.98); }
-.botao.principal { background: var(--destaque); color: var(--destaque-texto); box-shadow: 0 6px 16px color-mix(in srgb, var(--destaque) 30%, transparent); }
+.botao.principal { background: var(--destaque); color: var(--destaque-texto); }
 .botao.principal:hover { filter: brightness(1.06); }
 .botao.pequeno { min-height: 36px; padding: 0 16px; font-size: 14px; }
 .botao.perigo { background: var(--erro); color: #FFFFFF; }
