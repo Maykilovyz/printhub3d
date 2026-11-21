@@ -179,3 +179,7 @@ dl.ficha dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 @media (prefers-color-scheme: dark) {
   .tema-oficina { --destaque: #F0A54A; --destaque-texto: #2A1700; --destaque-suave: #3A2A16; }
 }
+
+/* Botão de ação destrutiva (remover cargo) */
+.botao.perigo { background: var(--erro); border-color: var(--erro); color: #FFFFFF; }
+.confirmar { display: inline-flex; gap: 8px; align-items: center; flex-wrap: wrap; }

@@ -19,16 +19,26 @@ function gerarToken(usuario) {
 }
 
 // "Middleware": roda antes das rotas protegidas.
-// Se o token estiver certo, coloca o usuário em req.usuario e deixa passar.
-function exigirLogin(req, res, next) {
+// 1) Confere se o token é válido (assinatura e validade).
+// 2) Busca o papel ATUAL no banco. Assim, se o dono tirar o cargo de
+//    fabricante de alguém, isso vale na hora, mesmo com o token antigo.
+async function exigirLogin(req, res, next) {
   const cabecalho = req.headers.authorization || "";
   const token = cabecalho.replace("Bearer ", "");
+  let dados;
   try {
-    req.usuario = jwt.verify(token, SEGREDO);
-    next();
+    dados = jwt.verify(token, SEGREDO);
   } catch {
-    res.status(401).json({ erro: "Faça login para continuar." });
+    return res.status(401).json({ erro: "Faça login para continuar." });
   }
+  try {
+    const supabase = require("./supabase");
+    const { data: atual } = await supabase
+      .from("usuarios").select("id, nome, tipo, dono").eq("id", dados.id).maybeSingle();
+    if (!atual) return res.status(401).json({ erro: "Conta não encontrada. Faça login de novo." });
+    req.usuario = { ...dados, tipo: atual.tipo, dono: atual.dono, nome: atual.nome };
+    next();
+  } catch (e) { next(e); }
 }
 
 // Só deixa passar usuários de um tipo (ex.: só fabricantes enviam orçamento)

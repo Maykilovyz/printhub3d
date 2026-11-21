@@ -33,6 +33,11 @@ async function carregarPedidos() {
 // Pede a cidade se ainda não tiver
 async function verificarCidade() {
   const perfil = await api("/usuarios/eu");
+  // Se o cargo de fabricante foi removido, atualiza a sessão e vai para o painel de cliente
+  if (perfil.tipo !== "fabricante") {
+    sessao.salvar(sessao.token(), { ...sessao.usuario(), tipo: perfil.tipo, dono: perfil.dono });
+    return irParaPainel(perfil);
+  }
   const form = document.querySelector("#form-cidade");
   form.hidden = !!perfil.cidade;
   form.onsubmit = async (e) => {
@@ -51,8 +56,41 @@ async function carregarEquipe() {
         : `<span class="linha-acoes"><span class="etiqueta s-aberto">Pendente</span><button type="button" class="botao pequeno" data-cancelar="${c.id}">Cancelar</button></span>`}</li>`).join("")
     : `<li class="apagado">Nenhum convite enviado.</li>`;
   document.querySelector("#lista-fabricantes").innerHTML = fabricantes.map((f) =>
-    `<li><span><strong>${esc(f.nome)}</strong><br><span class="apagado" style="font-size:13px">${esc(f.email)}${f.cidade ? " · " + esc(f.cidade) : ""}</span></span>
-      ${f.dono ? `<span class="etiqueta s-com_orcamento">Dono</span>` : ""}</li>`).join("");
+    `<li data-fab="${f.id}"><span><strong>${esc(f.nome)}</strong><br><span class="apagado" style="font-size:13px">${esc(f.email)}${f.cidade ? " · " + esc(f.cidade) : ""}</span></span>
+      ${f.dono
+        ? `<span class="etiqueta s-com_orcamento">Dono</span>`
+        : `<span class="linha-acoes">
+             <button type="button" class="botao pequeno" data-remover="${f.id}">Remover cargo</button>
+             <span class="confirmar" hidden>
+               <span class="apagado">Virar cliente?</span>
+               <button type="button" class="botao pequeno perigo" data-confirmar="${f.id}">Remover</button>
+               <button type="button" class="botao pequeno" data-voltar>Cancelar</button>
+             </span>
+           </span>`}
+      </li>`).join("");
+
+  // Remover cargo: 1º clique mostra a confirmação, 2º clique remove de verdade
+  document.querySelectorAll("[data-remover]").forEach((b) => (b.onclick = () => {
+    b.hidden = true;
+    b.nextElementSibling.hidden = false;
+  }));
+  document.querySelectorAll("[data-voltar]").forEach((b) => (b.onclick = () => {
+    const caixa = b.closest(".confirmar");
+    caixa.hidden = true;
+    caixa.previousElementSibling.hidden = false;
+  }));
+  document.querySelectorAll("[data-confirmar]").forEach((b) => (b.onclick = async () => {
+    const erro = document.querySelector("#equipe-erro");
+    erro.textContent = "";
+    b.disabled = true;
+    try {
+      await api(`/convites/fabricantes/${b.dataset.confirmar}/remover`, { method: "POST" });
+      carregarEquipe();
+    } catch (e) {
+      erro.textContent = e.message;
+      b.disabled = false;
+    }
+  }));
 
   document.querySelectorAll("[data-cancelar]").forEach((b) => (b.onclick = async () => {
     b.disabled = true;
