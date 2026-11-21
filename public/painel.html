@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>PrintHub 3D</title>
+</head>
+<body>
+  <!-- Esta página só redireciona para o painel do tipo de conta -->
+  <script src="/js/api.js"></script>
+  <script>
+    const u = sessao.usuario();
+    if (!sessao.token() || !u) location.href = "/";
+    else irParaPainel(u);
+  </script>
+</body>
+</html>

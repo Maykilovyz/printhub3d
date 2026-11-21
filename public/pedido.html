@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pedido · PrintHub 3D</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+  <header class="topo"><div class="topo-dentro">
+    <a class="marca" href="/painel.html">PrintHub 3D</a>
+    <nav class="perfil">
+      <img id="foto-usuario" class="foto" alt="" hidden referrerpolicy="no-referrer">
+      <span><span id="nome-usuario"></span> <span class="papel" id="papel-usuario"></span></span>
+      <button class="botao pequeno" id="sair">Sair</button>
+    </nav>
+  </div></header>
+
+  <main class="pagina">
+    <a href="/painel.html">← Voltar ao painel</a>
+    <div id="conteudo"><p class="apagado">Carregando…</p></div>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/pedido.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Novo pedido · PrintHub 3D</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+  <header class="topo"><div class="topo-dentro">
+    <a class="marca" href="/painel.html">PrintHub 3D</a>
+    <nav class="perfil">
+      <img id="foto-usuario" class="foto" alt="" hidden referrerpolicy="no-referrer">
+      <span><span id="nome-usuario"></span> <span class="papel" id="papel-usuario"></span></span>
+      <button class="botao pequeno" id="sair">Sair</button>
+    </nav>
+  </div></header>
+
+  <main class="pagina">
+    <div><a href="/painel.html">← Meus pedidos</a><h1 style="margin-top:8px">Novo pedido</h1>
+      <p class="apagado">Descreva com suas palavras. Se não souber algum detalhe técnico, o fabricante orienta.</p></div>
+
+    <form class="cartao" id="form">
+      <div class="campo"><span class="lbl">1. Para que é a peça?</span>
+        <div class="categorias" id="categorias"></div>
+      </div>
+
+      <div class="campo"><label for="titulo">2. Título</label>
+        <input id="titulo" name="titulo" required placeholder="Ex.: Maquete de edifício residencial, escala 1:200"></div>
+
+      <div class="campo"><label for="descricao">3. O que você precisa?</label>
+        <textarea id="descricao" name="descricao" required placeholder="Conte para que vai usar, o nível de detalhe e o que pode ficar de fora."></textarea></div>
+
+      <div class="grade">
+        <div class="campo"><span class="lbl">4. Dimensões aproximadas (mm)</span>
+          <div class="dimensoes">
+            <input name="largura_mm" type="number" min="1" placeholder="Larg." aria-label="Largura em mm" class="mono">
+            <input name="profundidade_mm" type="number" min="1" placeholder="Prof." aria-label="Profundidade em mm" class="mono">
+            <input name="altura_mm" type="number" min="1" placeholder="Alt." aria-label="Altura em mm" class="mono">
+          </div>
+        </div>
+        <div class="campo"><label for="quantidade">Quantidade</label><input id="quantidade" name="quantidade" type="number" min="1" value="1" class="mono"></div>
+        <div class="campo"><label for="prazo">Preciso até</label><input id="prazo" name="prazo" type="date"></div>
+      </div>
+
+      <div class="campo"><span class="lbl">Material</span>
+        <div class="opcoes" id="materiais"></div>
+        <span class="dica" id="dica-material"></span>
+      </div>
+
+      <div class="campo"><label for="cor">Cor</label>
+        <select id="cor" name="cor">
+          <option>Tanto faz</option><option>Branco</option><option>Cinza</option><option>Preto</option>
+          <option>Bege</option><option>Azul</option><option>Vermelho</option><option>Outra (explico na descrição)</option>
+        </select></div>
+
+      <div class="campo"><label for="anexos">5. Imagens ou arquivo 3D (opcional)</label>
+        <input id="anexos" name="anexos" type="file" multiple accept=".stl,.obj,.3mf,.jpg,.jpeg,.png,.webp,.pdf">
+        <span class="dica">Até 5 arquivos de 20 MB: <span class="mono">.stl .obj .3mf .jpg .png .pdf</span>. Sem arquivo 3D? Fotos e croquis já ajudam.</span></div>
+
+      <p class="erro-msg" id="erro"></p>
+      <div class="acoes"><a class="botao" href="/painel.html">Cancelar</a><button class="botao principal" id="enviar">Enviar solicitação</button></div>
+    </form>
+  </main>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const eu = exigirLogin("cliente");
+
+    // Monta as opções de categoria e material a partir destas listas
+    const CATEGORIAS = [
+      ["Arquitetura", "Maquetes, volumetrias, terrenos"],
+      ["Engenharia", "Protótipos, suportes, gabaritos"],
+      ["Design de produto", "Modelos de apresentação"],
+      ["Peças de reposição", "Botões, engrenagens, encaixes"],
+      ["Saúde e educação", "Modelos anatômicos e didáticos"],
+      ["Arte e cosplay", "Miniaturas, adereços, figuras"],
+    ];
+    const MATERIAIS = {
+      "Deixar o fabricante sugerir": "Boa escolha se você não conhece os materiais.",
+      "PLA": "Rígido e barato. Ideal para maquetes e protótipos visuais.",
+      "PETG": "Mais resistente a impacto e calor. Bom para peças de uso.",
+      "ABS": "Aguenta calor e pode ser lixado.",
+      "Resina": "Detalhe muito fino. Ótimo para miniaturas.",
+    };
+
+    document.querySelector("#categorias").innerHTML = CATEGORIAS.map(([nome, desc], i) =>
+      `<label><input type="radio" name="categoria" value="${nome}" ${i === 0 ? "checked" : ""}><strong>${nome}</strong><small>${desc}</small></label>`
+    ).join("");
+    document.querySelector("#materiais").innerHTML = Object.keys(MATERIAIS).map((m, i) =>
+      `<label><input type="radio" name="material" value="${m}" ${i === 0 ? "checked" : ""}><span>${m}</span></label>`
+    ).join("");
+
+    const dica = document.querySelector("#dica-material");
+    const mostrarDica = () => (dica.textContent = MATERIAIS[document.querySelector("input[name=material]:checked").value]);
+    document.querySelector("#materiais").onchange = mostrarDica;
+    mostrarDica();
+
+    // Envia o formulário com os arquivos (FormData monta tudo junto)
+    document.querySelector("#form").onsubmit = async (e) => {
+      e.preventDefault();
+      const botao = document.querySelector("#enviar");
+      const erro = document.querySelector("#erro");
+      erro.textContent = "";
+      botao.disabled = true;
+      botao.textContent = "Enviando…";
+      try {
+        const pedido = await api("/pedidos", { method: "POST", body: new FormData(e.target) });
+        location.href = "/pedido.html?id=" + pedido.id;
+      } catch (err) {
+        erro.textContent = err.message;
+        botao.disabled = false;
+        botao.textContent = "Enviar solicitação";
+      }
+    };
+  </script>
+</body>
+</html>

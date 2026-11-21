@@ -1,0 +1,96 @@
+// =============================================================
+// Funções usadas por todas as páginas.
+// "api()" conversa com o servidor e já manda o token de login.
+// =============================================================
+
+// O token e o usuário ficam salvos no navegador (localStorage)
+const sessao = {
+  token: () => localStorage.getItem("token"),
+  usuario: () => JSON.parse(localStorage.getItem("usuario") || "null"),
+  salvar(token, usuario) {
+    localStorage.setItem("token", token);
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+  },
+  sair() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+    location.href = "/";
+  },
+};
+
+// Cada tipo de conta tem o seu painel
+function irParaPainel(usuario) {
+  location.href = usuario && usuario.tipo === "fabricante" ? "/painel-fabricante.html" : "/painel-cliente.html";
+}
+
+// Faz uma chamada para a API. Se der erro, lança com a mensagem do servidor.
+async function api(caminho, opcoes = {}) {
+  const cabecalhos = { Authorization: "Bearer " + sessao.token() };
+  // Se não for upload de arquivo (FormData), enviamos JSON
+  if (opcoes.body && !(opcoes.body instanceof FormData)) {
+    cabecalhos["Content-Type"] = "application/json";
+    opcoes.body = JSON.stringify(opcoes.body);
+  }
+  const resposta = await fetch("/api" + caminho, { ...opcoes, headers: cabecalhos });
+  const dados = await resposta.json().catch(() => ({}));
+
+  if (resposta.status === 401) { sessao.sair(); return; } // token vencido
+  if (!resposta.ok) throw new Error(dados.erro || "Algo deu errado.");
+  return dados;
+}
+
+// Páginas internas chamam isto. Se não estiver logado, volta para o login.
+// Se passar o tipo ("cliente" ou "fabricante") e a conta for de outro tipo,
+// manda para o painel certo.
+function exigirLogin(tipo) {
+  const u = sessao.usuario();
+  if (!sessao.token() || !u) { location.href = "/"; return null; }
+  if (tipo && u.tipo !== tipo) { irParaPainel(u); return null; }
+
+  const nome = document.querySelector("#nome-usuario");
+  if (nome) nome.textContent = u.nome;
+  const papel = document.querySelector("#papel-usuario");
+  if (papel) papel.textContent = u.tipo === "cliente" ? "Cliente" : (u.dono ? "Fabricante · dono" : "Fabricante");
+  const foto = document.querySelector("#foto-usuario");
+  if (foto && u.foto_url) { foto.src = u.foto_url; foto.hidden = false; }
+  const sair = document.querySelector("#sair");
+  if (sair) sair.onclick = sessao.sair;
+  return u;
+}
+
+// Textos bonitos para os status
+const NOMES_STATUS = {
+  aberto: "Aguardando orçamentos",
+  com_orcamento: "Orçamentos recebidos",
+  aceito: "Orçamento aceito",
+  em_producao: "Em produção",
+  entregue: "Entregue",
+};
+
+// Evita que texto digitado por usuários vire HTML (segurança contra XSS)
+function esc(texto) {
+  return String(texto ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+const reais = (n) => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const data = (s) => (s ? new Date(s.length === 10 ? s + "T12:00" : s).toLocaleDateString("pt-BR") : "—");
+
+// Monta um item da lista de pedidos (usado nos dois painéis)
+function itemPedido(p, extra) {
+  return `<li><a href="/pedido.html?id=${p.id}">
+    <strong>${esc(p.titulo)}</strong>
+    <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status]}</span>
+    <span class="apagado" style="font-size:14px">${esc(p.categoria)} · ${p.quantidade} un. · prazo ${data(p.prazo)}</span>
+    <span class="apagado" style="font-size:14px;text-align:right">${extra || ""}</span>
+  </a></li>`;
+}
+
+// Abas simples: botões com data-aba mostram a seção de mesmo id
+function ligarAbas() {
+  const botoes = document.querySelectorAll("[data-aba]");
+  botoes.forEach((b) => (b.onclick = () => {
+    botoes.forEach((x) => x.setAttribute("aria-selected", x === b));
+    document.querySelectorAll(".aba").forEach((s) => (s.hidden = s.id !== b.dataset.aba));
+  }));
+}

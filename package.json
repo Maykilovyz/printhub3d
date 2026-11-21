@@ -1,0 +1,21 @@
+{
+  "name": "printhub3d",
+  "version": "1.0.0",
+  "description": "Plataforma que conecta clientes a fabricantes de peças por impressão 3D",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch --env-file=.env server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.45.4",
+    "bcryptjs": "2.4.3",
+    "express": "4.21.1",
+    "jsonwebtoken": "9.0.2",
+    "multer": "2.0.2"
+  }
+}

@@ -1,0 +1,392 @@
+<title>PrintHub 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app frame with a role switch (Cliente / Fabricante); client side is a 5-step wizard, maker side is inbox + detail. Layer-line stripes are the one motif. */
+:root{
+  --paper:#F2F4F6; --surface:#FFFFFF; --ink:#15202A; --muted:#5B6874; --line:#D8DEE4;
+  --accent:#0B6E78; --accent-ink:#FFFFFF; --accent-soft:#DDEFF0;
+  --ok:#2E7D4F; --warn:#A86A00; --bad:#B23A3A;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0F161C; --surface:#172129; --ink:#E6ECF1; --muted:#97A5B1; --line:#2A3742;
+  --accent:#3FB8C2; --accent-ink:#06262A; --accent-soft:#163A3F;
+  --ok:#5CC48A; --warn:#E0A84A; --bad:#E07A7A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F161C; --surface:#172129; --ink:#E6ECF1; --muted:#97A5B1; --line:#2A3742;
+  --accent:#3FB8C2; --accent-ink:#06262A; --accent-soft:#163A3F;
+  --ok:#5CC48A; --warn:#E0A84A; --bad:#E07A7A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(26px,4vw,34px);font-weight:800;letter-spacing:-.01em}
+h2{font-size:22px;font-weight:600}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+header.top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;padding-bottom:16px;
+  background:repeating-linear-gradient(to top,var(--line) 0 1px,transparent 1px 5px) bottom/100% 16px no-repeat}
+.brand{display:flex;flex-direction:column;gap:4px}
+.brand p{max-width:54ch;color:var(--muted)}
+.role{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--surface);padding:3px}
+.role button{border:0;background:transparent;color:var(--muted);font:600 14px var(--body);padding:8px 16px;border-radius:999px;cursor:pointer}
+.role button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.badge{display:inline-block;min-width:18px;padding:0 6px;margin-left:6px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:18px;text-align:center}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:20px;min-width:0}
+
+/* stepper */
+.steps{display:flex;gap:4px;list-style:none;margin:0;padding:0;overflow-x:auto}
+.steps li{flex:1;min-width:92px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.steps li::before{content:"";height:4px;border-radius:2px;background:var(--line)}
+.steps li.done::before,.steps li.on::before{background:var(--accent)}
+.steps li.on{color:var(--ink);font-weight:600}
+
+/* forms */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.field .lbl{font-weight:600;font-size:14px}
+.hint{font-size:13px;color:var(--muted)}
+input[type=text],input[type=email],input[type=number],input[type=date],textarea,select{
+  width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,.cat:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dims div{display:flex;flex-direction:column;gap:4px}
+.dims span{font-size:12px;color:var(--muted)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font:500 14px var(--body);cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.swatch{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.swatch[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}
+
+.cats{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.cat{text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r);padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:6px;font:inherit}
+.cat strong{font-family:var(--display);font-size:17px;font-weight:600}
+.cat small{color:var(--muted);font-size:13px}
+.cat[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+
+.drop{border:1.5px dashed var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.files{display:flex;flex-direction:column;gap:6px;list-style:none;margin:0;padding:0;width:100%}
+.files li{display:flex;justify-content:space-between;gap:12px;font-size:14px;border-top:1px solid var(--line);padding-top:6px}
+.files li span:first-child{overflow-wrap:anywhere}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px}
+.btn{font:600 15px var(--body);border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{padding:7px 12px;font-size:14px}
+
+/* review */
+dl.spec{display:grid;grid-template-columns:max-content 1fr;gap:8px 20px;margin:0}
+dl.spec dt{color:var(--muted);font-size:14px}
+dl.spec dd{margin:0;min-width:0;overflow-wrap:anywhere}
+
+/* status */
+.timeline{display:flex;gap:4px;list-style:none;padding:0;margin:0;overflow-x:auto}
+.timeline li{flex:1;min-width:96px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.timeline li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid var(--line);background:var(--surface)}
+.timeline li.done::before{background:var(--accent);border-color:var(--accent)}
+.timeline li.on{color:var(--ink);font-weight:600}
+.timeline li.on::before{border-color:var(--accent)}
+
+.quote{border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center}
+.quote .price{font-family:var(--display);font-size:24px;font-weight:800}
+.quote .meta{font-size:13px;color:var(--muted)}
+.quote.accepted{border-color:var(--ok);box-shadow:inset 0 0 0 1px var(--ok)}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:999px;border:1px solid currentColor}
+.pill.ok{color:var(--ok)} .pill.warn{color:var(--warn)} .pill.bad{color:var(--bad)} .pill.info{color:var(--accent)}
+
+/* maker */
+.maker{display:grid;gap:20px;grid-template-columns:minmax(240px,320px) 1fr;align-items:start}
+@media (max-width:760px){.maker{grid-template-columns:1fr}}
+.inbox{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.inbox button{width:100%;text-align:left;font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.inbox button[aria-current="true"]{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.inbox .row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.check{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0}
+.check li{display:flex;gap:10px;align-items:baseline;font-size:14px}
+.check li b{font-family:var(--mono);font-weight:500;width:1.2em;flex:none}
+.estimate{background:var(--paper);border-radius:8px;padding:12px 14px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px 20px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:8px;font-weight:500;max-width:calc(100% - 32px)}
+.sample{font-size:12px;color:var(--warn);font-weight:600}
+@media (prefers-reduced-motion:no-preference){.panel{animation:fade .18s ease-out}@keyframes fade{from{opacity:.6}to{opacity:1}}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <span class="label">Protótipo navegável</span>
+      <h1>PrintHub 3D</h1>
+      <p>Descreva a peça, anexe referências e receba orçamentos de fabricantes de impressão 3D, mesmo sem entender de impressão.</p>
+    </div>
+    <div class="role" role="group" aria-label="Ver como">
+      <button id="role-client" aria-pressed="true">Cliente</button>
+      <button id="role-maker" aria-pressed="false">Fabricante<span class="badge" id="maker-badge" hidden>1</span></button>
+    </div>
+  </header>
+
+  <main id="app"></main>
+  <p class="sample">Dados de exemplo: o pedido abaixo já vem preenchido com o caso do estudante de Arquitetura. Tudo pode ser editado.</p>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const CATS=[
+  {id:"arq",name:"Arquitetura",desc:"Maquetes, volumetrias, terrenos"},
+  {id:"eng",name:"Engenharia",desc:"Protótipos, suportes, gabaritos"},
+  {id:"des",name:"Design de produto",desc:"Modelos de apresentação"},
+  {id:"rep",name:"Peças de reposição",desc:"Botões, engrenagens, encaixes"},
+  {id:"sau",name:"Saúde e educação",desc:"Modelos anatômicos, didáticos"},
+  {id:"art",name:"Arte e cosplay",desc:"Miniaturas, adereços, figuras"}
+];
+const MATERIALS=["Deixar o fabricante sugerir","PLA","PETG","ABS","Resina"];
+const MAT_TIPS={"Deixar o fabricante sugerir":"Boa escolha se você não conhece os materiais.","PLA":"Rígido e barato. Ideal para maquetes e protótipos visuais.","PETG":"Mais resistente a impacto e calor. Bom para peças de uso.","ABS":"Aguenta calor e pode ser lixado. Mais difícil de imprimir.","Resina":"Detalhe muito fino. Ótimo para miniaturas e maquetes pequenas."};
+const COLORS=[["Branco","#F4F4F2"],["Cinza","#8E959B"],["Preto","#222"],["Bege","#D8C3A0"],["Azul","#2F5DA8"],["Vermelho","#C23B32"]];
+const STEPS=["Conta","Categoria","Pedido","Revisão","Acompanhar"];
+const STATUS=["Enviado","Em análise","Orçamentos","Aceito","Em produção","Entregue"];
+const BED={x:256,y:256,z:256};
+
+const S={
+  role:"client", step:0,
+  user:{name:"Lucas Andrade",email:"lucas.andrade@exemplo.edu.br",profile:"Estudante"},
+  cat:"arq",
+  order:{title:"Maquete de edifício residencial, escala 1:200",
+    desc:"Maquete volumétrica de um prédio de 8 andares com recuos no 3º e no 6º pavimento. Preciso para apresentar na disciplina de Projeto III. Não precisa de janelas detalhadas, só os volumes e a laje de cobertura.",
+    w:150,d:100,h:180,material:"Deixar o fabricante sugerir",color:"Branco",qty:1,deadline:"",
+    files:[{name:"fachada-norte.jpg",size:"1,8 MB"},{name:"edificio_v3.stl",size:"4,2 MB"}]},
+  sent:false, status:0, quotes:[], acceptedQuote:null,
+  selected:"PH-1042",
+  quoteDraft:{price:"",days:"5",note:""}
+};
+(function(){const d=new Date();d.setDate(d.getDate()+10);S.order.deadline=d.toISOString().slice(0,10)})();
+
+const OTHER=[
+  {id:"PH-1039",title:"Suporte de sensor para drone",cat:"Engenharia",w:60,d:40,h:25,material:"PETG",color:"Preto",qty:4,client:"Marina T.",when:"há 2 h",desc:"Suporte para fixar um sensor ultrassônico no braço do drone. Furos de 3 mm."},
+  {id:"PH-1036",title:"Modelo de coração em escala 1:1",cat:"Saúde e educação",w:120,d:90,h:130,material:"Resina",color:"Vermelho",qty:1,client:"Prof. Renato S.",when:"ontem",desc:"Modelo anatômico para aula de anatomia, com átrios e ventrículos visíveis."}
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const brl=n=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const fmtDate=s=>s?new Date(s+"T12:00").toLocaleDateString("pt-BR"):"Sem prazo";
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2400)}
+
+function myRequest(){const o=S.order;return{id:"PH-1042",title:o.title,cat:CATS.find(c=>c.id===S.cat).name,w:o.w,d:o.d,h:o.h,material:o.material,color:o.color,qty:o.qty,client:S.user.name.split(" ")[0]+" "+(S.user.name.split(" ")[1]||"")[0]+".",when:"agora",desc:o.desc,files:o.files,deadline:o.deadline,mine:true}}
+
+function estimate(r){
+  const cm3=r.w*r.d*r.h/1000, fill=0.18, dens=r.material==="Resina"?1.15:1.24;
+  const g=Math.round(cm3*fill*dens), hours=Math.max(1,Math.round(g/12));
+  const perG=r.material==="Resina"?0.45:0.18;
+  const price=Math.round((25+g*perG+hours*4)*r.qty);
+  return{g,hours,price};
+}
+
+/* ---------- client ---------- */
+function renderClient(){
+  const steps=`<ol class="steps">${STEPS.map((s,i)=>`<li class="${i<S.step?"done":i===S.step?"on":""}">${s}</li>`).join("")}</ol>`;
+  const body=[stepAccount,stepCategory,stepOrder,stepReview,stepTrack][S.step]();
+  $("#app").innerHTML=`<section class="panel">${steps}${body}</section>`;
+  bindClient();
+}
+function nav(back,next,nextLabel="Continuar",disabled=false){
+  return `<div class="actions">${back?`<button class="btn" data-go="${S.step-1}">Voltar</button>`:"<span></span>"}${next?`<button class="btn primary" id="next" ${disabled?"disabled":""}>${nextLabel}</button>`:""}</div>`;
+}
+function stepAccount(){
+  const u=S.user;
+  return `<div><h2>Crie sua conta</h2><p class="muted">Leva menos de um minuto. Você usa a mesma conta para pedir e acompanhar.</p></div>
+  <div class="grid">
+    <div class="field"><label for="u-name">Nome</label><input id="u-name" type="text" value="${esc(u.name)}"></div>
+    <div class="field"><label for="u-email">E-mail</label><input id="u-email" type="email" value="${esc(u.email)}"></div>
+  </div>
+  <div class="field"><span class="lbl">Você é</span><div class="chips" id="u-profile">${["Estudante","Profissional","Empresa"].map(p=>`<button class="chip" aria-pressed="${p===u.profile}" data-v="${p}">${p}</button>`).join("")}</div></div>
+  ${nav(false,true,"Criar conta")}`;
+}
+function stepCategory(){
+  return `<div><h2>Para que é a peça?</h2><p class="muted">A categoria ajuda a chegar em fabricantes que já fazem esse tipo de trabalho.</p></div>
+  <div class="cats">${CATS.map(c=>`<button class="cat" data-cat="${c.id}" aria-pressed="${c.id===S.cat}"><strong>${c.name}</strong><small>${c.desc}</small></button>`).join("")}</div>
+  ${nav(true,true,"Novo pedido",!S.cat)}`;
+}
+function stepOrder(){
+  const o=S.order, fits=o.w<=BED.x&&o.d<=BED.y&&o.h<=BED.z;
+  return `<div><h2>Novo pedido</h2><p class="muted">Descreva com suas palavras. Se não souber algum detalhe técnico, deixe como está: o fabricante orienta.</p></div>
+  <div class="field"><label for="o-title">Título</label><input id="o-title" type="text" value="${esc(o.title)}"></div>
+  <div class="field"><label for="o-desc">O que você precisa?</label><textarea id="o-desc">${esc(o.desc)}</textarea><span class="hint">Conte para que vai usar, o nível de detalhe e o que pode ficar de fora.</span></div>
+  <div class="grid">
+    <div class="field"><span class="lbl">Dimensões aproximadas (mm)</span>
+      <div class="dims">
+        <div><span>Largura</span><input id="o-w" type="number" min="1" value="${o.w}" class="mono"></div>
+        <div><span>Profund.</span><input id="o-d" type="number" min="1" value="${o.d}" class="mono"></div>
+        <div><span>Altura</span><input id="o-h" type="number" min="1" value="${o.h}" class="mono"></div>
+      </div>
+      <span class="hint" id="fit-hint">${fits?"Cabe em uma impressora comum, sem dividir a peça.":"Maior que uma impressora comum (256 mm). O fabricante pode imprimir em partes."}</span>
+    </div>
+    <div class="field"><label for="o-qty">Quantidade</label><input id="o-qty" type="number" min="1" value="${o.qty}" class="mono">
+      <label for="o-deadline" style="margin-top:8px">Preciso até</label><input id="o-deadline" type="date" value="${o.deadline}"></div>
+  </div>
+  <div class="field"><span class="lbl">Material</span><div class="chips" id="o-mat">${MATERIALS.map(m=>`<button class="chip" aria-pressed="${m===o.material}" data-v="${m}">${m}</button>`).join("")}</div><span class="hint" id="mat-tip">${MAT_TIPS[o.material]}</span></div>
+  <div class="field"><span class="lbl">Cor: <span id="color-name">${o.color}</span></span><div class="chips" id="o-color">${COLORS.map(([n,c])=>`<button class="swatch" style="background:${c}" aria-label="${n}" aria-pressed="${n===o.color}" data-v="${n}"></button>`).join("")}</div></div>
+  <div class="field"><span class="lbl">Referências</span>
+    <div class="drop" id="drop">
+      <span>Arraste imagens ou arquivos 3D aqui (<span class="mono">.stl .obj .3mf .jpg .png</span>)</span>
+      <label class="btn small" for="o-files" style="cursor:pointer">Escolher arquivos</label>
+      <input id="o-files" type="file" multiple accept=".stl,.obj,.3mf,image/*" hidden>
+      <ul class="files">${o.files.map((f,i)=>`<li><span>${esc(f.name)}</span><span class="muted mono">${f.size} <button class="btn small" data-rm="${i}" aria-label="Remover ${esc(f.name)}">Remover</button></span></li>`).join("")}</ul>
+      <span class="hint">Não tem arquivo 3D? Tudo bem. Fotos, croquis e plantas já ajudam.</span>
+    </div>
+  </div>
+  ${nav(true,true,"Revisar pedido",!o.desc.trim())}`;
+}
+function stepReview(){
+  const o=S.order, c=CATS.find(c=>c.id===S.cat);
+  return `<div><h2>Revise e envie</h2><p class="muted">Os fabricantes de ${esc(c.name)} recebem o pedido e respondem com orçamento e prazo.</p></div>
+  <dl class="spec">
+    <dt>Título</dt><dd>${esc(o.title)}</dd>
+    <dt>Categoria</dt><dd>${esc(c.name)}</dd>
+    <dt>Descrição</dt><dd>${esc(o.desc)}</dd>
+    <dt>Dimensões</dt><dd class="mono">${o.w} × ${o.d} × ${o.h} mm</dd>
+    <dt>Material</dt><dd>${esc(o.material)}</dd>
+    <dt>Cor</dt><dd>${esc(o.color)}</dd>
+    <dt>Quantidade</dt><dd class="mono">${o.qty}</dd>
+    <dt>Prazo</dt><dd>${fmtDate(o.deadline)}</dd>
+    <dt>Anexos</dt><dd>${o.files.length?o.files.map(f=>esc(f.name)).join(", "):"Nenhum"}</dd>
+    <dt>Solicitante</dt><dd>${esc(S.user.name)} · ${esc(S.user.profile)}</dd>
+  </dl>
+  ${nav(true,true,"Enviar solicitação")}`;
+}
+function stepTrack(){
+  const st=S.status;
+  const quotes=S.quotes.length?S.quotes.map((q,i)=>`<div class="quote ${S.acceptedQuote===i?"accepted":""}">
+      <div><h3>${esc(q.maker)}</h3><p class="meta">${esc(q.city)} · nota ${q.rating} · entrega em ${q.days} dias úteis</p>${q.note?`<p style="margin-top:6px;font-size:14px">${esc(q.note)}</p>`:""}</div>
+      <div style="text-align:right"><div class="price mono">${brl(q.price)}</div>
+      ${S.acceptedQuote===null?`<button class="btn primary small" data-accept="${i}">Aceitar</button>`:S.acceptedQuote===i?`<span class="pill ok">Aceito</span>`:`<span class="pill">Recusado</span>`}</div>
+    </div>`).join(""):`<p class="muted">Nenhum orçamento ainda. Troque para <b>Fabricante</b> no topo para responder este pedido como uma gráfica 3D.</p>`;
+  return `<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline"><h2>Pedido <span class="mono">PH-1042</span></h2><span class="pill info">${STATUS[st]}</span></div>
+  <ol class="timeline">${STATUS.map((s,i)=>`<li class="${i<st?"done":i===st?"on done":""}">${s}</li>`).join("")}</ol>
+  <div style="display:flex;flex-direction:column;gap:12px"><h3>Orçamentos recebidos</h3>${quotes}</div>
+  ${S.acceptedQuote!==null&&st<5?`<div class="actions"><span class="muted">Simule o andamento do pedido:</span><button class="btn" id="advance">Avançar para “${STATUS[st+1]}”</button></div>`:""}
+  ${st===5?`<p><span class="pill ok">Entregue</span> Bom trabalho na apresentação!</p>`:""}`;
+}
+
+function bindClient(){
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{S.step=+b.dataset.go;render()});
+  const next=$("#next");
+  if(S.step===0){
+    $("#u-name").oninput=e=>S.user.name=e.target.value;
+    $("#u-email").oninput=e=>S.user.email=e.target.value;
+    $("#u-profile").onclick=e=>{const v=e.target.dataset.v;if(!v)return;S.user.profile=v;render()};
+    next.onclick=()=>{if(!S.user.name.trim()||!/\S+@\S+\.\S+/.test(S.user.email)){toast("Preencha nome e um e-mail válido.");return}S.step=1;render()};
+  }
+  if(S.step===1){
+    document.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{S.cat=b.dataset.cat;render()});
+    next.onclick=()=>{S.step=2;render()};
+  }
+  if(S.step===2){
+    const o=S.order;
+    $("#o-title").oninput=e=>o.title=e.target.value;
+    $("#o-desc").oninput=e=>{o.desc=e.target.value;next.disabled=!o.desc.trim()};
+    ["w","d","h","qty"].forEach(k=>$("#o-"+k).oninput=e=>{o[k]=Math.max(1,+e.target.value||1);
+      if(k!=="qty"){const fits=o.w<=BED.x&&o.d<=BED.y&&o.h<=BED.z;$("#fit-hint").textContent=fits?"Cabe em uma impressora comum, sem dividir a peça.":"Maior que uma impressora comum (256 mm). O fabricante pode imprimir em partes."}});
+    $("#o-deadline").oninput=e=>o.deadline=e.target.value;
+    $("#o-mat").onclick=e=>{const v=e.target.dataset.v;if(!v)return;o.material=v;e.currentTarget.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c.dataset.v===v));$("#mat-tip").textContent=MAT_TIPS[v]};
+    $("#o-color").onclick=e=>{const v=e.target.dataset.v;if(!v)return;o.color=v;e.currentTarget.querySelectorAll(".swatch").forEach(c=>c.setAttribute("aria-pressed",c.dataset.v===v));$("#color-name").textContent=v};
+    const add=list=>{[...list].forEach(f=>o.files.push({name:f.name,size:(f.size/1048576).toLocaleString("pt-BR",{maximumFractionDigits:1})+" MB"}));render()};
+    $("#o-files").onchange=e=>add(e.target.files);
+    const d=$("#drop");
+    d.ondragover=e=>{e.preventDefault();d.classList.add("over")};
+    d.ondragleave=()=>d.classList.remove("over");
+    d.ondrop=e=>{e.preventDefault();add(e.dataTransfer.files)};
+    document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{o.files.splice(+b.dataset.rm,1);render()});
+    next.onclick=()=>{S.step=3;render()};
+  }
+  if(S.step===3){
+    next.onclick=()=>{S.sent=true;S.status=1;S.step=4;S.quotes=[];S.acceptedQuote=null;
+      S.quotes.push({maker:"Estúdio Camada Fina",city:"Campinas, SP",rating:"4,8",days:7,price:Math.round(estimate(myRequest()).price*1.15),note:"Imprimo em PLA branco fosco, camada de 0,2 mm. Base de MDF inclusa."});
+      S.status=2;render();toast("Solicitação enviada aos fabricantes");};
+  }
+  if(S.step===4){
+    document.querySelectorAll("[data-accept]").forEach(b=>b.onclick=()=>{S.acceptedQuote=+b.dataset.accept;S.status=3;render();toast("Orçamento aceito. O fabricante foi avisado.")});
+    const a=$("#advance"); if(a) a.onclick=()=>{S.status=Math.min(5,S.status+1);render()};
+  }
+}
+
+/* ---------- maker ---------- */
+function renderMaker(){
+  const list=(S.sent?[myRequest()]:[]).concat(OTHER);
+  if(!list.find(r=>r.id===S.selected)) S.selected=list[0].id;
+  const r=list.find(r=>r.id===S.selected), est=estimate(r);
+  const fits=r.w<=BED.x&&r.d<=BED.y&&r.h<=BED.z;
+  const hasFile=(r.files||[]).some(f=>/\.(stl|obj|3mf)$/i.test(f.name));
+  const quoted=r.mine&&S.quotes.some(q=>q.mine);
+  if(!S.quoteDraft.price) S.quoteDraft.price=String(est.price);
+  $("#app").innerHTML=`<div class="maker">
+    <section class="panel" style="padding:16px;gap:12px"><h3>Pedidos recebidos</h3>
+      ${S.sent?"":`<p class="hint">O pedido do estudante aparece aqui depois que ele for enviado na visão Cliente.</p>`}
+      <ul class="inbox">${list.map(x=>`<li><button data-sel="${x.id}" aria-current="${x.id===S.selected}">
+        <span class="row"><span class="mono muted" style="font-size:12px">${x.id}</span><span class="muted" style="font-size:12px">${x.when}</span></span>
+        <strong>${esc(x.title)}</strong><span class="row"><span class="muted" style="font-size:13px">${esc(x.cat)}</span>${x.mine?`<span class="pill info">Novo</span>`:""}</span></button></li>`).join("")}</ul>
+    </section>
+    <section class="panel">
+      <div><span class="label">${r.id} · ${esc(r.cat)} · ${esc(r.client)}</span><h2 style="margin-top:4px">${esc(r.title)}</h2></div>
+      <p>${esc(r.desc)}</p>
+      <dl class="spec">
+        <dt>Dimensões</dt><dd class="mono">${r.w} × ${r.d} × ${r.h} mm</dd>
+        <dt>Material</dt><dd>${esc(r.material)}</dd><dt>Cor</dt><dd>${esc(r.color)}</dd>
+        <dt>Quantidade</dt><dd class="mono">${r.qty}</dd>
+        ${r.deadline?`<dt>Prazo</dt><dd>${fmtDate(r.deadline)}</dd>`:""}
+        ${r.files?`<dt>Anexos</dt><dd>${r.files.map(f=>esc(f.name)).join(", ")||"Nenhum"}</dd>`:""}
+      </dl>
+      <div style="display:flex;flex-direction:column;gap:10px"><h3>Análise de viabilidade</h3>
+        <ul class="check">
+          <li><b style="color:var(--${fits?"ok":"warn"})">${fits?"✓":"!"}</b><span>${fits?`Cabe na mesa de impressão (<span class="mono">${BED.x}×${BED.y}×${BED.z} mm</span>)`:"Excede a mesa de impressão: precisa ser dividida em partes"}</span></li>
+          <li><b style="color:var(--${hasFile?"ok":"warn"})">${hasFile?"✓":"!"}</b><span>${hasFile?"Arquivo 3D anexado, pronto para fatiar":"Sem arquivo 3D: será preciso modelar a partir das referências"}</span></li>
+          <li><b style="color:var(--ok)">✓</b><span>${r.material==="Deixar o fabricante sugerir"?"Material em aberto: sugerir PLA para maquete":"Material "+esc(r.material)+" disponível"}</span></li>
+        </ul>
+        <div class="estimate mono"><span>≈ ${est.g} g de material</span><span>≈ ${est.hours} h de impressão</span><span>Sugerido: ${brl(est.price)}</span></div>
+      </div>
+      ${r.mine?(quoted?`<p><span class="pill ok">Orçamento enviado</span> ${S.acceptedQuote!==null&&S.quotes[S.acceptedQuote].mine?"O cliente aceitou seu orçamento.":"Aguardando resposta do cliente."}</p>`:`
+      <div style="display:flex;flex-direction:column;gap:12px"><h3>Enviar orçamento</h3>
+        <div class="grid">
+          <div class="field"><label for="q-price">Preço (R$)</label><input id="q-price" type="number" min="1" class="mono" value="${S.quoteDraft.price}"></div>
+          <div class="field"><label for="q-days">Prazo (dias úteis)</label><input id="q-days" type="number" min="1" class="mono" value="${S.quoteDraft.days}"></div>
+        </div>
+        <div class="field"><label for="q-note">Observações para o cliente</label><textarea id="q-note" placeholder="Ex.: sugiro PLA cinza, camada de 0,12 mm para os recuos ficarem nítidos.">${esc(S.quoteDraft.note)}</textarea></div>
+        <div class="actions"><button class="btn" id="q-decline">Recusar pedido</button><button class="btn primary" id="q-send">Enviar orçamento</button></div>
+      </div>`):`<p class="hint">Pedido de exemplo de outro cliente, apenas para leitura.</p>`}
+    </section></div>`;
+  document.querySelectorAll("[data-sel]").forEach(b=>b.onclick=()=>{S.selected=b.dataset.sel;S.quoteDraft={price:"",days:"5",note:""};render()});
+  const qs=$("#q-send");
+  if(qs){
+    $("#q-price").oninput=e=>S.quoteDraft.price=e.target.value;
+    $("#q-days").oninput=e=>S.quoteDraft.days=e.target.value;
+    $("#q-note").oninput=e=>S.quoteDraft.note=e.target.value;
+    qs.onclick=()=>{const p=+S.quoteDraft.price,d=+S.quoteDraft.days;if(!(p>0&&d>0)){toast("Informe preço e prazo maiores que zero.");return}
+      S.quotes.push({maker:"Sua oficina (você)",city:"São Paulo, SP",rating:"4,9",days:d,price:p,note:S.quoteDraft.note.trim(),mine:true});
+      if(S.status<2)S.status=2;render();toast("Orçamento enviado. Veja na visão Cliente.")};
+    $("#q-decline").onclick=()=>toast("Pedido recusado. O cliente continua recebendo outros orçamentos.");
+  }
+}
+
+function render(){
+  $("#role-client").setAttribute("aria-pressed",S.role==="client");
+  $("#role-maker").setAttribute("aria-pressed",S.role==="maker");
+  $("#maker-badge").hidden=!(S.sent&&!S.quotes.some(q=>q.mine));
+  S.role==="client"?renderClient():renderMaker();
+}
+$("#role-client").onclick=()=>{S.role="client";render()};
+$("#role-maker").onclick=()=>{S.role="maker";render()};
+render();
+</script>
