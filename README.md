@@ -34,7 +34,8 @@ PrintHub3D/
 │       ├── pedidos.js     ← criar/listar pedidos, upload, status
 │       ├── orcamentos.js  ← enviar e aceitar orçamento
 │       ├── mensagens.js   ← chat
-│       └── convites.js    ← dono convida fabricantes
+│       ├── convites.js    ← dono convida fabricantes
+│       └── app.js         ← entrega as telas em .zip para o app se atualizar
 ├── public/                ← tudo que o navegador recebe
 │   ├── index.html         ← login com Google
 │   ├── painel-cliente.html     ← painel do cliente (pedidos por etapa)
@@ -161,7 +162,18 @@ cd app-android && npm install && npm run apk
 ```
 O APK sai em `app-android/android/app/build/outputs/apk/debug/app-debug.apk`. Mande para o celular (cabo, Drive, WhatsApp) e instale (o Android pede para permitir "instalar apps desconhecidos").
 
-Sempre que mudar algo em `public/`, rode `npm run apk` de novo: ele copia as páginas para o app antes de gerar.
+### Atualização sem reinstalar
+
+Mudanças nas telas (pasta `public/`) chegam ao app **sozinhas**, sem instalar outro APK:
+
+1. Quando o servidor liga, `src/rotas/app.js` junta a pasta `public/` num `.zip` e calcula a versão (um resumo/hash do conteúdo).
+2. Ao abrir, o app pergunta `GET /api/app/versao`. Se a versão for diferente da dele, baixa o `.zip` (plugin `@capgo/capacitor-updater`).
+3. A versão nova entra na próxima vez que o app for minimizado ou aberto de novo.
+4. Segurança contra erro: se a versão nova não abrir direito em 10 segundos, o app volta sozinho para a anterior.
+
+Ou seja: entrou na `main`, o Render publica, e na próxima abertura o app já se atualiza.
+
+Só é preciso gerar e instalar um **APK novo** quando mudar algo do lado Android: plugin novo, permissão, ícone, nome do app.
 
 > O app conversa com o servidor do Render. Se o Render estiver "dormindo", o primeiro login no app demora uns 50 segundos.
 

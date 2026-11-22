@@ -11,6 +11,7 @@ const rotasPedidos = require("./src/rotas/pedidos");
 const rotasOrcamentos = require("./src/rotas/orcamentos");
 const rotasMensagens = require("./src/rotas/mensagens");
 const rotasConvites = require("./src/rotas/convites");
+const rotasApp = require("./src/rotas/app");
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.get("/api/config", (req, res) => {
 
 // Rotas da API. Tudo que começa com /api é dado, não página.
 app.use("/api/usuarios", rotasUsuarios);
+app.use("/api/app", rotasApp);      // atualização do app Android pelo ar
 app.use("/api/convites", rotasConvites);
 app.use("/api/pedidos", rotasPedidos);
 app.use("/api", rotasOrcamentos);   // /api/pedidos/:id/orcamentos e /api/orcamentos/:id/aceitar

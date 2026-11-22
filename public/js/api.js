@@ -15,6 +15,40 @@ const SERVIDOR = NO_APP ? "https://printhub3d-hqb0.onrender.com" : "";
 // Elementos marcados com data-so-app só aparecem no app (ex.: botão "Tirar foto")
 if (NO_APP) document.querySelectorAll("[data-so-app]").forEach((el) => (el.hidden = false));
 
+// ---------- Atualização do app "pelo ar" ----------
+// No app, as telas ficam guardadas no celular. Para não precisar reinstalar o APK
+// a cada mudança, o app pergunta ao servidor qual é a versão atual das telas.
+// Se for outra, baixa o pacote (.zip) e usa a versão nova na próxima vez que o
+// app for minimizado ou aberto de novo (plugin @capgo/capacitor-updater).
+async function atualizarApp() {
+  // Chama o plugin nativo pela "ponte" do Capacitor (nome do plugin + método)
+  const atualizador = (metodo, opcoes = {}) => window.Capacitor.nativePromise("CapacitorUpdater", metodo, opcoes);
+
+  // 1) Avisa que esta versão das telas abriu bem. Se uma versão nova estiver
+  //    quebrada e não chegar aqui em 10 segundos, o plugin volta para a anterior.
+  await atualizador("notifyAppReady");
+
+  // 2) Confere só uma vez cada vez que o app é aberto (e não a cada página)
+  if (sessionStorage.getItem("app-conferido")) return;
+  sessionStorage.setItem("app-conferido", "sim");
+  try {
+    const { versao, url } = await fetch(SERVIDOR + "/api/app/versao").then((r) => r.json());
+    const { bundle } = await atualizador("current");
+    if (bundle.version === versao) return; // já está na versão mais nova
+
+    // 3) Baixa o pacote (se ainda não tiver baixado antes)
+    const { bundles } = await atualizador("list");
+    let nova = bundles.find((b) => b.version === versao && b.status !== "error");
+    if (!nova) nova = await atualizador("download", { url: SERVIDOR + url, version: versao });
+
+    // 4) Agenda a troca: entra quando o app for minimizado ou aberto de novo
+    await atualizador("next", { id: nova.id });
+  } catch (e) {
+    console.warn("Não foi possível conferir atualização do app:", e);
+  }
+}
+if (NO_APP) atualizarApp();
+
 // O token e o usuário ficam salvos no navegador (localStorage)
 const sessao = {
   token: () => localStorage.getItem("token"),
