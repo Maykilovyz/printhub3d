@@ -50,8 +50,13 @@
           return;
         }
 
+        // Em qual grupo cada pedido entra. Se for um status que esta tela não conhece
+        // (ex.: um status novo criado depois), vai para "Em andamento" em vez de sumir.
+        const andamento = GRUPOS.find((g) => g.titulo === "Em andamento");
+        const grupoDe = (p) => GRUPOS.find((g) => g.status.includes(p.status)) || andamento;
+
         document.querySelector("#grupos").innerHTML = GRUPOS.map((g) => {
-          const lista = pedidos.filter((p) => g.status.includes(p.status));
+          const lista = pedidos.filter((p) => grupoDe(p) === g);
           if (!lista.length) return "";
           return `<section class="grupo"><h2>${g.titulo} <span class="num">${lista.length}</span></h2>
             <ul class="lista">${lista.map((p) => {

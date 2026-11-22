@@ -128,7 +128,7 @@ function itemPedido(p, extra) {
   // Só o essencial: título, status, categoria/prazo e um detalhe opcional
   return `<li><a href="/pedido.html?id=${p.id}">
     <strong>${esc(p.titulo)}</strong>
-    <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status]}</span>
+    <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status] || p.status}</span>
     <span class="sub">${esc(p.categoria)}${p.prazo ? " · até " + data(p.prazo) : ""}</span>
     <span class="lado">${extra || ""}</span>
   </a></li>`;

@@ -95,7 +95,7 @@ function desenharPedido() {
       <div style="display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
           <span class="rotulo">${esc(p.categoria)}</span>
-          <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status]}</span>
+          <span class="etiqueta s-${p.status}">${NOMES_STATUS[p.status] || p.status}</span>
         </div>
         <h1>${esc(p.titulo)}</h1>
         <span class="apagado" style="font-size:14px">${esc(p.cliente?.nome)}${p.cliente?.cidade ? " · " + esc(p.cliente.cidade) : ""}</span>
