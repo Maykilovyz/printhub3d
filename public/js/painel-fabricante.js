@@ -11,6 +11,9 @@ function preencher(id, pedidos, vazio, extra) {
     : `<li class="vazio">${vazio}</li>`;
 }
 
+// Pedidos que já estavam na tela. Serve para destacar os que chegarem depois.
+let idsConhecidos = null;
+
 async function carregarPedidos() {
   try {
     const pedidos = await api("/pedidos");
@@ -24,6 +27,13 @@ async function carregarPedidos() {
       "Nenhum orçamento esperando resposta.", () => "");
     preencher("trabalhos", pedidos.filter((p) => p.fabricante_id === eu.id),
       "Orçamentos aceitos aparecem aqui.", () => "");
+
+    // Pedido que não estava na tela antes ganha o destaque "novo"
+    if (idsConhecidos) {
+      pedidos.filter((p) => !idsConhecidos.has(p.id)).forEach((p) =>
+        document.querySelectorAll(`a[href="/pedido.html?id=${p.id}"]`).forEach((a) => a.parentElement.classList.add("novo")));
+    }
+    idsConhecidos = new Set(pedidos.map((p) => p.id));
   } catch (e) {
     document.querySelector("#lista-disponiveis").innerHTML = `<li class="vazio">${esc(e.message)}</li>`;
   }
@@ -113,6 +123,7 @@ document.querySelector("#form-convite").onsubmit = async (e) => {
 if (eu) {
   ligarAbas();
   carregarPedidos();
+  atualizarSozinho(carregarPedidos, 10); // pedidos novos aparecem sem recarregar a página
   verificarCidade().catch(() => {});
   if (eu.dono) {
     document.querySelector("#btn-equipe").hidden = false;

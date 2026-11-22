@@ -62,7 +62,10 @@
         document.querySelector("#grupos").innerHTML = `<p class="vazio">${esc(e.message)}</p>`;
       }
     }
-    if (eu) carregar();
+    if (eu) {
+      carregar();
+      atualizarSozinho(carregar, 10); // orçamentos novos aparecem sem recarregar a página
+    }
   </script>
 </body>
 </html>

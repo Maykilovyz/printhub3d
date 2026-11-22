@@ -99,6 +99,14 @@ function itemPedido(p, extra) {
   </a></li>`;
 }
 
+// Atualiza uma tela sozinha, sem precisar recarregar a página:
+// - a cada "segundos" (só enquanto a tela está visível, para não gastar à toa)
+// - e na hora em que a pessoa volta para a tela (outra aba do navegador ou app minimizado)
+function atualizarSozinho(carregar, segundos = 10) {
+  setInterval(() => { if (!document.hidden) carregar(); }, segundos * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) carregar(); });
+}
+
 // Abas simples: botões com data-aba mostram a seção de mesmo id
 function ligarAbas() {
   const botoes = document.querySelectorAll("[data-aba]");
