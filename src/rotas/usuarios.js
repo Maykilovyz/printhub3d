@@ -83,7 +83,9 @@ rotas.post("/google", async (req, res, next) => {
 // Não existe mais cadastro por e-mail: contas novas só pelo Google.
 rotas.post("/login", async (req, res, next) => {
   try {
-    const { email, senha } = req.body;
+    // String(): se mandarem um número ou objeto no lugar do texto, não quebra
+    const email = String(req.body.email ?? "").trim();
+    const senha = String(req.body.senha ?? "");
     if (!email || !senha) {
       return res.status(400).json({ erro: "Informe e-mail e senha." });
     }

@@ -6,8 +6,11 @@ const supabase = require("../supabase");
 const { exigirLogin } = require("../autenticacao");
 const { carregarPedidoSePermitido } = require("../permissoes");
 
+const { idValido } = require("../validar");
+
 const rotas = express.Router();
 // Login exigido rota por rota, porque este grupo fica em "/api".
+rotas.param("id", idValido("Pedido não encontrado."));
 
 // GET /api/pedidos/:id/mensagens?depois=ID  -> lista mensagens (só as novas, se passar "depois")
 rotas.get("/pedidos/:id/mensagens", exigirLogin, async (req, res, next) => {
@@ -21,7 +24,8 @@ rotas.get("/pedidos/:id/mensagens", exigirLogin, async (req, res, next) => {
       .select("id, texto, criado_em, autor_id, autor:usuarios(nome, tipo)")
       .eq("pedido_id", pedido.id)
       .order("id");
-    if (req.query.depois) consulta = consulta.gt("id", parseInt(req.query.depois, 10));
+    // "depois" só vale se for um número; qualquer outra coisa é ignorada
+    if (/^\d+$/.test(req.query.depois || "")) consulta = consulta.gt("id", Number(req.query.depois));
 
     const { data, error } = await consulta;
     if (error) throw error;

@@ -3,8 +3,10 @@ const express = require("express");
 const supabase = require("../supabase");
 const { exigirLogin, exigirTipo } = require("../autenticacao");
 const { carregarPedidoSePermitido } = require("../permissoes");
+const { idValido, texto } = require("../validar");
 
 const rotas = express.Router();
+rotas.param("id", idValido("Não encontrado.")); // id que não é número -> 404
 // Obs.: este grupo fica em "/api", então o login é exigido rota por rota
 // (se fosse rotas.use, bloquearia todas as outras rotas /api também).
 
@@ -18,9 +20,10 @@ rotas.post("/pedidos/:id/orcamentos", exigirLogin, exigirTipo("fabricante"), asy
     }
 
     const preco = Number(req.body.preco);
-    const prazo_dias = parseInt(req.body.prazo_dias, 10);
-    if (!(preco > 0) || !(prazo_dias > 0)) {
-      return res.status(400).json({ erro: "Informe preço e prazo maiores que zero." });
+    const prazo_dias = Number(req.body.prazo_dias);
+    // Preço: maior que zero e cabe no banco (até R$ 99.999.999,99). Prazo: dias inteiros.
+    if (!(preco > 0) || preco > 99999999.99 || !Number.isInteger(prazo_dias) || prazo_dias < 1 || prazo_dias > 3650) {
+      return res.status(400).json({ erro: "Informe um preço maior que zero e um prazo em dias inteiros (1 a 3650)." });
     }
 
     const { data, error } = await supabase
@@ -28,9 +31,9 @@ rotas.post("/pedidos/:id/orcamentos", exigirLogin, exigirTipo("fabricante"), asy
       .insert({
         pedido_id: pedido.id,
         fabricante_id: req.usuario.id,
-        preco,
+        preco: Math.round(preco * 100) / 100,
         prazo_dias,
-        observacao: req.body.observacao || null,
+        observacao: texto(req.body.observacao, 1000) || null,
       })
       .select()
       .single();

@@ -7,6 +7,9 @@ const botaoGoogle = document.querySelector("#google");
 // Se já estiver logado, vai direto para o painel certo
 if (sessao.token()) irParaPainel(sessao.usuario());
 
+// Erro de rede (sem internet / servidor fora) vira uma frase clara em português
+const mensagemDeErro = (e) => (e instanceof TypeError ? "Sem conexão com o servidor. Confira a internet e tente de novo." : e.message);
+
 let clienteSupabase = null;
 let googleClientId = null; // usado só no app Android
 
@@ -46,7 +49,7 @@ async function trocarPorTokenDoSite(accessToken) {
     sessao.salvar(dados.token, dados.usuario);
     irParaPainel(dados.usuario);
   } catch (e) {
-    erro.textContent = e.message;
+    erro.textContent = mensagemDeErro(e);
     botaoGoogle.disabled = false;
     botaoGoogle.querySelector("span").textContent = "Entrar com Google";
   }
@@ -120,7 +123,7 @@ document.querySelector("#form-teste").onsubmit = async (e) => {
     if (!r.ok) throw new Error(dados.erro);
     sessao.salvar(dados.token, dados.usuario);
     irParaPainel(dados.usuario);
-  } catch (err) { erro.textContent = err.message; }
+  } catch (err) { erro.textContent = mensagemDeErro(err); }
 };
 
 prepararGoogle().catch(() => (erro.textContent = "Não foi possível carregar o login. Recarregue a página."));

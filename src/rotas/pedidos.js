@@ -5,9 +5,11 @@ const crypto = require("crypto");
 const supabase = require("../supabase");
 const { exigirLogin, exigirTipo } = require("../autenticacao");
 const { carregarPedidoSePermitido } = require("../permissoes");
+const { idValido, inteiroOpcional, dataValida, texto } = require("../validar");
 
 const rotas = express.Router();
 rotas.use(exigirLogin); // todas as rotas de pedido exigem login
+rotas.param("id", idValido("Pedido não encontrado.")); // "/pedidos/abc" -> 404
 
 // Multer recebe os arquivos enviados pelo formulário (até 5 arquivos de 20 MB)
 const upload = multer({
@@ -16,15 +18,32 @@ const upload = multer({
 });
 const EXTENSOES_OK = /\.(stl|obj|3mf|jpg|jpeg|png|webp|pdf)$/i;
 
-// Converte texto do formulário em número inteiro (ou null se vazio)
-const inteiro = (v) => (v === undefined || v === "" ? null : parseInt(v, 10));
 
 // POST /api/pedidos  -> cliente cria um pedido (com anexos opcionais)
 rotas.post("/", exigirTipo("cliente"), upload.array("anexos", 5), async (req, res, next) => {
   try {
     const b = req.body;
-    if (!b.categoria || !b.titulo || !b.descricao) {
+    const categoria = texto(b.categoria, 60);
+    const titulo = texto(b.titulo, 120);
+    const descricao = texto(b.descricao, 5000);
+    if (!categoria || !titulo || !descricao) {
       return res.status(400).json({ erro: "Preencha categoria, título e descrição." });
+    }
+    // Números: vazio é permitido (opcional); letras, zero ou negativo não
+    const medidas = ["largura_mm", "profundidade_mm", "altura_mm"].map((c) => inteiroOpcional(b[c], 1, 100000));
+    if (medidas.some(Number.isNaN)) {
+      return res.status(400).json({ erro: "Medidas devem ser números inteiros maiores que zero (em mm)." });
+    }
+    const quantidade = inteiroOpcional(b.quantidade, 1, 10000);
+    if (Number.isNaN(quantidade)) {
+      return res.status(400).json({ erro: "Quantidade deve ser um número inteiro de 1 a 10000." });
+    }
+    const prazo = texto(b.prazo, 10) || null;
+    if (prazo && !dataValida(prazo)) {
+      return res.status(400).json({ erro: "Data do prazo inválida." });
+    }
+    if (prazo && prazo < new Date().toISOString().slice(0, 10)) {
+      return res.status(400).json({ erro: "O prazo não pode ser uma data que já passou." });
     }
     const arquivoInvalido = (req.files || []).find((f) => !EXTENSOES_OK.test(f.originalname));
     if (arquivoInvalido) {
@@ -36,16 +55,16 @@ rotas.post("/", exigirTipo("cliente"), upload.array("anexos", 5), async (req, re
       .from("pedidos")
       .insert({
         cliente_id: req.usuario.id,
-        categoria: b.categoria,
-        titulo: b.titulo,
-        descricao: b.descricao,
-        largura_mm: inteiro(b.largura_mm),
-        profundidade_mm: inteiro(b.profundidade_mm),
-        altura_mm: inteiro(b.altura_mm),
-        material: b.material || null,
-        cor: b.cor || null,
-        quantidade: inteiro(b.quantidade) || 1,
-        prazo: b.prazo || null,
+        categoria,
+        titulo,
+        descricao,
+        largura_mm: medidas[0],
+        profundidade_mm: medidas[1],
+        altura_mm: medidas[2],
+        material: texto(b.material, 40) || null,
+        cor: texto(b.cor, 40) || null,
+        quantidade: quantidade || 1,
+        prazo,
       })
       .select()
       .single();

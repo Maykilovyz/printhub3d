@@ -129,6 +129,18 @@ Abra http://localhost:3000. Para testar o fluxo inteiro, entre com o Google do d
 
 ---
 
+## Testes de falhas
+
+O arquivo `testes/falhas.test.js` testa o que acontece quando o usuário erra ou tenta algo que não pode: sem login, token falso ou vencido, cliente tentando ação de fabricante, ver/excluir pedido de outra pessoa, campos vazios, números negativos ou com letras, data inexistente, arquivo proibido, mais de 5 arquivos, JSON quebrado, endereço que não existe... Em todos, o servidor deve responder com o erro certo (400, 401, 403 ou 404) e uma mensagem clara, nunca "erro interno" (500).
+
+```bash
+npm test
+```
+
+Ele liga o servidor numa porta separada e usa o banco do `.env`. Cria só um pedido de teste (descrição começando com `[TESTE AUTOMÁTICO]`) e apaga no final.
+
+---
+
 ## App Android
 
 O app fica na pasta `app-android/` e é feito com **Capacitor**: ele coloca as mesmas páginas da pasta `public/` dentro de um app Android. As páginas ficam no celular e os dados vêm da **mesma API do Render** (`https://printhub3d-hqb0.onrender.com/api`), então app e site usam o mesmo banco: um pedido criado no app aparece no site e vice-versa.

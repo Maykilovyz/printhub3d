@@ -6,6 +6,6 @@
   <g id="polvo">
     <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M41 58c-3 8-7 13-3 19"/><path d="M50 61c-1 7-3 12 0 18"/><path d="M58 61c1 7 3 12 0 18"/><path d="M67 58c3 8 7 13 3 19"/></g>
     <path d="M34 50a20 20 0 0 1 40 0v6c0 4-4 6-8 6H42c-4 0-8-2-8-6z" fill="#fff"/>
-    <circle cx="47" cy="49" r="3.2" fill="#4A3FD3"/><circle cx="61" cy="49" r="3.2" fill="#4A3FD3"/>
+    <circle cx="47" cy="49" r="3.2" fill="#7A3FD1"/><circle cx="61" cy="49" r="3.2" fill="#7A3FD1"/>
   </g>
 </svg>

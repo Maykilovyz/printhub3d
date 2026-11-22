@@ -79,7 +79,13 @@ async function api(caminho, opcoes = {}) {
     cabecalhos["Content-Type"] = "application/json";
     opcoes.body = JSON.stringify(opcoes.body);
   }
-  const resposta = await fetch(SERVIDOR + "/api" + caminho, { ...opcoes, headers: cabecalhos });
+  let resposta;
+  try {
+    resposta = await fetch(SERVIDOR + "/api" + caminho, { ...opcoes, headers: cabecalhos });
+  } catch {
+    // Sem internet ou servidor fora do ar: mensagem clara em vez de "Failed to fetch"
+    throw new Error("Sem conexão com o servidor. Confira a internet e tente de novo.");
+  }
   const dados = await resposta.json().catch(() => ({}));
 
   if (resposta.status === 401) { sessao.sair(); return; } // token vencido

@@ -18,7 +18,7 @@
   </div></header>
 
   <main class="pagina">
-    <a class="voltar" href="/painel.html">← Voltar</a>
+    <a class="botao pequeno voltar" href="/painel.html">← Voltar</a>
     <h1>Novo pedido</h1>
 
     <form class="cartao" id="form">
@@ -108,6 +108,10 @@
       `<label><input type="radio" name="cor" value="${nome}" ${i === 0 ? "checked" : ""}>${hex
         ? `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${hex};border:1px solid rgba(0,0,0,.15);margin-right:6px;vertical-align:-1px"></span>` : ""}${nome}</label>`
     ).join("");
+
+    // O prazo não pode ser uma data que já passou (o servidor também confere)
+    const hoje = new Date();
+    document.querySelector("#prazo").min = new Date(hoje - hoje.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 
     const dica = document.querySelector("#dica-material");
     const mostrarDica = () => (dica.textContent = MATERIAIS[document.querySelector("input[name=material]:checked").dataset.dica]);

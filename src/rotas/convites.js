@@ -59,6 +59,7 @@ rotas.post("/", async (req, res, next) => {
 // DELETE /api/convites/:id  -> cancela um convite ainda não usado
 rotas.delete("/:id", async (req, res, next) => {
   try {
+    if (!/^\d+$/.test(req.params.id)) return res.status(404).json({ erro: "Convite não encontrado ou já usado." });
     const { data, error } = await supabase
       .from("convites").delete()
       .eq("id", req.params.id).is("usado_em", null)
@@ -78,7 +79,7 @@ rotas.delete("/:id", async (req, res, next) => {
 // - a conta continua existindo, agora como cliente.
 rotas.post("/fabricantes/:id/remover", async (req, res, next) => {
   try {
-    const id = parseInt(req.params.id, 10);
+    const id = /^\d+$/.test(req.params.id) ? Number(req.params.id) : 0; // "abc" vira 0 (não existe)
 
     const { data: alvo } = await supabase
       .from("usuarios").select("id, nome, tipo, dono").eq("id", id).maybeSingle();
@@ -92,7 +93,7 @@ rotas.post("/fabricantes/:id/remover", async (req, res, next) => {
     // 1) Tem trabalhos em andamento?
     const { count: emAndamento } = await supabase
       .from("pedidos").select("id", { count: "exact", head: true })
-      .eq("fabricante_id", id).in("status", ["aceito", "em_producao"]);
+      .eq("fabricante_id", id).in("status", ["aceito", "em_producao", "pronto"]);
     if (emAndamento > 0) {
       return res.status(409).json({
         erro: `${alvo.nome} tem ${emAndamento} trabalho(s) em andamento. Espere a entrega antes de remover.`,

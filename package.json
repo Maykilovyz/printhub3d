@@ -6,7 +6,8 @@
   "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch --env-file=.env server.js"
+    "dev": "node --watch --env-file=.env server.js",
+    "test": "node --env-file=.env --test \"testes/*.test.js\""
   },
   "engines": {
     "node": ">=20"

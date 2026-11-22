@@ -60,12 +60,23 @@ app.use("/api", rotasMensagens);    // /api/pedidos/:id/mensagens
 // Rota simples para checar se o servidor está no ar
 app.get("/api/saude", (req, res) => res.json({ ok: true }));
 
+// Qualquer outro endereço de API que não existe: responde em JSON (não em página HTML)
+app.use("/api", (req, res) => res.status(404).json({ erro: "Endereço da API não encontrado." }));
+
 // Tratamento de erros: qualquer erro não tratado cai aqui
 app.use((erro, req, res, next) => {
   console.error(erro);
   // Erro do multer quando o arquivo é grande demais
   if (erro.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({ erro: "Arquivo maior que 20 MB." });
+  }
+  // Mais arquivos que o permitido (ou campo de arquivo com outro nome)
+  if (erro.code === "LIMIT_FILE_COUNT" || erro.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({ erro: "Envie no máximo 5 arquivos." });
+  }
+  // JSON quebrado no corpo da requisição
+  if (erro.type === "entity.parse.failed") {
+    return res.status(400).json({ erro: "Os dados enviados estão em formato inválido." });
   }
   res.status(500).json({ erro: "Erro interno no servidor. Tente de novo." });
 });

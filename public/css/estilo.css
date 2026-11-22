@@ -13,10 +13,16 @@
   --apagado: #6B7086;
   --linha: #E3E5EF;
 
+  /* Paleta roxa da Oficina: a MESMA no site, no app, no ícone e na abertura */
+  --roxo: #7A3FD1;        /* roxo principal: botões, balões, linha do tempo */
+  --roxo-claro: #B48CF2;  /* só para LETRA roxa no modo escuro (legível no fundo escuro) */
+  --roxo-suave: #F0E8FC;  /* fundo clarinho de etiquetas e seleção */
+
   /* Cor de destaque (cliente) */
   --destaque: #3550D6;
   --destaque-texto: #FFFFFF;
   --destaque-suave: #E8ECFF;
+  --destaque-letra: var(--destaque); /* cor de destaque quando é usada como letra */
 
   /* Cores de status */
   --ok: #1F8A57;       --ok-suave: #DFF4E9;
@@ -41,17 +47,19 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --fundo: #10121B; --cartao: #191C29; --campo: #212536; --texto: #ECEEF6; --apagado: #9AA0B8; --linha: #2A2F44;
-    --destaque: #8C9DFF; --destaque-texto: #0E1330; --destaque-suave: #252C55;
+    --destaque: #8C9DFF; --destaque-texto: #0E1330; --destaque-suave: #252C55; --destaque-letra: #8C9DFF;
+    --roxo-suave: #2D2148;
     --ok: #5CD49A; --ok-suave: #173527; --aviso: #F2B15A; --aviso-suave: #3A2B12;
     --erro: #F08585; --erro-suave: #3C1C1E; --neutro-suave: #262A3B;
     --sombra: 0 1px 2px rgba(0, 0, 0, .3); color-scheme: dark;
   }
 }
 
-/* Oficina do fabricante: troca só a cor de destaque (roxo) */
-.tema-oficina { --destaque: #7A3FD1; --destaque-texto: #FFFFFF; --destaque-suave: #F0E8FC; }
+/* Oficina do fabricante: troca só a cor de destaque para o roxo da paleta.
+   O roxo dos botões é o mesmo no claro e no escuro; no escuro só a LETRA roxa clareia. */
+.tema-oficina { --destaque: var(--roxo); --destaque-texto: #FFFFFF; --destaque-suave: var(--roxo-suave); --destaque-letra: var(--roxo); }
 @media (prefers-color-scheme: dark) {
-  .tema-oficina { --destaque: #B48CF2; --destaque-texto: #1E0B3A; --destaque-suave: #2D2148; }
+  .tema-oficina { --destaque-letra: var(--roxo-claro); }
 }
 
 /* ===================== Base ===================== */
@@ -63,11 +71,11 @@ h1 { font-size: clamp(28px, 4vw, 36px); font-weight: 800; }
 h2 { font-size: 20px; font-weight: 600; }
 h3 { font-size: 16px; font-weight: 600; }
 p { margin: 0; }
-a { color: var(--destaque); text-decoration: none; font-weight: 600; }
+a { color: var(--destaque-letra); text-decoration: none; font-weight: 600; }
 a:hover { text-decoration: underline; }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 .apagado { color: var(--apagado); }
-.rotulo { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--destaque); font-weight: 700; }
+.rotulo { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--destaque-letra); font-weight: 700; }
 :focus-visible { outline: 3px solid var(--destaque-suave); outline-offset: 2px; box-shadow: 0 0 0 1px var(--destaque); }
 
 /* ===================== Topo ===================== */
@@ -76,7 +84,7 @@ a:hover { text-decoration: underline; }
 .topo-dentro { max-width: 980px; margin: 0 auto; padding: 14px 20px; display: flex; gap: 16px; align-items: center; justify-content: space-between; }
 .marca { font-family: var(--titulo); font-weight: 800; font-size: 20px; color: var(--texto); display: flex; align-items: center; gap: 8px; }
 .marca:hover { text-decoration: none; }
-.marca-sub { font-family: var(--corpo); font-weight: 700; font-size: 12px; color: var(--destaque);
+.marca-sub { font-family: var(--corpo); font-weight: 700; font-size: 12px; color: var(--destaque-letra);
   background: var(--destaque-suave); border-radius: var(--pilula); padding: 3px 10px; }
 .perfil { display: flex; gap: 10px; align-items: center; font-size: 14px; }
 .foto { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
@@ -91,7 +99,8 @@ a:hover { text-decoration: underline; }
 @media (max-width: 560px) { .cartao { padding: 20px; border-radius: 18px; } }
 .cabecalho-painel { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .cabecalho-painel > div { display: flex; flex-direction: column; gap: 4px; }
-.voltar { font-size: 14px; color: var(--apagado); display: inline-flex; gap: 6px; align-items: center; align-self: flex-start; }
+/* "← Voltar": usa o visual de botão (.botao.pequeno); aqui só fica alinhado à esquerda */
+.voltar { align-self: flex-start; }
 .duas-colunas { display: grid; gap: 24px; grid-template-columns: 1.35fr 1fr; align-items: start; }
 @media (max-width: 820px) { .duas-colunas { grid-template-columns: 1fr; } }
 .coluna { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
@@ -124,7 +133,7 @@ textarea { padding: 12px 16px; min-height: 120px; resize: vertical; }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--destaque); background: var(--cartao); box-shadow: none; }
 input[type=file] { padding: 10px 16px; }
 input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0; border-radius: var(--pilula);
-  padding: 8px 16px; margin-right: 12px; background: var(--destaque-suave); color: var(--destaque); cursor: pointer; }
+  padding: 8px 16px; margin-right: 12px; background: var(--destaque-suave); color: var(--destaque-letra); cursor: pointer; }
 .dimensoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .secao-form { display: flex; flex-direction: column; gap: 16px; }
 .secao-form + .secao-form { border-top: 1px solid var(--linha); padding-top: 22px; }
@@ -134,7 +143,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
 .opcoes label { background: var(--campo); border-radius: var(--pilula); padding: 9px 16px; cursor: pointer; font-size: 14px; font-weight: 500;
   border: 1.5px solid transparent; position: relative; }
 .opcoes input { position: absolute; opacity: 0; width: 1px; min-height: 0; }
-.opcoes label:has(input:checked) { border-color: var(--destaque); background: var(--destaque-suave); color: var(--destaque); font-weight: 700; }
+.opcoes label:has(input:checked) { border-color: var(--destaque); background: var(--destaque-suave); color: var(--destaque-letra); font-weight: 700; }
 .opcoes label:has(input:focus-visible) { outline: 3px solid var(--destaque-suave); }
 
 /* Categorias em cartões pequenos */
@@ -143,7 +152,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
   border: 1.5px solid transparent; position: relative; }
 .categorias input { position: absolute; opacity: 0; width: 1px; min-height: 0; }
 .categorias small { display: none; } /* menos informação: só o nome da categoria */
-.categorias label:has(input:checked) { border-color: var(--destaque); background: var(--destaque-suave); color: var(--destaque); }
+.categorias label:has(input:checked) { border-color: var(--destaque); background: var(--destaque-suave); color: var(--destaque-letra); }
 .categorias label:has(input:focus-visible) { outline: 3px solid var(--destaque-suave); }
 
 /* ===================== Listas de pedidos ===================== */
@@ -159,7 +168,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
   border: 2px dashed var(--linha); list-style: none; }
 .grupo { display: flex; flex-direction: column; gap: 12px; }
 .grupo h2 { display: flex; align-items: center; gap: 10px; }
-.num { font-family: var(--corpo); font-size: 13px; font-weight: 700; background: var(--destaque-suave); color: var(--destaque);
+.num { font-family: var(--corpo); font-size: 13px; font-weight: 700; background: var(--destaque-suave); color: var(--destaque-letra);
   border-radius: var(--pilula); padding: 2px 10px; }
 #grupos { display: flex; flex-direction: column; gap: 32px; }
 
@@ -168,7 +177,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
   border-radius: var(--pilula); white-space: nowrap; background: var(--neutro-suave); color: var(--apagado); }
 .etiqueta::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .s-aberto { background: var(--aviso-suave); color: var(--aviso); }
-.s-com_orcamento, .s-pendente, .s-aceito, .s-em_producao { background: var(--destaque-suave); color: var(--destaque); }
+.s-com_orcamento, .s-pendente, .s-aceito, .s-em_producao { background: var(--destaque-suave); color: var(--destaque-letra); }
 .s-pronto { background: var(--aviso-suave); color: var(--aviso); }
 .s-entregue { background: var(--ok-suave); color: var(--ok); }
 .s-recusado { background: var(--neutro-suave); color: var(--apagado); }
@@ -179,7 +188,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
 .abas button { font: 600 14px var(--corpo); color: var(--apagado); background: none; border: 0; border-radius: var(--pilula);
   min-height: 38px; padding: 0 16px; cursor: pointer; white-space: nowrap; display: inline-flex; gap: 6px; align-items: center; }
 .abas button[aria-selected="true"] { background: var(--cartao); color: var(--texto); box-shadow: var(--sombra); }
-.contador { font-size: 12px; font-weight: 700; color: var(--destaque); }
+.contador { font-size: 12px; font-weight: 700; color: var(--destaque-letra); }
 .contador:empty { display: none; }
 
 /* ===================== Detalhe do pedido ===================== */
