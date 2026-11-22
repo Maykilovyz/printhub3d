@@ -123,7 +123,7 @@ document.querySelector("#form-convite").onsubmit = async (e) => {
 if (eu) {
   ligarAbas();
   carregarPedidos();
-  atualizarSozinho(carregarPedidos, 10); // pedidos novos aparecem sem recarregar a página
+  atualizarSozinho(carregarPedidos, 3); // pedidos novos aparecem sem recarregar a página
   verificarCidade().catch(() => {});
   if (eu.dono) {
     document.querySelector("#btn-equipe").hidden = false;

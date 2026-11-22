@@ -169,6 +169,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
 .etiqueta::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .s-aberto { background: var(--aviso-suave); color: var(--aviso); }
 .s-com_orcamento, .s-pendente, .s-aceito, .s-em_producao { background: var(--destaque-suave); color: var(--destaque); }
+.s-pronto { background: var(--aviso-suave); color: var(--aviso); }
 .s-entregue { background: var(--ok-suave); color: var(--ok); }
 .s-recusado { background: var(--neutro-suave); color: var(--apagado); }
 
@@ -182,7 +183,7 @@ input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0;
 .contador:empty { display: none; }
 
 /* ===================== Detalhe do pedido ===================== */
-.linha-tempo { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; list-style: none; margin: 0; padding: 0; }
+.linha-tempo { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; list-style: none; margin: 0; padding: 0; }
 .linha-tempo li { height: 8px; border-radius: var(--pilula); background: var(--neutro-suave); font-size: 0; }
 .linha-tempo li.feito { background: var(--destaque); }
 dl.ficha { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 0; }

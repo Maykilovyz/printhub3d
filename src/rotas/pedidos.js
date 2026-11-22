@@ -174,8 +174,9 @@ rotas.delete("/:id", exigirTipo("cliente"), async (req, res, next) => {
 });
 
 // PATCH /api/pedidos/:id/status  -> fabricante escolhido avança a produção
-//   aceito -> em_producao -> entregue
-const PROXIMO = { aceito: "em_producao", em_producao: "entregue" };
+//   aceito -> em_producao -> pronto (peça feita)
+// Quem marca "entregue" é o cliente, confirmando que recebeu (rota /recebido abaixo).
+const PROXIMO = { aceito: "em_producao", em_producao: "pronto" };
 rotas.patch("/:id/status", exigirTipo("fabricante"), async (req, res, next) => {
   try {
     const { pedido } = await carregarPedidoSePermitido(req.params.id, req.usuario);
@@ -188,6 +189,26 @@ rotas.patch("/:id/status", exigirTipo("fabricante"), async (req, res, next) => {
 
     const { data, error } = await supabase
       .from("pedidos").update({ status: novo }).eq("id", pedido.id).select().single();
+    if (error) throw error;
+    res.json(data);
+  } catch (e) { next(e); }
+});
+
+// PATCH /api/pedidos/:id/recebido  -> cliente confirma que recebeu a peça
+//   pronto -> entregue
+rotas.patch("/:id/recebido", exigirTipo("cliente"), async (req, res, next) => {
+  try {
+    const { pedido } = await carregarPedidoSePermitido(req.params.id, req.usuario);
+    if (!pedido) return res.status(404).json({ erro: "Pedido não encontrado." });
+    if (pedido.cliente_id !== req.usuario.id) {
+      return res.status(403).json({ erro: "Este pedido não é seu." });
+    }
+    if (pedido.status !== "pronto") {
+      return res.status(400).json({ erro: "O fabricante ainda não marcou a peça como pronta." });
+    }
+
+    const { data, error } = await supabase
+      .from("pedidos").update({ status: "entregue" }).eq("id", pedido.id).select().single();
     if (error) throw error;
     res.json(data);
   } catch (e) { next(e); }

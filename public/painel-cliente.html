@@ -33,6 +33,7 @@
 
     // Grupos na ordem de prioridade para o cliente
     const GRUPOS = [
+      { titulo: "Pronto: confirme quando receber", status: ["pronto"] },
       { titulo: "Escolha um orçamento", status: ["com_orcamento"] },
       { titulo: "Aguardando orçamentos", status: ["aberto"] },
       { titulo: "Em andamento", status: ["aceito", "em_producao"] },
@@ -64,7 +65,7 @@
     }
     if (eu) {
       carregar();
-      atualizarSozinho(carregar, 10); // orçamentos novos aparecem sem recarregar a página
+      atualizarSozinho(carregar, 3); // orçamentos novos aparecem sem recarregar a página
     }
   </script>
 </body>

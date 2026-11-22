@@ -110,6 +110,7 @@ const NOMES_STATUS = {
   com_orcamento: "Orçamentos recebidos",
   aceito: "Orçamento aceito",
   em_producao: "Em produção",
+  pronto: "Pronto para entrega",
   entregue: "Entregue",
 };
 
@@ -136,7 +137,7 @@ function itemPedido(p, extra) {
 // Atualiza uma tela sozinha, sem precisar recarregar a página:
 // - a cada "segundos" (só enquanto a tela está visível, para não gastar à toa)
 // - e na hora em que a pessoa volta para a tela (outra aba do navegador ou app minimizado)
-function atualizarSozinho(carregar, segundos = 10) {
+function atualizarSozinho(carregar, segundos = 3) {
   setInterval(() => { if (!document.hidden) carregar(); }, segundos * 1000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) carregar(); });
 }

@@ -24,8 +24,10 @@ flowchart TD
     K -->|Aceita um| L{{Status: aceito}}
     L --> M[Fabricante inicia produção]
     M --> N{{Status: em_producao}}
-    N --> O[Fabricante marca<br/>como entregue]
-    O --> P([Status: entregue])
+    N --> O[Fabricante marca<br/>a peça como pronta]
+    O --> Q{{Status: pronto}}
+    Q --> R[Cliente recebe e toca<br/>em "Recebi o pedido"]
+    R --> P([Status: entregue])
 ```
 
 ---
@@ -128,6 +130,8 @@ flowchart LR
 ```
 
 **O app e o site usam o mesmo servidor e o mesmo banco.** A diferença é que no app as páginas já estão dentro do celular (vêm no .apk), então só os dados passam pela internet. Por isso um pedido criado no app aparece no site e vice-versa.
+
+**Ao vivo:** as telas (painéis, pedido e chat) perguntam ao servidor a cada 3 segundos se algo mudou e só redesenham o que mudou. Funciona igual no site e no app.
 
 **Explicando em uma frase:** o navegador nunca fala direto com o banco. Ele sempre pede ao servidor, e o servidor confere quem é a pessoa (token) e o que ela pode fazer antes de mexer no banco.
 
@@ -244,7 +248,9 @@ sequenceDiagram
 | GET | `/api/pedidos` | Logado | Cliente: os pedidos dele. Fabricante: pedidos abertos e os dele |
 | POST | `/api/pedidos` | Cliente | Cria pedido com anexos |
 | GET | `/api/pedidos/:id` | Logado | Detalhes, anexos e orçamentos |
-| PATCH | `/api/pedidos/:id/status` | Fabricante escolhido | Avança para "em produção" e depois "entregue" |
+| PATCH | `/api/pedidos/:id/status` | Fabricante escolhido | Avança para "em produção" e depois "pronto" |
+| PATCH | `/api/pedidos/:id/recebido` | Cliente dono | Confirma que recebeu: "pronto" vira "entregue" |
+| GET | `/api/app/versao` e `/api/app/pacote.zip` | Qualquer um | Atualização do app Android pelo ar |
 | POST | `/api/pedidos/:id/orcamentos` | Fabricante | Envia orçamento |
 | POST | `/api/orcamentos/:id/aceitar` | Cliente dono | Aceita um orçamento e recusa os outros |
 | GET | `/api/pedidos/:id/mensagens` | Participantes | Lê o chat (`?depois=ID` traz só as novas) |

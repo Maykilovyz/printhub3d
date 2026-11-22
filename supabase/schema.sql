@@ -32,7 +32,7 @@ create table if not exists pedidos (
   -- Ciclo de vida do pedido:
   -- aberto -> com_orcamento -> aceito -> em_producao -> entregue
   status        text not null default 'aberto'
-                check (status in ('aberto','com_orcamento','aceito','em_producao','entregue')),
+                check (status in ('aberto','com_orcamento','aceito','em_producao','pronto','entregue')),
   fabricante_id bigint references usuarios(id),   -- preenchido quando um orçamento é aceito
   criado_em     timestamptz not null default now()
 );

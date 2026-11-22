@@ -6,20 +6,78 @@ const eu = exigirLogin();
 // Fabricante vê a página com a cor da "Oficina"
 if (eu && eu.tipo === "fabricante") document.body.classList.add("tema-oficina");
 const pedidoId = new URLSearchParams(location.search).get("id");
-const ETAPAS = ["aberto", "com_orcamento", "aceito", "em_producao", "entregue"];
+const ETAPAS = ["aberto", "com_orcamento", "aceito", "em_producao", "pronto", "entregue"];
 let pedido = null;
+let assinatura = ""; // "resumo" do pedido, para saber se algo mudou
 
+// O que importa para a tela. Os links dos anexos mudam a cada busca (são temporários),
+// por isso não entram aqui: senão a tela seria redesenhada à toa.
+const resumir = (p) => JSON.stringify([p.status, p.fabricante_id, p.anexos.length,
+  p.orcamentos.map((o) => [o.id, o.status, o.preco, o.prazo_dias])]);
+
+// Primeira vez: monta a página inteira (pedido, orçamentos e chat)
 async function carregar() {
   try {
     pedido = await api("/pedidos/" + pedidoId);
-    desenhar();
+    assinatura = resumir(pedido);
+    montarPagina();
     iniciarChat();
+    atualizarSozinho(atualizarAoVivo, 3); // depois, confere mudanças a cada 3 segundos
   } catch (e) {
     document.querySelector("#conteudo").innerHTML = `<p class="erro-msg">${esc(e.message)}</p>`;
   }
 }
 
-function desenhar() {
+// Ao vivo: busca o pedido de novo e só redesenha se algo mudou.
+// O chat não é redesenhado (ele tem a própria atualização) e nada que a
+// pessoa esteja digitando ou confirmando é apagado.
+async function atualizarAoVivo() {
+  try {
+    const novo = await api("/pedidos/" + pedidoId);
+    if (!novo || resumir(novo) === assinatura) return;
+    pedido = novo;
+    assinatura = resumir(novo);
+    const confirmando = document.querySelector("#confirmar-excluir:not([hidden])");
+    if (!confirmando) desenharPedido();
+    const formOrc = document.querySelector("#form-orcamento");
+    const digitando = formOrc && [...formOrc.elements].some((c) => c.value);
+    if (!digitando) desenharOrcamentosNaTela();
+  } catch { /* se falhar, tenta de novo no próximo ciclo */ }
+}
+
+// Depois de uma ação da própria pessoa (aceitar, avançar...), redesenha na hora
+async function recarregar() {
+  pedido = await api("/pedidos/" + pedidoId);
+  assinatura = resumir(pedido);
+  desenharPedido();
+  desenharOrcamentosNaTela();
+}
+
+function montarPagina() {
+  document.querySelector("#conteudo").innerHTML = `
+  <div class="duas-colunas">
+    <section class="cartao" id="cartao-pedido"></section>
+    <div class="coluna">
+      <section class="cartao"><h2>Orçamentos</h2><div id="orcamentos"></div></section>
+      <section class="cartao"><h2>Conversa</h2>
+        <div class="chat" id="chat"><p class="apagado">Nenhuma mensagem ainda.</p></div>
+        <form class="chat-form" id="chat-form">
+          <input id="chat-texto" placeholder="Escreva uma mensagem" aria-label="Mensagem" autocomplete="off" maxlength="2000">
+          <button class="botao principal">Enviar</button>
+        </form>
+      </section>
+    </div>
+  </div>`;
+  desenharPedido();
+  desenharOrcamentosNaTela();
+}
+
+function desenharOrcamentosNaTela() {
+  document.querySelector("#orcamentos").innerHTML = desenharOrcamentos();
+  ligarBotoes();
+}
+
+function desenharPedido() {
   const p = pedido;
   const passo = ETAPAS.indexOf(p.status);
   const dims = p.largura_mm ? `${p.largura_mm} × ${p.profundidade_mm || "?"} × ${p.altura_mm || "?"} mm` : "";
@@ -33,9 +91,7 @@ function desenhar() {
     ["Prazo", p.prazo ? data(p.prazo) : ""],
   ].filter(([, v]) => v).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join("");
 
-  document.querySelector("#conteudo").innerHTML = `
-  <div class="duas-colunas">
-    <section class="cartao">
+  document.querySelector("#cartao-pedido").innerHTML = `
       <div style="display:flex;flex-direction:column;gap:10px">
         <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
           <span class="rotulo">${esc(p.categoria)}</span>
@@ -44,26 +100,13 @@ function desenhar() {
         <h1>${esc(p.titulo)}</h1>
         <span class="apagado" style="font-size:14px">${esc(p.cliente?.nome)}${p.cliente?.cidade ? " · " + esc(p.cliente.cidade) : ""}</span>
       </div>
-      <ol class="linha-tempo" aria-label="Etapa ${passo + 1} de 5">${ETAPAS.map((s, i) =>
+      <ol class="linha-tempo" aria-label="Etapa ${passo + 1} de ${ETAPAS.length}">${ETAPAS.map((s, i) =>
         `<li class="${i <= passo ? "feito" : ""}" title="${NOMES_STATUS[s]}">${NOMES_STATUS[s]}</li>`).join("")}</ol>
       <p class="descricao">${esc(p.descricao)}</p>
       ${ficha ? `<dl class="ficha">${ficha}</dl>` : ""}
       ${p.anexos.length ? `<div class="campo"><h3>Arquivos</h3>${desenharAnexos(p.anexos)}</div>` : ""}
       ${desenharAcaoFabricante()}
-      ${desenharAcaoCliente()}
-    </section>
-
-    <div class="coluna">
-      <section class="cartao"><h2>Orçamentos</h2>${desenharOrcamentos()}</section>
-      <section class="cartao"><h2>Conversa</h2>
-        <div class="chat" id="chat"><p class="apagado">Nenhuma mensagem ainda.</p></div>
-        <form class="chat-form" id="chat-form">
-          <input id="chat-texto" placeholder="Escreva uma mensagem" aria-label="Mensagem" autocomplete="off" maxlength="2000">
-          <button class="botao principal">Enviar</button>
-        </form>
-      </section>
-    </div>
-  </div>`;
+      ${desenharAcaoCliente()}`;
 
   ligarBotoes();
 }
@@ -125,12 +168,16 @@ function desenharOrcamentos() {
 function desenharAcaoFabricante() {
   if (eu.tipo !== "fabricante" || pedido.fabricante_id !== eu.id) return "";
   if (pedido.status === "aceito") return `<div class="acoes"><button class="botao principal" id="avancar">Iniciar produção</button></div>`;
-  if (pedido.status === "em_producao") return `<div class="acoes"><button class="botao principal" id="avancar">Marcar como entregue</button></div>`;
+  if (pedido.status === "em_producao") return `<div class="acoes"><button class="botao principal" id="avancar">Marcar peça como pronta</button></div>`;
+  if (pedido.status === "pronto") return `<p class="apagado">Peça pronta. Esperando o cliente confirmar que recebeu.</p>`;
   return "";
 }
 
-// Cliente dono pode excluir o pedido, se ninguém estiver trabalhando nele
+// Cliente dono confirma o recebimento, ou exclui o pedido se ninguém estiver trabalhando nele
 function desenharAcaoCliente() {
+  if (eu.tipo === "cliente" && pedido.status === "pronto") {
+    return `<div class="acoes"><button class="botao principal" id="recebido">Recebi o pedido</button></div>`;
+  }
   const podeExcluir = ["aberto", "com_orcamento", "entregue"].includes(pedido.status);
   if (eu.tipo !== "cliente" || !podeExcluir) return "";
   return `<div class="acoes" id="acoes-excluir">
@@ -167,7 +214,7 @@ function ligarBotoes() {
   // Cliente aceita um orçamento
   document.querySelectorAll("[data-aceitar]").forEach((b) => (b.onclick = async () => {
     b.disabled = true;
-    try { await api(`/orcamentos/${b.dataset.aceitar}/aceitar`, { method: "POST" }); carregar(); }
+    try { await api(`/orcamentos/${b.dataset.aceitar}/aceitar`, { method: "POST" }); recarregar(); }
     catch (e) { alert(e.message); b.disabled = false; }
   }));
 
@@ -184,7 +231,8 @@ function ligarBotoes() {
           observacao: document.querySelector("#o-obs").value,
         },
       });
-      carregar();
+      formOrc.reset();
+      recarregar();
     } catch (err) { document.querySelector("#o-erro").textContent = err.message; }
   };
 
@@ -192,8 +240,16 @@ function ligarBotoes() {
   const avancar = document.querySelector("#avancar");
   if (avancar) avancar.onclick = async () => {
     avancar.disabled = true;
-    try { await api(`/pedidos/${pedidoId}/status`, { method: "PATCH" }); carregar(); }
+    try { await api(`/pedidos/${pedidoId}/status`, { method: "PATCH" }); recarregar(); }
     catch (e) { alert(e.message); avancar.disabled = false; }
+  };
+
+  // Cliente confirma que recebeu a peça
+  const recebido = document.querySelector("#recebido");
+  if (recebido) recebido.onclick = async () => {
+    recebido.disabled = true;
+    try { await api(`/pedidos/${pedidoId}/recebido`, { method: "PATCH" }); recarregar(); }
+    catch (e) { alert(e.message); recebido.disabled = false; }
   };
 }
 

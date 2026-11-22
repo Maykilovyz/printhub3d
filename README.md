@@ -61,7 +61,7 @@ PrintHub3D/
    - Anote a senha do banco (não vamos usar no código, mas guarde).
 2. Quando o projeto terminar de criar, abra **SQL Editor → New query**.
 3. Cole todo o conteúdo de [supabase/schema.sql](supabase/schema.sql) e clique em **Run**.
-4. Faça o mesmo com [supabase/migracao-02-google-convites.sql](supabase/migracao-02-google-convites.sql).
+4. Faça o mesmo com [supabase/migracao-02-google-convites.sql](supabase/migracao-02-google-convites.sql) e depois com [supabase/migracao-03-status-pronto.sql](supabase/migracao-03-status-pronto.sql).
 5. Vá em **Project Settings → API** e copie:
    - **Project URL** (só até `.supabase.co`, sem `/rest/v1/`)
    - **publishable** (ou **anon**): chave pública, usada pelo botão do Google
