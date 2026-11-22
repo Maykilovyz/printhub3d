@@ -35,10 +35,13 @@ for (const arquivo of listarArquivos(PASTA_PUBLIC)) {
 // A versão é um "resumo" (hash) do conteúdo: mudou qualquer tela, muda a versão.
 const VERSAO = resumo.digest("hex").slice(0, 12);
 const PACOTE = zip.toBuffer();
+// "Impressão digital" (SHA-256) do .zip: o app confere se o arquivo chegou inteiro
+// e sem alteração antes de usar. O plugin de atualização exige esse valor.
+const CHECKSUM = crypto.createHash("sha256").update(PACOTE).digest("hex");
 
-// GET /api/app/versao -> qual é a versão atual das telas e onde baixar
+// GET /api/app/versao -> qual é a versão atual das telas, onde baixar e o checksum
 rotas.get("/versao", (req, res) => {
-  res.json({ versao: VERSAO, url: "/api/app/pacote.zip?v=" + VERSAO });
+  res.json({ versao: VERSAO, url: "/api/app/pacote.zip?v=" + VERSAO, checksum: CHECKSUM });
 });
 
 // GET /api/app/pacote.zip -> o .zip com todas as telas

@@ -28,21 +28,23 @@ async function atualizarApp() {
   //    quebrada e não chegar aqui em 10 segundos, o plugin volta para a anterior.
   await atualizador("notifyAppReady");
 
-  // 2) Confere só uma vez cada vez que o app é aberto (e não a cada página)
+  // 2) Confere só uma vez cada vez que o app é aberto (e não a cada página).
+  //    A marca "conferido" só é gravada quando dá certo; se a página mudar no meio
+  //    (ex.: login indo para o painel), a próxima página tenta de novo.
   if (sessionStorage.getItem("app-conferido")) return;
-  sessionStorage.setItem("app-conferido", "sim");
   try {
-    const { versao, url } = await fetch(SERVIDOR + "/api/app/versao").then((r) => r.json());
+    const { versao, url, checksum } = await fetch(SERVIDOR + "/api/app/versao").then((r) => r.json());
     const { bundle } = await atualizador("current");
-    if (bundle.version === versao) return; // já está na versão mais nova
+    if (bundle.version === versao) { sessionStorage.setItem("app-conferido", "sim"); return; } // já está atualizado
 
     // 3) Baixa o pacote (se ainda não tiver baixado antes)
     const { bundles } = await atualizador("list");
     let nova = bundles.find((b) => b.version === versao && b.status !== "error");
-    if (!nova) nova = await atualizador("download", { url: SERVIDOR + url, version: versao });
+    if (!nova) nova = await atualizador("download", { url: SERVIDOR + url, version: versao, checksum });
 
     // 4) Agenda a troca: entra quando o app for minimizado ou aberto de novo
     await atualizador("next", { id: nova.id });
+    sessionStorage.setItem("app-conferido", "sim");
   } catch (e) {
     console.warn("Não foi possível conferir atualização do app:", e);
   }
