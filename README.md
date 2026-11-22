@@ -173,6 +173,10 @@ Mudanças nas telas (pasta `public/`) chegam ao app **sozinhas**, sem instalar o
 
 Ou seja: entrou na `main`, o Render publica, e na próxima abertura o app já se atualiza.
 
+### Ícone do app
+
+O ícone (um polvo minimalista no degradê azul → roxo) está desenhado em `app-android/icone/polvo.svg`. Para mudar: edite o SVG e rode `python3 gerar-icones.py` dentro de `app-android/icone`. Ele usa o Chrome para gerar todos os tamanhos que o Android pede. Depois gere um APK novo.
+
 Só é preciso gerar e instalar um **APK novo** quando mudar algo do lado Android: plugin novo, permissão, ícone, nome do app.
 
 > O app conversa com o servidor do Render. Se o Render estiver "dormindo", o primeiro login no app demora uns 50 segundos.
