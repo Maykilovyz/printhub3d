@@ -5,7 +5,7 @@
   "description": "App Android do PrintHub 3D (Capacitor). Usa as telas de ../public e a API publicada no Render.",
   "scripts": {
     "sincronizar": "cap sync android",
-    "apk": "cap sync android && cd android && ./gradlew assembleDebug"
+    "apk": "cap sync android && cd android && ./gradlew assembleDebug && cd .. && node copiar-apk.js"
   },
   "dependencies": {
     "@capacitor/android": "8.6.2",

@@ -160,7 +160,7 @@ Depois:
 ```bash
 cd app-android && npm install && npm run apk
 ```
-O APK sai em `app-android/android/app/build/outputs/apk/debug/app-debug.apk`. Mande para o celular (cabo, Drive, WhatsApp) e instale (o Android pede para permitir "instalar apps desconhecidos").
+O APK sai na pasta `app-android/apks/`, com número e data no nome (ex.: `PrintHub3D-v3-22-11-14h05.apk`): o de número maior é o mais novo. Mande para o celular (cabo, Drive, WhatsApp) e instale (o Android pede para permitir "instalar apps desconhecidos").
 
 ### Atualização sem reinstalar
 
