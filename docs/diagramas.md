@@ -246,6 +246,8 @@ sequenceDiagram
 | POST | `/api/convites` | Dono | Convida um e-mail para ser fabricante |
 | DELETE | `/api/convites/:id` | Dono | Cancela convite pendente |
 | GET | `/api/pedidos` | Logado | Cliente: os pedidos dele. Fabricante: pedidos abertos e os dele |
+| GET | `/api/pedidos?todos=1` | Dono | Todos os pedidos da plataforma (aba "Todos" da Oficina) |
+| DELETE | `/api/pedidos/:id` | Cliente dono ou dono da plataforma | Cliente: só fora da produção. Dono da plataforma: qualquer etapa |
 | POST | `/api/pedidos` | Cliente | Cria pedido com anexos |
 | GET | `/api/pedidos/:id` | Logado | Detalhes, anexos e orçamentos |
 | PATCH | `/api/pedidos/:id/status` | Fabricante escolhido | Avança para "em produção" e depois "pronto" |

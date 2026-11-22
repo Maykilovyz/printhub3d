@@ -42,7 +42,16 @@ async function atualizarAoVivo() {
     const formOrc = document.querySelector("#form-orcamento");
     const digitando = formOrc && [...formOrc.elements].some((c) => c.value);
     if (!digitando) desenharOrcamentosNaTela();
-  } catch { /* se falhar, tenta de novo no próximo ciclo */ }
+  } catch (e) {
+    // O pedido foi excluído enquanto a tela estava aberta: avisa em vez de ficar parada
+    if (e.message === "Pedido não encontrado.") {
+      clearInterval(timerChat);
+      document.querySelector("#conteudo").innerHTML =
+        `<p class="vazio">Este pedido foi excluído.<br><a href="#" id="ir-painel">Voltar ao painel</a></p>`;
+      document.querySelector("#ir-painel").onclick = (ev) => { ev.preventDefault(); irParaPainel(eu); };
+    }
+    // outros erros (ex.: internet caiu): tenta de novo no próximo ciclo
+  }
 }
 
 // Depois de uma ação da própria pessoa (aceitar, avançar...), redesenha na hora
@@ -181,13 +190,14 @@ function desenharAcaoFabricante() {
   return "";
 }
 
-// Cliente dono confirma o recebimento, ou exclui o pedido se ninguém estiver trabalhando nele
+// Cliente dono confirma o recebimento, ou exclui o pedido se ninguém estiver trabalhando nele.
+// O dono da plataforma pode excluir qualquer pedido, em qualquer etapa.
 function desenharAcaoCliente() {
   if (eu.tipo === "cliente" && pedido.status === "pronto") {
     return `<div class="acoes"><button class="botao principal" id="recebido">Recebi o pedido</button></div>`;
   }
-  const podeExcluir = ["aberto", "com_orcamento", "entregue"].includes(pedido.status);
-  if (eu.tipo !== "cliente" || !podeExcluir) return "";
+  const clientePodeExcluir = eu.tipo === "cliente" && ["aberto", "com_orcamento", "entregue"].includes(pedido.status);
+  if (!clientePodeExcluir && !eu.dono) return "";
   return `<div class="acoes" id="acoes-excluir">
     <button type="button" class="botao fantasma" id="excluir">Excluir pedido</button>
     <span class="confirmar" id="confirmar-excluir" hidden>
@@ -211,7 +221,7 @@ function ligarBotoes() {
       try {
         await api("/pedidos/" + pedidoId, { method: "DELETE" });
         clearInterval(timerChat);
-        location.href = "/painel-cliente.html";
+        irParaPainel(eu);
       } catch (err) {
         document.querySelector("#erro-excluir").textContent = err.message;
         e.target.disabled = false;

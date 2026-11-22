@@ -32,12 +32,15 @@
       <button role="tab" data-aba="aba-disponiveis" aria-selected="true">Novos <span class="contador" id="n-disponiveis"></span></button>
       <button role="tab" data-aba="aba-orcados" aria-selected="false">Orçados <span class="contador" id="n-orcados"></span></button>
       <button role="tab" data-aba="aba-trabalhos" aria-selected="false">Trabalhos <span class="contador" id="n-trabalhos"></span></button>
+      <button role="tab" data-aba="aba-todos" aria-selected="false" id="btn-todos" hidden>Todos <span class="contador" id="n-todos"></span></button>
       <button role="tab" data-aba="aba-equipe" aria-selected="false" id="btn-equipe" hidden>Equipe</button>
     </div>
 
     <section class="aba" id="aba-disponiveis"><ul class="lista" id="lista-disponiveis"><li class="vazio">Carregando…</li></ul></section>
     <section class="aba" id="aba-orcados" hidden><ul class="lista" id="lista-orcados"></ul></section>
     <section class="aba" id="aba-trabalhos" hidden><ul class="lista" id="lista-trabalhos"></ul></section>
+    <!-- Só o DONO vê esta aba: todos os pedidos da plataforma, em qualquer etapa -->
+    <section class="aba" id="aba-todos" hidden><ul class="lista" id="lista-todos"></ul></section>
 
     <!-- Só o DONO vê esta aba: convida outros fabricantes -->
     <section class="aba" id="aba-equipe" hidden>

@@ -39,6 +39,17 @@ async function carregarPedidos() {
   }
 }
 
+// ---------- TODOS (só dono) ----------
+// O dono vê todos os pedidos da plataforma e pode abrir qualquer um para excluir.
+async function carregarTodos() {
+  try {
+    const pedidos = await api("/pedidos?todos=1");
+    preencher("todos", pedidos, "Nenhum pedido na plataforma.", () => "");
+  } catch (e) {
+    document.querySelector("#lista-todos").innerHTML = `<li class="vazio">${esc(e.message)}</li>`;
+  }
+}
+
 // Pede a cidade se ainda não tiver
 async function verificarCidade() {
   const perfil = await api("/usuarios/eu");
@@ -126,6 +137,9 @@ if (eu) {
   atualizarSozinho(carregarPedidos, 3); // pedidos novos aparecem sem recarregar a página
   verificarCidade().catch(() => {});
   if (eu.dono) {
+    document.querySelector("#btn-todos").hidden = false;
+    carregarTodos();
+    atualizarSozinho(carregarTodos, 3);
     document.querySelector("#btn-equipe").hidden = false;
     carregarEquipe().catch(() => {});
   }

@@ -6,6 +6,7 @@ const supabase = require("./supabase");
 // - O cliente dono sempre pode.
 // - Fabricantes podem ver pedidos ainda abertos (para orçar)
 //   e, depois do aceite, só o fabricante escolhido.
+// - O dono da plataforma (DONO_EMAIL) vê todos, para poder administrar e excluir.
 async function carregarPedidoSePermitido(pedidoId, usuario) {
   const { data: pedido, error } = await supabase
     .from("pedidos")
@@ -20,7 +21,9 @@ async function carregarPedidoSePermitido(pedidoId, usuario) {
   const ehFabricanteEscolhido = pedido.fabricante_id === usuario.id;
   const ehFabricante = usuario.tipo === "fabricante";
 
-  const permitido = ehDono || ehFabricanteEscolhido || (ehFabricante && aindaAberto);
+  const ehDonoDaPlataforma = !!usuario.dono;
+
+  const permitido = ehDono || ehFabricanteEscolhido || (ehFabricante && aindaAberto) || ehDonoDaPlataforma;
   return { pedido, permitido };
 }
 

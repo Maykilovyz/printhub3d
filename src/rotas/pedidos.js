@@ -86,6 +86,8 @@ rotas.get("/", async (req, res, next) => {
 
     if (req.usuario.tipo === "cliente") {
       consulta = consulta.eq("cliente_id", req.usuario.id);
+    } else if (req.usuario.dono && req.query.todos) {
+      // Dono da plataforma pedindo ?todos=1: todos os pedidos, sem filtro (aba "Todos")
     } else {
       consulta = consulta.or(
         `status.in.(aberto,com_orcamento),fabricante_id.eq.${req.usuario.id}`
@@ -144,17 +146,20 @@ rotas.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// DELETE /api/pedidos/:id  -> cliente exclui o próprio pedido
-// Só quando ninguém está trabalhando nele: aberto, com orçamentos ainda
-// não aceitos, ou já entregue. Aceito/em produção não pode.
+// DELETE /api/pedidos/:id  -> exclui um pedido
+// - Cliente: só o próprio e só quando ninguém está trabalhando nele
+//   (aberto, com orçamentos ainda não aceitos, ou já entregue).
+// - Dono da plataforma: qualquer pedido, em qualquer etapa.
 const PODE_EXCLUIR = ["aberto", "com_orcamento", "entregue"];
-rotas.delete("/:id", exigirTipo("cliente"), async (req, res, next) => {
+rotas.delete("/:id", async (req, res, next) => {
   try {
     const { pedido } = await carregarPedidoSePermitido(req.params.id, req.usuario);
-    if (!pedido || pedido.cliente_id !== req.usuario.id) {
+    const ehDonoDaPlataforma = !!req.usuario.dono;
+    const ehClienteDoPedido = req.usuario.tipo === "cliente" && pedido?.cliente_id === req.usuario.id;
+    if (!pedido || !(ehDonoDaPlataforma || ehClienteDoPedido)) {
       return res.status(404).json({ erro: "Pedido não encontrado." });
     }
-    if (!PODE_EXCLUIR.includes(pedido.status)) {
+    if (!ehDonoDaPlataforma && !PODE_EXCLUIR.includes(pedido.status)) {
       return res.status(409).json({ erro: "Este pedido está com um fabricante. Converse com ele pelo chat antes de excluir." });
     }
 
