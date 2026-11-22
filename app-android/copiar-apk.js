@@ -8,11 +8,9 @@ const ORIGEM = path.join(__dirname, "android/app/build/outputs/apk/debug/app-deb
 const PASTA = path.join(__dirname, "apks");
 fs.mkdirSync(PASTA, { recursive: true });
 
-// O número é sempre um a mais que o maior que já existe na pasta
-const numeros = fs.readdirSync(PASTA)
-  .map((nome) => Number((nome.match(/^PrintHub3D-v(\d+)-/) || [])[1]))
-  .filter(Boolean);
-const numero = Math.max(0, ...numeros) + 1;
+// O número é a versão que o versao-apk.js gravou no build.gradle antes do build
+const gradle = fs.readFileSync(path.join(__dirname, "android/app/build.gradle"), "utf8");
+const numero = Number(gradle.match(/versionCode (\d+)/)[1]);
 
 const agora = new Date();
 const dois = (n) => String(n).padStart(2, "0");
