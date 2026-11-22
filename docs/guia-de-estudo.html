@@ -1,0 +1,1648 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia PrintHub 3D</title>
+<!--
+  Guia de estudo do PrintHub 3D.
+  Arquivo único: abra com dois cliques (funciona sem internet).
+  Cada assunto tem 3 camadas: "Em uma frase", a explicação simples
+  e o botão "Aprofundar" com o código real explicado linha a linha.
+-->
+<style>
+:root {
+  --fundo: #F3F4FA; --cartao: #FFFFFF; --campo: #F6F7FC; --texto: #1B1E2E; --apagado: #5E637A; --linha: #E3E5EF;
+  --azul: #3550D6; --azul-suave: #E8ECFF; --roxo: #7A3FD1; --roxo-letra: #7A3FD1; --roxo-suave: #F0E8FC;
+  --ok: #1F8A57; --ok-suave: #DFF4E9; --aviso: #B26A00; --aviso-suave: #FFF1DA; --erro: #C9373A; --erro-suave: #FDE4E4;
+  --codigo-fundo: #1B1E2E; --codigo-texto: #E6E8F2; --codigo-com: #8C93AE; --codigo-str: #9FE0B5; --codigo-pal: #C9A8FF;
+  --raio: 20px; --sombra: 0 1px 2px rgba(27,30,46,.05), 0 8px 28px rgba(27,30,46,.07);
+  --fonte: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fundo: #10121B; --cartao: #191C29; --campo: #212536; --texto: #ECEEF6; --apagado: #A3A9C0; --linha: #2A2F44;
+    --azul: #8C9DFF; --azul-suave: #252C55; --roxo: #7A3FD1; --roxo-letra: #B48CF2; --roxo-suave: #2D2148;
+    --ok: #5CD49A; --ok-suave: #173527; --aviso: #F2B15A; --aviso-suave: #3A2B12; --erro: #F08585; --erro-suave: #3C1C1E;
+    --codigo-fundo: #0B0D14; --sombra: 0 1px 2px rgba(0,0,0,.3); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fundo: #10121B; --cartao: #191C29; --campo: #212536; --texto: #ECEEF6; --apagado: #A3A9C0; --linha: #2A2F44;
+  --azul: #8C9DFF; --azul-suave: #252C55; --roxo: #7A3FD1; --roxo-letra: #B48CF2; --roxo-suave: #2D2148;
+  --ok: #5CD49A; --ok-suave: #173527; --aviso: #F2B15A; --aviso-suave: #3A2B12; --erro: #F08585; --erro-suave: #3C1C1E;
+  --codigo-fundo: #0B0D14; --sombra: 0 1px 2px rgba(0,0,0,.3); color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 16px; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 17px/1.6 var(--fonte); -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { line-height: 1.2; margin: 0 0 .5em; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font-size: clamp(26px, 4vw, 34px); font-weight: 800; }
+h3 { font-size: 20px; margin-top: 1.6em; }
+h4 { font-size: 17px; margin-top: 1.2em; }
+p { margin: 0 0 .9em; }
+a { color: var(--roxo-letra); font-weight: 600; }
+code { font-family: var(--mono); font-size: .88em; background: var(--campo); border: 1px solid var(--linha); padding: .05em .35em; border-radius: 6px; overflow-wrap: anywhere; }
+ul, ol { padding-left: 1.3em; margin: 0 0 1em; }
+li { margin: .25em 0; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; margin: 0 0 1em; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+th { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--apagado); }
+.tabela { overflow-x: auto; }
+
+/* ---------- Estrutura: menu lateral + conteúdo ---------- */
+.pagina { display: grid; grid-template-columns: 270px minmax(0, 1fr); min-height: 100vh; }
+nav.menu { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 22px 16px; border-right: 1px solid var(--linha); background: var(--cartao); }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; margin-bottom: 4px; }
+.marca svg { width: 36px; height: 36px; border-radius: 10px; flex: none; }
+.progresso { font-size: 13px; color: var(--apagado); margin: 6px 0 14px; }
+.barra { height: 6px; border-radius: 9px; background: var(--campo); overflow: hidden; margin-top: 6px; }
+.barra i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--azul), var(--roxo)); transition: width .3s; }
+nav.menu ol { list-style: none; padding: 0; margin: 0; counter-reset: sec; }
+nav.menu li { margin: 0; }
+nav.menu a { display: flex; gap: 8px; align-items: baseline; padding: 6px 10px; border-radius: 10px; color: var(--texto); font-weight: 500; font-size: 15px; text-decoration: none; }
+nav.menu a:hover { background: var(--campo); }
+nav.menu a.ativo { background: var(--roxo-suave); color: var(--roxo-letra); font-weight: 700; }
+nav.menu a .feito { margin-left: auto; color: var(--ok); font-size: 13px; visibility: hidden; }
+nav.menu a.estudado .feito { visibility: visible; }
+nav.menu .grupo-menu { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--apagado); margin: 14px 10px 4px; font-weight: 700; }
+.tema { margin-top: 16px; width: 100%; }
+main { padding: 32px clamp(16px, 4vw, 56px) 80px; max-width: 1060px; }
+
+/* ---------- Seções e cartões ---------- */
+section.sec { margin: 0 0 56px; }
+.selo { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--roxo-letra); margin-bottom: 6px; }
+.cartao { background: var(--cartao); border: 1px solid var(--linha); border-radius: var(--raio); padding: 22px; box-shadow: var(--sombra); margin: 0 0 18px; }
+.frase { display: flex; gap: 14px; align-items: flex-start; background: linear-gradient(135deg, var(--azul-suave), var(--roxo-suave)); border-radius: var(--raio); padding: 18px 20px; margin: 0 0 18px; font-size: 18px; font-weight: 600; }
+.frase b.rot { flex: none; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; background: var(--cartao); color: var(--roxo-letra); padding: 3px 10px; border-radius: 99px; margin-top: 3px; }
+.analogia { border-left: 5px solid var(--aviso); background: var(--aviso-suave); padding: 14px 18px; border-radius: 0 14px 14px 0; margin: 0 0 18px; }
+.analogia::before { content: "💡 Analogia"; display: block; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--aviso); margin-bottom: 4px; }
+.atencao { border-left: 5px solid var(--erro); background: var(--erro-suave); padding: 14px 18px; border-radius: 0 14px 14px 0; margin: 0 0 18px; }
+.atencao::before { content: "⚠️ Cuidado"; display: block; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--erro); margin-bottom: 4px; }
+.banca { border-left: 5px solid var(--roxo); background: var(--roxo-suave); padding: 14px 18px; border-radius: 0 14px 14px 0; margin: 0 0 18px; }
+.banca::before { content: "🎤 Para falar na banca"; display: block; font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--roxo-letra); margin-bottom: 4px; }
+.grade { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); margin: 0 0 18px; }
+.grade .cartao { margin: 0; padding: 18px; }
+.grade .cartao h4 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+.icone { font-size: 26px; line-height: 1; }
+.mini { font-size: 14px; color: var(--apagado); }
+.onde { font-size: 13px; margin-top: 8px; }
+.onde code { font-size: 12px; }
+.estudei { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; cursor: pointer; padding: 8px 14px; border-radius: 99px; border: 1px solid var(--linha); background: var(--cartao); }
+.estudei input { width: 18px; height: 18px; accent-color: var(--ok); }
+
+/* Papéis */
+.papel { border-top: 6px solid; }
+.papel.cliente { border-top-color: var(--azul); }
+.papel.fabricante { border-top-color: var(--roxo); }
+.papel.dono { border-top-color: var(--aviso); }
+
+/* ---------- "Aprofundar" (details) ---------- */
+details { border: 1px solid var(--linha); border-radius: 16px; background: var(--cartao); margin: 0 0 14px; }
+details > summary { cursor: pointer; list-style: none; padding: 14px 18px; font-weight: 700; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: "▸"; color: var(--roxo-letra); transition: transform .2s; display: inline-block; }
+details[open] > summary::before { transform: rotate(90deg); }
+details > summary .tipo { margin-left: auto; font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 99px; background: var(--roxo-suave); color: var(--roxo-letra); white-space: nowrap; }
+details > .dentro { padding: 0 18px 16px; }
+details.pergunta > summary .tipo { background: var(--azul-suave); color: var(--azul); }
+
+/* ---------- Código ---------- */
+.codigo { margin: 0 0 14px; border-radius: 14px; overflow: hidden; background: var(--codigo-fundo); }
+.codigo .arquivo { font: 600 12px var(--mono); color: var(--codigo-com); padding: 8px 14px; border-bottom: 1px solid #ffffff14; }
+.codigo pre { margin: 0; padding: 12px 0; overflow-x: auto; font: 13.5px/1.6 var(--mono); color: var(--codigo-texto); counter-reset: l; }
+.codigo pre code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; overflow-wrap: normal; }
+.codigo pre .ln { display: block; padding: 0 14px 0 0; white-space: pre; }
+.codigo pre .ln::before { counter-increment: l; content: counter(l); display: inline-block; width: 3em; padding-right: 1em; text-align: right; color: #5a6080; user-select: none; }
+.codigo .c { color: var(--codigo-com); font-style: italic; }
+.codigo .s { color: var(--codigo-str); }
+.codigo .k { color: var(--codigo-pal); }
+ol.linhas { list-style: none; padding: 0; margin: 0 0 14px; }
+ol.linhas li { display: grid; grid-template-columns: 74px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px dashed var(--linha); font-size: 15px; }
+ol.linhas li b { font: 700 12px var(--mono); color: var(--roxo-letra); background: var(--roxo-suave); border-radius: 8px; padding: 3px 6px; height: fit-content; text-align: center; }
+
+/* ---------- Diagramas feitos com caixas ---------- */
+.fluxo { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 0 0 18px; }
+.passo { flex: 1 1 140px; background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 14px; position: relative; box-shadow: var(--sombra); }
+.passo .n { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--roxo); color: #fff; font-weight: 800; font-size: 14px; margin-bottom: 6px; }
+.passo small { display: block; color: var(--apagado); font-size: 13px; line-height: 1.45; margin-top: 4px; }
+.passo.azul .n { background: var(--azul); }
+.seta { align-self: center; color: var(--apagado); font-size: 22px; font-weight: 800; }
+@media (max-width: 700px) { .fluxo { flex-direction: column; } .seta { transform: rotate(90deg); align-self: center; } }
+
+/* Linha do tempo do status */
+.status-linha { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; margin: 10px 0 22px; counter-reset: st; }
+.status-linha .st { text-align: center; position: relative; padding: 0 4px; }
+.status-linha .st::before { counter-increment: st; content: counter(st); display: grid; place-items: center; margin: 0 auto 8px; width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 800; background: var(--cor, var(--roxo)); position: relative; z-index: 1; box-shadow: 0 0 0 5px var(--cartao); }
+.status-linha .st::after { content: ""; position: absolute; top: 19px; left: 50%; width: 100%; height: 3px; background: var(--linha); }
+.status-linha .st:last-child::after { display: none; }
+.status-linha code { display: inline-block; font-size: 12px; margin-bottom: 4px; }
+.status-linha span { display: block; font-size: 13px; color: var(--apagado); line-height: 1.35; }
+.status-linha .quem { margin-top: 6px; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; display: inline-block; }
+.quem.c { background: var(--azul-suave); color: var(--azul); }
+.quem.f { background: var(--roxo-suave); color: var(--roxo-letra); }
+@media (max-width: 760px) {
+  .status-linha { grid-template-columns: 1fr; gap: 14px; }
+  .status-linha .st { display: grid; grid-template-columns: 48px 1fr; text-align: left; align-items: start; }
+  .status-linha .st::before { grid-row: span 4; margin: 0; }
+  .status-linha .st::after { top: 44px; left: 19px; width: 3px; height: calc(100% - 20px); }
+}
+
+/* Banco: tabelas desenhadas */
+.tabelas-bd { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); margin: 0 0 18px; }
+.tbd { background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; overflow: hidden; font-size: 13.5px; box-shadow: var(--sombra); }
+.tbd h5 { margin: 0; padding: 9px 12px; font-size: 14px; color: #fff; background: var(--roxo); font-family: var(--mono); }
+.tbd.u h5 { background: var(--azul); }
+.tbd ul { list-style: none; padding: 6px 12px 10px; margin: 0; font-family: var(--mono); }
+.tbd li { margin: 2px 0; display: flex; gap: 6px; align-items: baseline; }
+.tbd .pk, .tbd .fk { font-size: 10px; font-weight: 800; padding: 0 5px; border-radius: 5px; }
+.tbd .pk { background: var(--aviso-suave); color: var(--aviso); }
+.tbd .fk { background: var(--azul-suave); color: var(--azul); }
+
+/* Arquitetura SVG */
+.diagrama { background: var(--cartao); border: 1px solid var(--linha); border-radius: var(--raio); padding: 14px; margin: 0 0 18px; box-shadow: var(--sombra); overflow-x: auto; }
+.diagrama svg { width: 100%; height: auto; min-width: 560px; display: block; }
+.diagrama svg text { font-family: var(--fonte); fill: var(--texto); }
+.diagrama .caixa { fill: var(--campo); stroke: var(--linha); stroke-width: 1.5; }
+.diagrama .caixa-azul { fill: var(--azul-suave); stroke: var(--azul); stroke-width: 1.5; }
+.diagrama .caixa-roxa { fill: var(--roxo-suave); stroke: var(--roxo); stroke-width: 1.5; }
+.diagrama .caixa-verde { fill: var(--ok-suave); stroke: var(--ok); stroke-width: 1.5; }
+.diagrama .caixa-erro { fill: var(--erro-suave); stroke: var(--erro); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.diagrama .fio { stroke: var(--apagado); stroke-width: 2; fill: none; }
+.diagrama .fio-erro { stroke: var(--erro); stroke-width: 2; fill: none; stroke-dasharray: 6 4; }
+.diagrama .t-peq { font-size: 12px; fill: var(--apagado); }
+.diagrama .t-tit { font-size: 15px; font-weight: 800; }
+.diagrama .t-erro { fill: var(--erro); font-weight: 700; font-size: 13px; }
+.legenda { font-size: 14px; color: var(--apagado); text-align: center; margin: 8px 0 0; }
+
+/* Códigos HTTP */
+.http { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); margin: 0 0 18px; }
+.http div { border-radius: 14px; padding: 12px 14px; background: var(--cartao); border: 1px solid var(--linha); font-size: 14px; }
+.http b { font: 800 22px var(--mono); display: block; }
+.http .bom b { color: var(--ok); }
+.http .ruim b { color: var(--erro); }
+.http .meio b { color: var(--aviso); }
+
+/* Cores */
+.amostras { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 18px; }
+.amostra { width: 150px; border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); background: var(--cartao); font-size: 13px; }
+.amostra i { display: block; height: 64px; }
+.amostra span { display: block; padding: 8px 10px; }
+
+/* Comparação */
+.comparar { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 0 0 18px; }
+.comparar .cartao { margin: 0; }
+.comparar .escolhido { outline: 3px solid var(--ok); }
+.comparar .escolhido h4::after { content: " ✓ escolhido"; color: var(--ok); font-size: 13px; }
+
+/* Roteiro de fala */
+.roteiro { list-style: none; padding: 0; margin: 0 0 18px; }
+.roteiro li { display: grid; grid-template-columns: 92px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--linha); }
+.roteiro .tempo { font: 800 14px var(--mono); color: #fff; background: linear-gradient(135deg, var(--azul), var(--roxo)); border-radius: 12px; padding: 8px; text-align: center; height: fit-content; }
+.roteiro .fala { font-style: italic; background: var(--campo); border-radius: 12px; padding: 10px 14px; margin: 6px 0; }
+.roteiro .mostrar { font-size: 14px; color: var(--apagado); }
+.roteiro .mostrar::before { content: "🖥️ Mostrar: "; font-weight: 700; color: var(--texto); }
+
+/* Glossário */
+.busca { width: 100%; font: inherit; padding: 12px 16px; border-radius: 99px; border: 1px solid var(--linha); background: var(--cartao); color: var(--texto); margin: 0 0 14px; }
+.glossario { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.glossario div { background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 12px 14px; font-size: 15px; }
+.glossario dt { font-weight: 800; color: var(--roxo-letra); }
+.glossario dd { margin: 2px 0 0; }
+
+/* Checklist */
+.checklist { list-style: none; padding: 0; }
+.checklist li { margin: 0 0 8px; }
+.checklist label { display: flex; gap: 12px; align-items: flex-start; background: var(--cartao); border: 1px solid var(--linha); border-radius: 14px; padding: 12px 14px; cursor: pointer; }
+.checklist input { width: 20px; height: 20px; margin-top: 3px; accent-color: var(--ok); flex: none; }
+.checklist input:checked + span { text-decoration: line-through; color: var(--apagado); }
+
+/* História (git log) */
+.historia { border-left: 3px solid var(--linha); margin: 0 0 18px 10px; padding-left: 22px; }
+.historia .dia { font-weight: 800; margin: 18px 0 8px; position: relative; }
+.historia .dia::before { content: ""; position: absolute; left: -31px; top: 4px; width: 15px; height: 15px; border-radius: 50%; background: var(--roxo); box-shadow: 0 0 0 4px var(--fundo); }
+.historia ul { list-style: none; padding: 0; }
+.historia li { font-size: 15px; margin: 6px 0; }
+.historia li code { margin-right: 6px; }
+.historia li .h { font: 600 12px var(--mono); color: var(--apagado); margin-right: 6px; }
+
+/* Botões */
+.botao { font: inherit; font-weight: 700; padding: 10px 18px; border-radius: 99px; border: 1px solid var(--linha); background: var(--cartao); color: var(--texto); cursor: pointer; }
+.botao:hover { border-color: var(--roxo); }
+.botoes { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 18px; }
+
+/* Topo */
+.capa { background: linear-gradient(135deg, #3550D6, #7A3FD1); color: #fff; border-radius: 28px; padding: clamp(24px, 5vw, 44px); margin: 0 0 32px; position: relative; overflow: hidden; }
+.capa h1 { font-size: clamp(30px, 6vw, 50px); font-weight: 800; margin-bottom: 10px; }
+.capa p { font-size: 18px; max-width: 640px; opacity: .95; }
+.capa svg.polvo { position: absolute; right: -20px; bottom: -30px; width: 230px; opacity: .22; }
+.capa .camadas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; position: relative; }
+.capa .camadas span { background: #ffffff26; border: 1px solid #ffffff40; padding: 6px 14px; border-radius: 99px; font-size: 14px; font-weight: 600; }
+
+/* Celular */
+@media (max-width: 900px) {
+  .pagina { grid-template-columns: minmax(0, 1fr); }
+  main { min-width: 0; }
+  nav.menu { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--linha); }
+  nav.menu ol { display: flex; flex-wrap: wrap; gap: 4px; }
+  nav.menu .grupo-menu { width: 100%; }
+  nav.menu a .feito { margin-left: 4px; }
+  ol.linhas li { grid-template-columns: 1fr; gap: 4px; }
+  ol.linhas li b { width: fit-content; }
+  .roteiro li { grid-template-columns: 1fr; gap: 8px; }
+  .roteiro .tempo { width: fit-content; }
+}
+@media print {
+  nav.menu, .botoes, .tema, .estudei { display: none; }
+  .pagina { display: block; }
+  details { break-inside: avoid; }
+  details:not([open]) > .dentro { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+
+<!-- ================= MENU LATERAL ================= -->
+<nav class="menu" aria-label="Sumário">
+  <div class="marca">
+    <svg viewBox="0 0 108 108" aria-hidden="true"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3550D6"/><stop offset="1" stop-color="#7A3FD1"/></linearGradient></defs><rect width="108" height="108" fill="url(#gm)"/><g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M41 58c-3 8-7 13-3 19"/><path d="M50 61c-1 7-3 12 0 18"/><path d="M58 61c1 7 3 12 0 18"/><path d="M67 58c3 8 7 13 3 19"/></g><path d="M34 50a20 20 0 0 1 40 0v6c0 4-4 6-8 6H42c-4 0-8-2-8-6z" fill="#fff"/><circle cx="47" cy="49" r="3.2" fill="#7A3FD1"/><circle cx="61" cy="49" r="3.2" fill="#7A3FD1"/></svg>
+    Guia PrintHub 3D
+  </div>
+  <div class="progresso"><span id="txt-progresso">0 de 0 assuntos estudados</span><div class="barra"><i id="barra"></i></div></div>
+  <ol id="sumario">
+    <li class="grupo-menu">Entender</li>
+    <li><a href="#comecar">Como usar este guia</a></li>
+    <li><a href="#visao">1. O problema e a ideia</a></li>
+    <li><a href="#fluxo">2. O caminho do pedido</a></li>
+    <li><a href="#pastas">3. Mapa das pastas</a></li>
+    <li><a href="#tecnologias">4. Tecnologias e porquês</a></li>
+    <li class="grupo-menu">Como funciona por dentro</li>
+    <li><a href="#arquitetura">5. Arquitetura e a API</a></li>
+    <li><a href="#banco">6. Banco de dados</a></li>
+    <li><a href="#login">7. Login com Google</a></li>
+    <li><a href="#aovivo">8. Telas ao vivo</a></li>
+    <li><a href="#visual">9. Visual (CSS)</a></li>
+    <li><a href="#app">10. App Android</a></li>
+    <li><a href="#atualizacao">11. Atualização pelo ar</a></li>
+    <li><a href="#seguranca">12. Segurança</a></li>
+    <li><a href="#testes">13. Testes de falhas</a></li>
+    <li><a href="#deploy">14. Publicação (deploy)</a></li>
+    <li><a href="#historia">15. A história no Git</a></li>
+    <li class="grupo-menu">Apresentar</li>
+    <li><a href="#roteiro">16. Roteiro de fala</a></li>
+    <li><a href="#perguntas">17. Perguntas da banca</a></li>
+    <li><a href="#glossario">18. Glossário</a></li>
+    <li><a href="#checklist">19. Checklist do dia</a></li>
+  </ol>
+  <button class="botao tema" id="tema" type="button">🌓 Trocar tema claro/escuro</button>
+</nav>
+
+<main>
+
+<!-- ================= CAPA ================= -->
+<header class="capa" id="comecar">
+  <svg class="polvo" viewBox="0 0 108 108" aria-hidden="true"><g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M41 58c-3 8-7 13-3 19"/><path d="M50 61c-1 7-3 12 0 18"/><path d="M58 61c1 7 3 12 0 18"/><path d="M67 58c3 8 7 13 3 19"/></g><path d="M34 50a20 20 0 0 1 40 0v6c0 4-4 6-8 6H42c-4 0-8-2-8-6z" fill="#fff"/></svg>
+  <h1>Como o PrintHub 3D foi feito</h1>
+  <p>Um guia para estudar o projeto do começo ao fim e apresentar na banca com confiança. Tudo aqui foi tirado do código de verdade do repositório.</p>
+  <div class="camadas"><span>① Em uma frase</span><span>② Explicação simples + analogia</span><span>③ ▸ Aprofundar: o código linha a linha</span></div>
+</header>
+
+<section class="sec">
+  <div class="cartao">
+    <h3 style="margin-top:0">Como estudar com este guia</h3>
+    <ol>
+      <li><b>Primeira leitura:</b> leia só as caixas coloridas ("Em uma frase", analogias e "Para falar na banca"). Em 1 hora você entende o projeto todo.</li>
+      <li><b>Segunda leitura:</b> abra os botões <b>▸ Aprofundar</b> e acompanhe o código. Deixe o arquivo aberto no VS Code ao lado.</li>
+      <li><b>Treino:</b> leia as <a href="#perguntas">perguntas da banca</a> em voz alta e tente responder antes de abrir a resposta.</li>
+      <li>Ao terminar cada assunto, marque <b>"Já estudei"</b> no fim da seção. A barra no menu mostra quanto falta (fica salvo neste navegador).</li>
+    </ol>
+    <p class="mini">Dica: este arquivo funciona sem internet. Para imprimir ou salvar em PDF, use Ctrl+P (todas as partes "Aprofundar" saem abertas).</p>
+  </div>
+</section>
+
+<!-- ================= 1. VISÃO GERAL ================= -->
+<section class="sec" id="visao" data-sec>
+  <span class="selo">Assunto 1</span>
+  <h2>O problema e a ideia</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O PrintHub 3D liga quem precisa de uma peça impressa em 3D a quem tem impressora 3D, do pedido até a entrega.</span></div>
+
+  <p><b>O problema:</b> muita gente precisa de uma peça (um suporte quebrado, uma maquete, um protótipo), mas não tem impressora 3D nem sabe quem faz. Do outro lado, quem tem impressora não tem um lugar organizado para receber pedidos, mandar preço e conversar com o cliente.</p>
+  <p><b>A solução:</b> uma plataforma (site + app Android) onde o cliente descreve a peça, os fabricantes mandam orçamentos, o cliente escolhe um, e os dois conversam pelo chat até a peça ser entregue.</p>
+
+  <div class="analogia">É como um "iFood de peças 3D": o cliente faz o pedido, as "cozinhas" (fabricantes) dizem quanto custa e quanto demora, o cliente escolhe uma, e acompanha o preparo até chegar.</div>
+
+  <h3>Os três papéis</h3>
+  <div class="grade">
+    <div class="cartao papel cliente"><h4><span class="icone">🙋</span> Cliente</h4>
+      <p class="mini">Qualquer pessoa que entra com uma conta Google.</p>
+      <ul class="mini"><li>Cria pedidos com fotos e arquivos 3D</li><li>Compara e aceita orçamentos</li><li>Conversa pelo chat</li><li>Toca em "Recebi o pedido"</li><li>Exclui pedido se ninguém está trabalhando nele</li></ul>
+      <p class="onde">Tela: <code>painel-cliente.html</code> (cor azul)</p></div>
+    <div class="cartao papel fabricante"><h4><span class="icone">🛠️</span> Fabricante</h4>
+      <p class="mini">Só entra quem foi convidado pelo dono.</p>
+      <ul class="mini"><li>Vê pedidos abertos</li><li>Envia orçamento (preço + prazo)</li><li>Se for escolhido: inicia produção e marca "pronto"</li><li>Conversa pelo chat</li></ul>
+      <p class="onde">Tela: <code>painel-fabricante.html</code>, chamada de "Oficina" (cor roxa)</p></div>
+    <div class="cartao papel dono"><h4><span class="icone">👑</span> Dono da plataforma</h4>
+      <p class="mini">Um fabricante especial: o e-mail que está em <code>DONO_EMAIL</code>.</p>
+      <ul class="mini"><li>Tudo que o fabricante faz</li><li>Aba <b>Equipe</b>: convida e remove fabricantes</li><li>Aba <b>Todos</b>: vê todos os pedidos e pode excluir qualquer um</li></ul>
+      <p class="onde">Só pode existir <b>um</b> dono (o banco garante isso).</p></div>
+  </div>
+
+  <div class="banca">"O PrintHub 3D resolve a falta de um ponto de encontro entre quem precisa de peças impressas em 3D e quem fabrica. Tem três papéis: cliente, fabricante e o dono, que administra a equipe de fabricantes."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="visao"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 2. FLUXO ================= -->
+<section class="sec" id="fluxo" data-sec>
+  <span class="selo">Assunto 2</span>
+  <h2>O caminho do pedido</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Todo pedido passa por 6 etapas, sempre na mesma ordem, e cada etapa tem um "dono" do botão.</span></div>
+
+  <div class="cartao">
+    <div class="status-linha">
+      <div class="st" style="--cor:#3550D6"><code>aberto</code><span>Cliente criou. Esperando orçamentos.</span><span class="quem c">Cliente cria</span></div>
+      <div class="st" style="--cor:#4A4BD4"><code>com_orcamento</code><span>Chegou pelo menos 1 orçamento.</span><span class="quem f">Fabricante orça</span></div>
+      <div class="st" style="--cor:#5A47D3"><code>aceito</code><span>Cliente escolheu um orçamento.</span><span class="quem c">Cliente aceita</span></div>
+      <div class="st" style="--cor:#6943D2"><code>em_producao</code><span>A impressora está trabalhando.</span><span class="quem f">Fabricante inicia</span></div>
+      <div class="st" style="--cor:#7A3FD1"><code>pronto</code><span>Peça feita, esperando entrega.</span><span class="quem f">Fabricante marca</span></div>
+      <div class="st" style="--cor:#1F8A57"><code>entregue</code><span>Cliente confirmou que recebeu.</span><span class="quem c">Cliente confirma</span></div>
+    </div>
+    <p class="mini" style="margin:0">Azul = quem aperta é o cliente. Roxo = quem aperta é o fabricante. Os nomes em <code>código</code> são exatamente os valores gravados na coluna <code>status</code> do banco.</p>
+  </div>
+
+  <p>Repare em duas decisões importantes:</p>
+  <ul>
+    <li><b>Quem marca "entregue" é o cliente</b>, não o fabricante. Assim o fabricante não consegue dizer que entregou sem o cliente confirmar. Por isso existe a etapa <code>pronto</code> no meio (ela foi criada depois, na migração 03).</li>
+    <li><b>Não dá para pular nem voltar etapas.</b> O servidor tem uma "tabela de próximo passo" e só aceita andar uma casa.</li>
+  </ul>
+
+  <div class="analogia">É como rastrear uma encomenda nos Correios: "postado → em trânsito → saiu para entrega → entregue". Ninguém pula de "postado" direto para "entregue".</div>
+
+  <details><summary>Aprofundar: como o servidor impede pular etapas <span class="tipo">src/rotas/pedidos.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="src/rotas/pedidos.js (rota de avançar status)">
+const PROXIMO = { aceito: "em_producao", em_producao: "pronto" };
+rotas.patch("/:id/status", exigirTipo("fabricante"), async (req, res, next) => {
+  try {
+    const { pedido } = await carregarPedidoSePermitido(req.params.id, req.usuario);
+    if (!pedido) return res.status(404).json({ erro: "Pedido não encontrado." });
+    if (pedido.fabricante_id !== req.usuario.id) {
+      return res.status(403).json({ erro: "Só o fabricante escolhido pode mudar o status." });
+    }
+    const novo = PROXIMO[pedido.status];
+    if (!novo) return res.status(400).json({ erro: "Este pedido não pode avançar mais." });
+
+    const { data, error } = await supabase
+      .from("pedidos").update({ status: novo }).eq("id", pedido.id).select().single();
+    if (error) throw error;
+    res.json(data);
+  } catch (e) { next(e); }
+});
+</script>
+    <ol class="linhas">
+      <li><b>1</b><span>Um "dicionário": para cada status atual, qual é o próximo. Só existem duas entradas, então o fabricante só consegue fazer <code>aceito → em_producao</code> e <code>em_producao → pronto</code>.</span></li>
+      <li><b>2</b><span><code>PATCH /api/pedidos/:id/status</code>. Antes de entrar na função, <code>exigirTipo("fabricante")</code> barra quem não é fabricante.</span></li>
+      <li><b>4</b><span>Busca o pedido no banco usando a regra de permissões (assunto 5).</span></li>
+      <li><b>6–8</b><span>Mesmo sendo fabricante, tem que ser <b>o escolhido</b> desse pedido. Se não for: erro 403 (proibido).</span></li>
+      <li><b>9–10</b><span>Procura o próximo status. Se o atual for <code>pronto</code> ou <code>entregue</code>, não existe próximo: erro 400.</span></li>
+      <li><b>12–13</b><span>Grava o novo status no banco e devolve o pedido atualizado.</span></li>
+      <li><b>16</b><span>Qualquer erro inesperado vai para <code>next(e)</code>, que cai no tratamento de erros do <code>server.js</code>.</span></li>
+    </ol>
+    <p>O "pronto → entregue" fica em outra rota, <code>PATCH /:id/recebido</code>, que só aceita <code>exigirTipo("cliente")</code>, confere se o pedido é do cliente e se o status é <code>pronto</code>.</p>
+  </div></details>
+
+  <details><summary>Aprofundar: o que acontece quando o cliente aceita um orçamento <span class="tipo">src/rotas/orcamentos.js</span></summary><div class="dentro">
+    <div class="fluxo">
+      <div class="passo azul"><span class="n">1</span><br><b>Confere</b><small>O orçamento existe? O pedido é desse cliente? Está em <code>com_orcamento</code>?</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">2</span><br><b>Recusa os outros</b><small>Todos os outros orçamentos do pedido viram <code>recusado</code>.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">3</span><br><b>Aceita este</b><small>Este orçamento vira <code>aceito</code>.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">4</span><br><b>Guarda o fabricante</b><small>Pedido vai para <code>aceito</code> e grava <code>fabricante_id</code>.</small></div>
+    </div>
+    <p>A partir daí, só esse fabricante consegue ver o pedido (os outros deixam de enxergá-lo), avançar a produção e conversar no chat.</p>
+  </div></details>
+
+  <label class="estudei"><input type="checkbox" data-estudei="fluxo"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 3. PASTAS ================= -->
+<section class="sec" id="pastas" data-sec>
+  <span class="selo">Assunto 3</span>
+  <h2>Mapa das pastas</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O projeto tem 4 partes: as telas (<code>public/</code>), o servidor (<code>server.js</code> + <code>src/</code>), o banco (<code>supabase/</code>) e o app (<code>app-android/</code>).</span></div>
+
+  <div class="grade">
+    <div class="cartao"><h4><span class="icone">🖥️</span> public/ — as telas</h4>
+      <p class="mini">Tudo que o navegador (e o app) recebe.</p>
+      <ul class="mini">
+        <li><code>index.html</code> + <code>js/entrar.js</code>: login</li>
+        <li><code>painel-cliente.html</code>: pedidos do cliente por etapa</li>
+        <li><code>painel-fabricante.html</code> + <code>js/painel-fabricante.js</code>: Oficina (abas, Equipe, Todos)</li>
+        <li><code>novo-pedido.html</code>: formulário</li>
+        <li><code>pedido.html</code> + <code>js/pedido.js</code>: detalhes, orçamentos e chat</li>
+        <li><code>js/api.js</code>: funções usadas por todas as telas</li>
+        <li><code>css/estilo.css</code>: o visual</li>
+      </ul></div>
+    <div class="cartao"><h4><span class="icone">⚙️</span> Servidor</h4>
+      <ul class="mini">
+        <li><code>server.js</code>: liga tudo</li>
+        <li><code>src/supabase.js</code>: conexão com o banco</li>
+        <li><code>src/autenticacao.js</code>: token e "porteiros"</li>
+        <li><code>src/permissoes.js</code>: quem vê qual pedido</li>
+        <li><code>src/validar.js</code>: confere dados</li>
+        <li><code>src/rotas/</code>: usuarios, pedidos, orcamentos, mensagens, convites, app</li>
+      </ul></div>
+    <div class="cartao"><h4><span class="icone">🗄️</span> supabase/ — o banco</h4>
+      <ul class="mini">
+        <li><code>schema.sql</code>: cria as tabelas</li>
+        <li><code>migracao-02-google-convites.sql</code>: Google + convites</li>
+        <li><code>migracao-03-status-pronto.sql</code>: status "pronto"</li>
+      </ul></div>
+    <div class="cartao"><h4><span class="icone">📱</span> app-android/</h4>
+      <ul class="mini">
+        <li><code>capacitor.config.json</code>: nome, id e plugins</li>
+        <li><code>android/</code>: projeto Android (Gradle)</li>
+        <li><code>versao-apk.js</code> e <code>copiar-apk.js</code>: geram o APK numerado</li>
+        <li><code>icone/</code>: o polvo (SVG) e o gerador de ícones</li>
+      </ul></div>
+    <div class="cartao"><h4><span class="icone">🧪</span> Outros</h4>
+      <ul class="mini">
+        <li><code>testes/falhas.test.js</code>: 31 testes</li>
+        <li><code>docs/diagramas.md</code>: diagramas Mermaid</li>
+        <li><code>package.json</code>: bibliotecas e comandos</li>
+        <li><code>.env.example</code>: modelo das chaves (o <code>.env</code> real não vai pro GitHub)</li>
+      </ul></div>
+  </div>
+  <div class="analogia">Pense num restaurante: <code>public/</code> é o salão (o que o cliente vê), o servidor é a cozinha (onde as regras são aplicadas), o banco é a despensa (onde tudo fica guardado) e o app é um delivery que leva o mesmo cardápio para o celular.</div>
+  <label class="estudei"><input type="checkbox" data-estudei="pastas"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 4. TECNOLOGIAS ================= -->
+<section class="sec" id="tecnologias" data-sec>
+  <span class="selo">Assunto 4</span>
+  <h2>Tecnologias e porquês</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Escolhemos ferramentas simples, gratuitas e muito usadas no mercado, para dar tempo de entregar e ser fácil de explicar.</span></div>
+
+  <h3>Linguagens</h3>
+  <div class="grade">
+    <div class="cartao"><h4><span class="icone">🧱</span> HTML</h4><p class="mini">A <b>estrutura</b> da tela: títulos, botões, campos, listas.</p><p class="mini"><b>Por quê:</b> é a base de toda página web; não precisa instalar nada.</p><p class="onde">Onde: <code>public/*.html</code></p></div>
+    <div class="cartao"><h4><span class="icone">🎨</span> CSS</h4><p class="mini">A <b>aparência</b>: cores, cantos arredondados, tema escuro.</p><p class="mini"><b>Por quê:</b> com variáveis (tokens) dá para trocar a cor do site inteiro mudando uma linha.</p><p class="onde">Onde: <code>public/css/estilo.css</code></p></div>
+    <div class="cartao"><h4><span class="icone">⚡</span> JavaScript (navegador)</h4><p class="mini">O <b>comportamento</b>: clicar, buscar dados, atualizar a tela.</p><p class="mini"><b>Por quê:</b> "JS puro", sem React/Vue: menos coisa para aprender e explicar.</p><p class="onde">Onde: <code>public/js/*.js</code></p></div>
+    <div class="cartao"><h4><span class="icone">🟢</span> JavaScript (Node.js)</h4><p class="mini">O <b>mesmo</b> JavaScript, mas rodando no servidor.</p><p class="mini"><b>Por quê:</b> uma linguagem só no projeto inteiro (tela e servidor).</p><p class="onde">Onde: <code>server.js</code>, <code>src/</code></p></div>
+    <div class="cartao"><h4><span class="icone">🗃️</span> SQL</h4><p class="mini">A linguagem para <b>criar tabelas e regras</b> no banco.</p><p class="mini"><b>Por quê:</b> é o padrão dos bancos relacionais.</p><p class="onde">Onde: <code>supabase/*.sql</code></p></div>
+    <div class="cartao"><h4><span class="icone">🐍</span> Python (só ferramenta)</h4><p class="mini">Um script que gera os ícones do app em todos os tamanhos.</p><p class="onde">Onde: <code>app-android/icone/gerar-icones.py</code></p></div>
+  </div>
+
+  <h3>Ferramentas e bibliotecas</h3>
+  <div class="tabela"><table>
+    <tr><th>Ferramenta</th><th>O que faz</th><th>Por que escolhemos</th></tr>
+    <tr><td><b>Express</b></td><td>Biblioteca do Node para criar o servidor e as rotas da API.</td><td>Poucas linhas para criar uma API; a mais usada do Node.</td></tr>
+    <tr><td><b>Supabase</b> (PostgreSQL)</td><td>Banco de dados na nuvem.</td><td>Grátis, os dados não se perdem quando o servidor reinicia, e é PostgreSQL de verdade.</td></tr>
+    <tr><td><b>Supabase Storage</b></td><td>Guarda os arquivos (fotos, .stl) num "bucket" privado chamado <code>anexos</code>.</td><td>O Render grátis apaga arquivos salvos no próprio disco a cada deploy.</td></tr>
+    <tr><td><b>Supabase Auth</b></td><td>Faz a conversa com o Google no login.</td><td>Já vem pronto e seguro; não precisamos implementar OAuth do zero.</td></tr>
+    <tr><td><b>jsonwebtoken</b> (JWT)</td><td>Cria e confere o "crachá" de login.</td><td>Padrão de mercado; o servidor não precisa guardar sessões.</td></tr>
+    <tr><td><b>bcryptjs</b></td><td>Confere a senha das contas de teste pelo "hash".</td><td>A senha nunca fica guardada em texto puro.</td></tr>
+    <tr><td><b>multer</b></td><td>Recebe arquivos enviados pelo formulário.</td><td>O Express sozinho não lê uploads; multer também limita tamanho e quantidade.</td></tr>
+    <tr><td><b>adm-zip</b></td><td>Monta o .zip das telas para o app se atualizar.</td><td>Simples: junta arquivos num zip na memória.</td></tr>
+    <tr><td><b>Capacitor</b></td><td>Transforma as páginas web num app Android.</td><td>Reaproveita 100% das telas do site. React Native ou Flutter exigiriam reescrever tudo, e o prazo era curto.</td></tr>
+    <tr><td><b>Gradle + Android SDK</b></td><td>Ferramentas oficiais do Android que "compilam" o app e geram o APK.</td><td>É obrigatório para gerar qualquer app Android.</td></tr>
+    <tr><td><b>Render</b></td><td>Hospeda o servidor na internet.</td><td>Publica sozinho a cada push no GitHub; plano grátis.</td></tr>
+    <tr><td><b>Git + GitHub</b></td><td>Guarda o histórico do código e liga com o Render.</td><td>Cada mudança fica registrada (commit) e dá para voltar atrás.</td></tr>
+    <tr><td><b>node:test</b></td><td>Roda os testes automáticos.</td><td>Já vem dentro do Node, sem instalar nada.</td></tr>
+  </table></div>
+
+  <div class="banca">"Escolhi HTML, CSS e JavaScript puro nas telas e Node com Express no servidor para usar uma só linguagem no projeto todo. O banco é PostgreSQL no Supabase, e o app Android usa Capacitor, que reaproveita as mesmas telas do site."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="tecnologias"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 5. ARQUITETURA ================= -->
+<section class="sec" id="arquitetura" data-sec>
+  <span class="selo">Assunto 5</span>
+  <h2>Arquitetura e a API</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O navegador e o app nunca falam direto com o banco: eles sempre pedem ao servidor, e o servidor confere quem é a pessoa e o que ela pode fazer.</span></div>
+
+  <div class="diagrama">
+    <svg viewBox="0 -24 900 400" role="img" aria-label="Diagrama: navegador e app chamam o servidor no Render, que fala com o banco e o storage no Supabase">
+      <defs><marker id="pt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
+      <!-- clientes -->
+      <rect class="caixa-azul" x="20" y="40" width="200" height="120" rx="18"/>
+      <text class="t-tit" x="120" y="72" text-anchor="middle">🖥️ Navegador</text>
+      <text x="120" y="96" text-anchor="middle" font-size="13">Site (pasta public)</text>
+      <text class="t-peq" x="120" y="118" text-anchor="middle">HTML + CSS + JS</text>
+      <text class="t-peq" x="120" y="138" text-anchor="middle">fetch("/api/...")</text>
+
+      <rect class="caixa-roxa" x="20" y="210" width="200" height="130" rx="18"/>
+      <text class="t-tit" x="120" y="242" text-anchor="middle">📱 App Android</text>
+      <text x="120" y="266" text-anchor="middle" font-size="13">Mesmas telas (Capacitor)</text>
+      <text class="t-peq" x="120" y="288" text-anchor="middle">+ login nativo e câmera</text>
+      <text class="t-peq" x="120" y="308" text-anchor="middle">fetch("https://...onrender</text>
+      <text class="t-peq" x="120" y="324" text-anchor="middle">.com/api/...")</text>
+
+      <!-- servidor -->
+      <rect class="caixa" x="330" y="30" width="270" height="320" rx="20"/>
+      <text class="t-tit" x="465" y="62" text-anchor="middle">⚙️ Servidor no Render</text>
+      <text class="t-peq" x="465" y="80" text-anchor="middle">Node.js + Express (server.js)</text>
+      <rect class="caixa-verde" x="355" y="98" width="220" height="44" rx="12"/>
+      <text x="465" y="125" text-anchor="middle" font-size="13">1. exigirLogin (confere o token)</text>
+      <rect class="caixa-verde" x="355" y="152" width="220" height="44" rx="12"/>
+      <text x="465" y="179" text-anchor="middle" font-size="13">2. exigirTipo / permissões</text>
+      <rect class="caixa-verde" x="355" y="206" width="220" height="44" rx="12"/>
+      <text x="465" y="233" text-anchor="middle" font-size="13">3. validar os dados</text>
+      <rect class="caixa-verde" x="355" y="260" width="220" height="44" rx="12"/>
+      <text x="465" y="287" text-anchor="middle" font-size="13">4. rota faz o trabalho</text>
+      <text class="t-peq" x="465" y="330" text-anchor="middle">usa a chave SECRETA do Supabase</text>
+
+      <!-- supabase -->
+      <rect class="caixa" x="690" y="40" width="190" height="300" rx="20"/>
+      <text class="t-tit" x="785" y="72" text-anchor="middle">☁️ Supabase</text>
+      <rect class="caixa-azul" x="710" y="95" width="150" height="90" rx="14"/>
+      <text x="785" y="130" text-anchor="middle" font-size="14" font-weight="700">PostgreSQL</text>
+      <text class="t-peq" x="785" y="152" text-anchor="middle">tabelas</text>
+      <rect class="caixa-roxa" x="710" y="205" width="150" height="90" rx="14"/>
+      <text x="785" y="240" text-anchor="middle" font-size="14" font-weight="700">Storage</text>
+      <text class="t-peq" x="785" y="262" text-anchor="middle">bucket "anexos"</text>
+
+      <!-- fios -->
+      <path class="fio" d="M220 100 H330" marker-end="url(#pt)"/>
+      <text class="t-peq" x="275" y="92" text-anchor="middle">pedido + token</text>
+      <path class="fio" d="M220 275 C280 275 280 200 330 200" marker-end="url(#pt)"/>
+      <text class="t-peq" x="270" y="300" text-anchor="middle">CORS liberado</text>
+      <path class="fio" d="M600 140 H710" marker-end="url(#pt)"/>
+      <path class="fio" d="M600 250 H710" marker-end="url(#pt)"/>
+      <!-- caminho proibido -->
+      <path class="fio-erro" d="M120 40 C120 4 785 4 785 40"/>
+      <text class="t-erro" x="452" y="-6" text-anchor="middle">✗ caminho proibido: o navegador nunca acessa o banco direto</text>
+    </svg>
+    <p class="legenda">Uma chamada passa por 4 "portões" no servidor antes de mexer no banco.</p>
+  </div>
+
+  <div class="analogia">O servidor é um <b>garçom</b>. O cliente (navegador) não entra na cozinha nem mexe na despensa (banco). Ele faz o pedido ao garçom, que confere a comanda (token), vê se o pedido é permitido, e só então vai à cozinha.</div>
+
+  <h3>O que é a API?</h3>
+  <p>API é a lista de "pedidos" que o servidor aceita. Cada item é uma <b>rota</b>: um <b>método</b> (o verbo) + um <b>endereço</b>. A resposta vem em <b>JSON</b>, um formato de texto para dados.</p>
+  <div class="grade">
+    <div class="cartao"><h4><code>GET</code></h4><p class="mini">Buscar/ler. Ex.: <code>GET /api/pedidos</code> lista os pedidos.</p></div>
+    <div class="cartao"><h4><code>POST</code></h4><p class="mini">Criar/enviar. Ex.: <code>POST /api/pedidos/7/orcamentos</code>.</p></div>
+    <div class="cartao"><h4><code>PATCH</code></h4><p class="mini">Mudar uma parte. Ex.: <code>PATCH /api/pedidos/7/status</code>.</p></div>
+    <div class="cartao"><h4><code>DELETE</code></h4><p class="mini">Apagar. Ex.: <code>DELETE /api/pedidos/7</code>.</p></div>
+  </div>
+
+  <h3>Os códigos de resposta (status HTTP)</h3>
+  <div class="http">
+    <div class="bom"><b>200</b>Deu certo.</div>
+    <div class="bom"><b>201</b>Criado (pedido, orçamento, mensagem).</div>
+    <div class="meio"><b>400</b>Dado errado (campo vazio, preço negativo).</div>
+    <div class="ruim"><b>401</b>Não está logado / token inválido.</div>
+    <div class="ruim"><b>403</b>Logado, mas não tem permissão.</div>
+    <div class="meio"><b>404</b>Não encontrado.</div>
+    <div class="meio"><b>409</b>Conflito (ex.: já orçou esse pedido).</div>
+    <div class="ruim"><b>500</b>Erro interno. Os testes garantem que o usuário nunca cai aqui por erro dele.</div>
+  </div>
+
+  <details><summary>Aprofundar: a função <code>api()</code> que todas as telas usam <span class="tipo">public/js/api.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="public/js/api.js">
+async function api(caminho, opcoes = {}) {
+  const cabecalhos = { Authorization: "Bearer " + sessao.token() };
+  // Se não for upload de arquivo (FormData), enviamos JSON
+  if (opcoes.body && !(opcoes.body instanceof FormData)) {
+    cabecalhos["Content-Type"] = "application/json";
+    opcoes.body = JSON.stringify(opcoes.body);
+  }
+  let resposta;
+  try {
+    resposta = await fetch(SERVIDOR + "/api" + caminho, { ...opcoes, headers: cabecalhos });
+  } catch {
+    throw new Error("Sem conexão com o servidor. Confira a internet e tente de novo.");
+  }
+  const dados = await resposta.json().catch(() => ({}));
+
+  if (resposta.status === 401) { sessao.sair(); return; } // token vencido
+  if (!resposta.ok) throw new Error(dados.erro || "Algo deu errado.");
+  return dados;
+}
+</script>
+    <ol class="linhas">
+      <li><b>1</b><span><code>async</code> quer dizer que a função espera respostas da internet sem travar a tela.</span></li>
+      <li><b>2</b><span>Coloca o <b>token</b> (crachá) no cabeçalho <code>Authorization</code> de toda chamada. É assim que o servidor sabe quem é.</span></li>
+      <li><b>4–7</b><span>Se estamos mandando dados comuns, transforma em texto JSON. Se for upload de arquivo (<code>FormData</code>), deixa como está.</span></li>
+      <li><b>10</b><span><code>fetch</code> faz a chamada. <code>SERVIDOR</code> é vazio no site e é o endereço do Render no app (assunto 10).</span></li>
+      <li><b>11–13</b><span>Se não houver internet, mostra uma frase clara em português em vez de "Failed to fetch".</span></li>
+      <li><b>16</b><span>401 = o token venceu ou é inválido: desloga e volta para o login.</span></li>
+      <li><b>17</b><span>Qualquer outro erro: lança a mensagem que o servidor mandou (ex.: "Este pedido não é seu.").</span></li>
+    </ol>
+  </div></details>
+
+  <details><summary>Aprofundar: os "porteiros" <code>exigirLogin</code> e <code>exigirTipo</code> (middleware) <span class="tipo">src/autenticacao.js</span></summary><div class="dentro">
+    <p><b>Middleware</b> é uma função que roda <b>antes</b> da rota. Ela pode deixar passar (<code>next()</code>) ou barrar com um erro.</p>
+<script type="text/plain" class="cod" data-arquivo="src/autenticacao.js">
+async function exigirLogin(req, res, next) {
+  const cabecalho = req.headers.authorization || "";
+  const token = cabecalho.replace("Bearer ", "");
+  let dados;
+  try {
+    dados = jwt.verify(token, SEGREDO);
+  } catch {
+    return res.status(401).json({ erro: "Faça login para continuar." });
+  }
+  try {
+    const supabase = require("./supabase");
+    const { data: atual } = await supabase
+      .from("usuarios").select("id, nome, tipo, dono").eq("id", dados.id).maybeSingle();
+    if (!atual) return res.status(401).json({ erro: "Conta não encontrada. Faça login de novo." });
+    req.usuario = { ...dados, tipo: atual.tipo, dono: atual.dono, nome: atual.nome };
+    next();
+  } catch (e) { next(e); }
+}
+
+function exigirTipo(tipo) {
+  return (req, res, next) => {
+    if (req.usuario.tipo !== tipo) {
+      return res.status(403).json({ erro: `Apenas contas de ${tipo} podem fazer isso.` });
+    }
+    next();
+  };
+}
+</script>
+    <ol class="linhas">
+      <li><b>2–3</b><span>Pega o cabeçalho <code>Authorization: Bearer xxxxx</code> e tira a palavra "Bearer " para sobrar só o token.</span></li>
+      <li><b>6</b><span><code>jwt.verify</code> confere a <b>assinatura</b> (foi o nosso servidor que criou?) e a <b>validade</b> (7 dias). Token falso ou vencido cai no <code>catch</code>: 401.</span></li>
+      <li><b>12–13</b><span>Importante: busca o papel <b>atual no banco</b>. Se o dono tirar o cargo de fabricante de alguém, vale na hora, mesmo que o token antigo diga "fabricante".</span></li>
+      <li><b>14</b><span>Se a conta foi apagada: 401.</span></li>
+      <li><b>15</b><span>Guarda os dados em <code>req.usuario</code>, para a rota saber quem está chamando.</span></li>
+      <li><b>16</b><span><code>next()</code> = "pode passar".</span></li>
+      <li><b>20–27</b><span><code>exigirTipo("fabricante")</code> é uma função que <b>cria</b> outro porteiro. Ele só deixa passar quem tem aquele tipo; os outros recebem 403.</span></li>
+    </ol>
+    <p>Uso numa rota: <code>rotas.post("/pedidos/:id/orcamentos", exigirLogin, exigirTipo("fabricante"), async (req, res) =&gt; {...})</code>. Lê-se: "primeiro confere login, depois confere se é fabricante, depois faz o trabalho".</p>
+  </div></details>
+
+  <details><summary>Aprofundar: a regra "quem pode ver qual pedido" <span class="tipo">src/permissoes.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="src/permissoes.js">
+const ehDono = pedido.cliente_id === usuario.id;
+const aindaAberto = ["aberto", "com_orcamento"].includes(pedido.status);
+const ehFabricanteEscolhido = pedido.fabricante_id === usuario.id;
+const ehFabricante = usuario.tipo === "fabricante";
+const ehDonoDaPlataforma = !!usuario.dono;
+
+const permitido = ehDono || ehFabricanteEscolhido || (ehFabricante && aindaAberto) || ehDonoDaPlataforma;
+</script>
+    <p>Pode ver o pedido quem for:</p>
+    <div class="fluxo">
+      <div class="passo azul"><b>O cliente que criou</b><small>sempre</small></div>
+      <div class="seta">ou</div>
+      <div class="passo"><b>O fabricante escolhido</b><small>depois do aceite</small></div>
+      <div class="seta">ou</div>
+      <div class="passo"><b>Qualquer fabricante</b><small>enquanto o pedido está aberto (para poder orçar)</small></div>
+      <div class="seta">ou</div>
+      <div class="passo"><b>O dono da plataforma</b><small>sempre (para administrar)</small></div>
+    </div>
+    <p>Essa regra fica num arquivo só e é usada por pedidos, orçamentos e chat. Assim não tem perigo de uma parte ter uma regra diferente da outra.</p>
+  </div></details>
+
+  <details><summary>Aprofundar: validação dos dados <span class="tipo">src/validar.js</span></summary><div class="dentro">
+    <p>Antes de gravar qualquer coisa, o servidor confere o que chegou. Nunca confiamos só no formulário da tela, porque alguém pode chamar a API direto, sem usar a tela.</p>
+<script type="text/plain" class="cod" data-arquivo="src/validar.js">
+function inteiroOpcional(valor, minimo, maximo) {
+  if (valor === undefined || valor === null || String(valor).trim() === "") return null;
+  const texto = String(valor).trim();
+  if (!/^-?\d+$/.test(texto)) return NaN;
+  const n = Number(texto);
+  return n >= minimo && n <= maximo ? n : NaN;
+}
+
+function dataValida(texto) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) return false;
+  const d = new Date(texto + "T12:00:00Z");
+  return !isNaN(d) && d.toISOString().slice(0, 10) === texto;
+}
+</script>
+    <ol class="linhas">
+      <li><b>2</b><span>Campo vazio = "não preenchido" (<code>null</code>). É permitido, porque medidas são opcionais.</span></li>
+      <li><b>4</b><span>Uma <b>expressão regular</b> (regex) confere se só tem dígitos. "abc" ou "1.5" viram <code>NaN</code> ("não é número") = inválido.</span></li>
+      <li><b>6</b><span>Também tem que estar dentro do limite (ex.: quantidade de 1 a 10000).</span></li>
+      <li><b>10–12</b><span>Data: além do formato AAAA-MM-DD, confere se o dia existe de verdade. "2026-02-31" vira outra data no JavaScript, então não bate com o texto: inválida.</span></li>
+    </ol>
+    <p>Outras validações: título/descrição obrigatórios e cortados no tamanho máximo, prazo não pode ser no passado, só arquivos <code>.stl .obj .3mf .jpg .jpeg .png .webp .pdf</code>, preço maior que zero, prazo do orçamento de 1 a 3650 dias, id da URL tem que ser número (<code>idValido</code>).</p>
+  </div></details>
+
+  <details><summary>Aprofundar: <code>server.js</code>, o arquivo que liga tudo <span class="tipo">server.js</span></summary><div class="dentro">
+    <div class="fluxo">
+      <div class="passo"><span class="n">1</span><br><b>Lê JSON</b><small><code>express.json()</code></small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">2</span><br><b>CORS do app</b><small>libera só <code>https://localhost</code></small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">3</span><br><b>Entrega as telas</b><small><code>express.static("public")</code></small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">4</span><br><b>Rotas /api</b><small>usuarios, app, convites, pedidos, orçamentos, mensagens</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">5</span><br><b>404 e erros</b><small>sempre responde JSON com <code>{ erro }</code></small></div>
+    </div>
+    <p>O último bloco transforma erros técnicos em frases claras: arquivo maior que 20 MB, mais de 5 arquivos, JSON quebrado. Qualquer outro vira 500 "Erro interno no servidor. Tente de novo."</p>
+  </div></details>
+
+  <details><summary>Aprofundar: a lista completa das rotas <span class="tipo">tabela</span></summary><div class="dentro"><div class="tabela"><table>
+    <tr><th>Método</th><th>Rota</th><th>Quem</th><th>O que faz</th></tr>
+    <tr><td>GET</td><td><code>/api/config</code></td><td>Todos</td><td>Dados públicos para o botão do Google</td></tr>
+    <tr><td>POST</td><td><code>/api/usuarios/google</code></td><td>Todos</td><td>Troca o login do Google pelo token do site</td></tr>
+    <tr><td>POST</td><td><code>/api/usuarios/login</code></td><td>Contas de teste</td><td>Login por e-mail e senha</td></tr>
+    <tr><td>GET/PATCH</td><td><code>/api/usuarios/eu</code></td><td>Logado</td><td>Meus dados / mudar a cidade</td></tr>
+    <tr><td>GET/POST</td><td><code>/api/convites</code></td><td>Dono</td><td>Ver e criar convites</td></tr>
+    <tr><td>DELETE</td><td><code>/api/convites/:id</code></td><td>Dono</td><td>Cancelar convite</td></tr>
+    <tr><td>POST</td><td><code>/api/convites/fabricantes/:id/remover</code></td><td>Dono</td><td>Tira o cargo de fabricante</td></tr>
+    <tr><td>GET</td><td><code>/api/pedidos</code> (<code>?todos=1</code>)</td><td>Logado (dono)</td><td>Lista do painel (todos, para o dono)</td></tr>
+    <tr><td>POST</td><td><code>/api/pedidos</code></td><td>Cliente</td><td>Cria pedido com anexos</td></tr>
+    <tr><td>GET</td><td><code>/api/pedidos/:id</code></td><td>Com permissão</td><td>Detalhes, anexos e orçamentos</td></tr>
+    <tr><td>DELETE</td><td><code>/api/pedidos/:id</code></td><td>Cliente / dono</td><td>Exclui pedido</td></tr>
+    <tr><td>PATCH</td><td><code>/api/pedidos/:id/status</code></td><td>Fabricante escolhido</td><td>Avança a produção</td></tr>
+    <tr><td>PATCH</td><td><code>/api/pedidos/:id/recebido</code></td><td>Cliente</td><td>Pronto → entregue</td></tr>
+    <tr><td>POST</td><td><code>/api/pedidos/:id/orcamentos</code></td><td>Fabricante</td><td>Envia orçamento</td></tr>
+    <tr><td>POST</td><td><code>/api/orcamentos/:id/aceitar</code></td><td>Cliente</td><td>Aceita orçamento</td></tr>
+    <tr><td>GET/POST</td><td><code>/api/pedidos/:id/mensagens</code></td><td>Participantes</td><td>Chat</td></tr>
+    <tr><td>GET</td><td><code>/api/app/versao</code>, <code>/api/app/pacote.zip</code></td><td>Todos</td><td>Atualização do app</td></tr>
+    <tr><td>GET</td><td><code>/api/saude</code></td><td>Todos</td><td>"Estou no ar"</td></tr>
+  </table></div></div></details>
+
+  <div class="banca">"O navegador nunca acessa o banco direto. Toda chamada passa pelo servidor, que confere o token, o papel da pessoa, a permissão sobre aquele pedido e os dados enviados. Só depois ele grava no banco, usando uma chave secreta que fica só no servidor."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="arquitetura"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 6. BANCO ================= -->
+<section class="sec" id="banco" data-sec>
+  <span class="selo">Assunto 6</span>
+  <h2>Banco de dados</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>São 6 tabelas no PostgreSQL ligadas por ids, com regras (constraints) que o próprio banco garante, mesmo se o código errar.</span></div>
+
+  <div class="analogia">Cada tabela é uma <b>planilha</b>. Cada linha é um registro (um pedido, um usuário). O <b>id</b> é o número da linha. Uma <b>chave estrangeira</b> (FK) é uma coluna que aponta para o número de uma linha em outra planilha, como "este pedido é do usuário nº 3".</div>
+
+  <div class="tabelas-bd">
+    <div class="tbd u"><h5>usuarios</h5><ul><li><span class="pk">PK</span>id</li><li>nome</li><li>email <span class="mini">único</span></li><li>senha_hash <span class="mini">só teste</span></li><li>tipo <span class="mini">cliente|fabricante</span></li><li>cidade</li><li>auth_id <span class="mini">Google</span></li><li>foto_url</li><li>dono <span class="mini">sim/não</span></li></ul></div>
+    <div class="tbd"><h5>pedidos</h5><ul><li><span class="pk">PK</span>id</li><li><span class="fk">FK</span>cliente_id</li><li><span class="fk">FK</span>fabricante_id</li><li>categoria, titulo, descricao</li><li>largura/profundidade/altura_mm</li><li>material, cor</li><li>quantidade</li><li>prazo</li><li>status</li></ul></div>
+    <div class="tbd"><h5>orcamentos</h5><ul><li><span class="pk">PK</span>id</li><li><span class="fk">FK</span>pedido_id</li><li><span class="fk">FK</span>fabricante_id</li><li>preco</li><li>prazo_dias</li><li>observacao</li><li>status <span class="mini">pendente|aceito|recusado</span></li></ul></div>
+    <div class="tbd"><h5>mensagens</h5><ul><li><span class="pk">PK</span>id</li><li><span class="fk">FK</span>pedido_id</li><li><span class="fk">FK</span>autor_id</li><li>texto <span class="mini">1–2000</span></li><li>criado_em</li></ul></div>
+    <div class="tbd"><h5>anexos</h5><ul><li><span class="pk">PK</span>id</li><li><span class="fk">FK</span>pedido_id</li><li>nome_original</li><li>caminho <span class="mini">no Storage</span></li><li>tamanho_bytes</li></ul></div>
+    <div class="tbd u"><h5>convites</h5><ul><li><span class="pk">PK</span>id</li><li>email</li><li><span class="fk">FK</span>criado_por</li><li><span class="fk">FK</span>usado_por</li><li>usado_em</li></ul></div>
+  </div>
+
+  <div class="diagrama">
+    <svg viewBox="0 0 760 250" role="img" aria-label="Relações: um usuário tem muitos pedidos; um pedido tem muitos orçamentos, mensagens e anexos">
+      <defs><marker id="pt2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
+      <rect class="caixa-azul" x="20" y="95" width="150" height="60" rx="14"/><text x="95" y="131" text-anchor="middle" font-weight="800">usuarios</text>
+      <rect class="caixa-roxa" x="300" y="95" width="150" height="60" rx="14"/><text x="375" y="131" text-anchor="middle" font-weight="800">pedidos</text>
+      <rect class="caixa" x="590" y="15" width="150" height="50" rx="14"/><text x="665" y="46" text-anchor="middle" font-weight="700">orcamentos</text>
+      <rect class="caixa" x="590" y="100" width="150" height="50" rx="14"/><text x="665" y="131" text-anchor="middle" font-weight="700">mensagens</text>
+      <rect class="caixa" x="590" y="185" width="150" height="50" rx="14"/><text x="665" y="216" text-anchor="middle" font-weight="700">anexos</text>
+      <path class="fio" d="M170 125 H300" marker-end="url(#pt2)"/><text class="t-peq" x="235" y="115" text-anchor="middle">1 cliente → muitos pedidos</text>
+      <path class="fio" d="M450 115 C520 115 520 40 590 40" marker-end="url(#pt2)"/>
+      <path class="fio" d="M450 125 H590" marker-end="url(#pt2)"/>
+      <path class="fio" d="M450 135 C520 135 520 210 590 210" marker-end="url(#pt2)"/>
+      <text class="t-peq" x="520" y="170" text-anchor="middle">1 pedido →</text><text class="t-peq" x="520" y="185" text-anchor="middle">muitos</text>
+    </svg>
+    <p class="legenda">Diagrama completo (ER) em <code>docs/diagramas.md</code>, seção 3.</p>
+  </div>
+
+  <h3>As regras que o banco garante sozinho</h3>
+  <div class="grade">
+    <div class="cartao"><h4>✅ check</h4><p class="mini">Só aceita valores da lista. Ex.: <code>status</code> só pode ser um dos 6 status; <code>preco &gt; 0</code>; <code>quantidade &gt; 0</code>.</p></div>
+    <div class="cartao"><h4>🔑 unique</h4><p class="mini">Não deixa repetir. Ex.: e-mail único; <code>unique (pedido_id, fabricante_id)</code> = cada fabricante manda só 1 orçamento por pedido.</p></div>
+    <div class="cartao"><h4>🧹 on delete cascade</h4><p class="mini">Apagou o pedido? Os anexos, orçamentos e mensagens dele somem junto, sem sobrar lixo.</p></div>
+    <div class="cartao"><h4>👑 um dono só</h4><p class="mini">Índice único parcial <code>um_dono_so</code>: só uma linha pode ter <code>dono = true</code>.</p></div>
+    <div class="cartao"><h4>✉️ convite pendente único</h4><p class="mini">Não pode ter dois convites ainda não usados para o mesmo e-mail.</p></div>
+    <div class="cartao"><h4>🔒 RLS ligado</h4><p class="mini">Row Level Security ligado <b>sem regras públicas</b>: ninguém de fora lê as tabelas. Só o servidor, com a chave secreta.</p></div>
+  </div>
+
+  <details><summary>Aprofundar: a tabela de orçamentos em SQL <span class="tipo">supabase/schema.sql</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="supabase/schema.sql" data-lang="sql">
+create table if not exists orcamentos (
+  id            bigint generated always as identity primary key,
+  pedido_id     bigint not null references pedidos(id) on delete cascade,
+  fabricante_id bigint not null references usuarios(id) on delete cascade,
+  preco         numeric(10,2) not null check (preco > 0),
+  prazo_dias    integer not null check (prazo_dias > 0),
+  observacao    text,
+  status        text not null default 'pendente'
+                check (status in ('pendente','aceito','recusado')),
+  criado_em     timestamptz not null default now(),
+  unique (pedido_id, fabricante_id)     -- cada fabricante manda só 1 orçamento por pedido
+);
+</script>
+    <ol class="linhas">
+      <li><b>2</b><span><code>id</code> numérico que o banco gera sozinho (1, 2, 3...). <code>primary key</code> = identifica a linha.</span></li>
+      <li><b>3</b><span><code>references pedidos(id)</code> = chave estrangeira: tem que existir esse pedido. <code>on delete cascade</code> = apagou o pedido, apaga o orçamento.</span></li>
+      <li><b>5</b><span><code>numeric(10,2)</code> = número com 2 casas decimais (dinheiro). O <code>check</code> recusa zero ou negativo.</span></li>
+      <li><b>8–9</b><span>Começa como <code>pendente</code> e só pode ser um dos 3 valores.</span></li>
+      <li><b>11</b><span>Se o mesmo fabricante tentar orçar duas vezes, o banco devolve o erro <code>23505</code>, e a rota transforma em 409 "Você já enviou um orçamento para este pedido."</span></li>
+    </ol>
+  </div></details>
+
+  <details><summary>Aprofundar: o que são as "migrações" <span class="tipo">supabase/migracao-*.sql</span></summary><div class="dentro">
+    <p>Migração é um arquivo SQL que <b>muda</b> um banco que já existe, sem apagar os dados. O projeto teve 3 passos:</p>
+    <div class="fluxo">
+      <div class="passo"><span class="n">1</span><br><b>schema.sql</b><small>Cria as 5 tabelas, índices, RLS e o bucket "anexos".</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">2</span><br><b>migração 02</b><small>Login Google: senha vira opcional, colunas <code>auth_id</code>, <code>foto_url</code>, <code>dono</code>; tabela <code>convites</code>.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">3</span><br><b>migração 03</b><small>Acha a regra antiga de status, apaga e cria de novo incluindo <code>pronto</code>.</small></div>
+    </div>
+    <p>Elas usam <code>if not exists</code>, então rodar de novo não estraga nada. Roda-se no "SQL Editor" do Supabase.</p>
+  </div></details>
+
+  <details><summary>Aprofundar: onde ficam os arquivos (Storage) <span class="tipo">src/rotas/pedidos.js</span></summary><div class="dentro">
+    <div class="fluxo">
+      <div class="passo azul"><span class="n">1</span><br><b>multer recebe</b><small>Até 5 arquivos de 20 MB, na memória.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">2</span><br><b>Nome seguro</b><small>Troca caracteres estranhos por "_" e põe um código aleatório (<code>randomUUID</code>) na frente.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">3</span><br><b>Storage</b><small>Envia para o bucket privado <code>anexos/ID-do-pedido/...</code></small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">4</span><br><b>Tabela anexos</b><small>Guarda só o caminho e o tamanho.</small></div>
+    </div>
+    <p>Para mostrar o arquivo, o servidor cria um <b>link temporário de 1 hora</b> (<code>createSignedUrl(caminho, 3600)</code>). Depois disso o link não funciona mais. Ao excluir um pedido, o servidor apaga os arquivos do Storage primeiro, porque o "cascade" só apaga linhas do banco, não arquivos.</p>
+  </div></details>
+
+  <div class="banca">"O banco tem seis tabelas: usuários, pedidos, orçamentos, mensagens, anexos e convites. As regras importantes ficam no próprio banco: o status só aceita os seis valores, cada fabricante manda um orçamento por pedido, e apagar um pedido apaga tudo ligado a ele."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="banco"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 7. LOGIN ================= -->
+<section class="sec" id="login" data-sec>
+  <span class="selo">Assunto 7</span>
+  <h2>Login com Google</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O Google confirma quem a pessoa é; o nosso servidor confere essa confirmação e entrega o "crachá" do PrintHub (token JWT), que vale 7 dias.</span></div>
+
+  <div class="analogia">É como entrar num evento: você mostra o <b>RG</b> (Google) na portaria, e recebe uma <b>pulseira</b> do evento (nosso token). Dali em diante, em cada área você só mostra a pulseira. A pulseira tem um selo que só o organizador sabe fazer (a assinatura com <code>JWT_SECRET</code>), então ninguém falsifica.</div>
+
+  <h3>No site (navegador)</h3>
+  <div class="fluxo">
+    <div class="passo azul"><span class="n">1</span><br><b>Clica "Entrar com Google"</b><small><code>signInWithOAuth</code> do Supabase manda a pessoa para o Google.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">2</span><br><b>Escolhe a conta</b><small>O Google devolve para o site com um código (PKCE).</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">3</span><br><b>Sessão do Supabase</b><small>A biblioteca troca o código por um <code>access_token</code>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">4</span><br><b>POST /api/usuarios/google</b><small>O servidor confere o token com o Supabase (<code>getUser</code>).</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">5</span><br><b>Nosso token</b><small>Acha ou cria o usuário, decide o papel e devolve o JWT.</small></div>
+  </div>
+
+  <h3>No app Android</h3>
+  <div class="fluxo">
+    <div class="passo azul"><span class="n">1</span><br><b>Toca no botão</b><small>Plugin <code>@capgo/capacitor-social-login</code>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">2</span><br><b>Janela nativa</b><small>O Android mostra as contas do celular e devolve um <code>idToken</code>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">3</span><br><b>signInWithIdToken</b><small>O Supabase confere o idToken + <b>nonce</b>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">4–5</span><br><b>Igual ao site</b><small>Mesmo <code>POST /api/usuarios/google</code>, mesmo token.</small></div>
+  </div>
+
+  <div class="cartao">
+    <h4 style="margin-top:0">❓ Por que o app não usa o mesmo login do site?</h4>
+    <p>O app mostra as telas dentro de uma <b>WebView</b> (um "navegador embutido"). O Google <b>bloqueia login dentro de WebView</b> desde 2016 (erro <code>disallowed_useragent</code>), porque um app malicioso poderia espiar a senha digitada. Por isso, no app, usamos a janela <b>nativa</b> do Android, que é do próprio sistema e o app não consegue espiar.</p>
+  </div>
+
+  <h3>Quem vira o quê</h3>
+  <div class="fluxo">
+    <div class="passo" style="border-color:var(--aviso)"><b>E-mail = DONO_EMAIL?</b><small>Vira fabricante + dono.</small></div>
+    <div class="seta">senão</div>
+    <div class="passo"><b>Tem convite pendente?</b><small>Vira fabricante e o convite é marcado como usado.</small></div>
+    <div class="seta">senão</div>
+    <div class="passo azul"><b>Qualquer outro</b><small>Vira cliente.</small></div>
+  </div>
+  <p>Não existe cadastro por e-mail e senha. As únicas contas com senha são as <b>contas de teste</b> antigas; a senha delas é guardada como <b>hash bcrypt</b> e conferida com <code>bcrypt.compare</code>.</p>
+
+  <details><summary>Aprofundar: o servidor troca o token do Google pelo nosso <span class="tipo">src/rotas/usuarios.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="src/rotas/usuarios.js (resumido)">
+rotas.post("/google", async (req, res, next) => {
+  // 1) Confere com o Supabase se o token é verdadeiro
+  const { data, error } = await supabase.auth.getUser(req.body.access_token);
+  if (error || !data.user) return res.status(401).json({ erro: "Não foi possível confirmar seu login..." });
+  const email = data.user.email.toLowerCase();
+
+  // 2) Procura o usuário pelo id do Google ou pelo e-mail
+  let { data: usuario } = await supabase.from("usuarios").select("*")
+    .or(`auth_id.eq.${data.user.id},email.eq.${email}`).limit(1).maybeSingle();
+
+  // 3) Existe convite pendente para este e-mail?
+  const { data: convite } = await supabase.from("convites").select("id")
+    .ilike("email", email).is("usado_em", null).maybeSingle();
+
+  const ehDono = DONO_EMAIL && email === DONO_EMAIL;
+  const virarFabricante = ehDono || !!convite;
+  // ... cria a conta (insert) ou atualiza (update) e marca o convite como usado ...
+
+  delete usuario.senha_hash;
+  res.json({ token: gerarToken(usuario), usuario });
+});
+</script>
+    <ol class="linhas">
+      <li><b>3–4</b><span>Nunca confiamos no que o navegador diz: perguntamos ao Supabase se o token é verdadeiro. Se não for: 401.</span></li>
+      <li><b>8–9</b><span>Procura a pessoa pelo id do Google ou pelo e-mail (assim as contas antigas também são reconhecidas).</span></li>
+      <li><b>12–13</b><span>Convite ainda não usado (<code>usado_em</code> vazio) para esse e-mail.</span></li>
+      <li><b>15–16</b><span>A regra do papel em uma linha: vira fabricante quem é o dono ou quem foi convidado.</span></li>
+      <li><b>19–20</b><span>Tira a senha da resposta (nunca vai para a tela) e devolve o nosso token.</span></li>
+    </ol>
+  </div></details>
+
+  <details><summary>Aprofundar: o login nativo no app e o "nonce" <span class="tipo">public/js/entrar.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="public/js/entrar.js">
+await SocialLogin.initialize({ google: { webClientId: googleClientId } });
+
+const nonce = crypto.randomUUID();
+const resposta = await SocialLogin.login({ provider: "google", options: { nonce: await sha256(nonce) } });
+
+const { data, error } = await clienteSupabase.auth.signInWithIdToken({
+  provider: "google",
+  token: resposta.result.idToken,
+  nonce,
+});
+if (error) throw error;
+await trocarPorTokenDoSite(data.session.access_token);
+</script>
+    <ol class="linhas">
+      <li><b>1</b><span>Liga o plugin com o <b>ID do cliente Web</b> do Google (vem do servidor em <code>/api/config</code>).</span></li>
+      <li><b>3</b><span><b>Nonce</b> = número aleatório de uso único.</span></li>
+      <li><b>4</b><span>O Google recebe o nonce <b>resumido</b> (SHA-256) e coloca dentro do idToken.</span></li>
+      <li><b>6–10</b><span>O Supabase recebe o nonce <b>original</b>, resume ele também e confere se bate com o que está no idToken. Se alguém roubar um idToken antigo, não tem o nonce certo: não funciona.</span></li>
+      <li><b>12</b><span>Daqui para frente é igual ao site.</span></li>
+    </ol>
+  </div></details>
+
+  <details><summary>Aprofundar: o que foi configurado no Google Cloud <span class="tipo">configuração</span></summary><div class="dentro">
+    <div class="grade">
+      <div class="cartao"><h4>🌐 Cliente "Aplicativo da Web"</h4><p class="mini">Usado pelo Supabase no login do site. Tem a URL de retorno <code>https://SEU-PROJETO.supabase.co/auth/v1/callback</code>. O ID e a chave secreta dele ficam cadastrados no Supabase (Authentication → Providers → Google). O mesmo ID vai na variável <code>GOOGLE_WEB_CLIENT_ID</code> para o app.</p></div>
+      <div class="cartao"><h4>🤖 Cliente "Android"</h4><p class="mini">Nome do pacote <code>com.printhub3d.app</code> + a impressão digital <b>SHA-1</b> da chave que assina o APK. Ele não aparece no código: só diz ao Google "este app, assinado por esta chave, pode pedir login".</p></div>
+    </div>
+    <p class="mini">Também foi configurada a "Tela de consentimento OAuth" (nome do app e e-mail de suporte) e, no Supabase, as URLs permitidas para voltar ao site (localhost e o endereço do Render).</p>
+  </div></details>
+
+  <div class="banca">"O login é com Google. No site, o Supabase faz a conversa com o Google; no app usamos o login nativo do Android, porque o Google bloqueia login dentro de WebView. Nos dois casos o servidor confere o token do Google e entrega o token próprio do PrintHub, um JWT que vale sete dias."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="login"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 8. AO VIVO ================= -->
+<section class="sec" id="aovivo" data-sec>
+  <span class="selo">Assunto 8</span>
+  <h2>Telas ao vivo (polling)</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>A cada 3 segundos a tela pergunta ao servidor "mudou alguma coisa?" e só redesenha o que mudou.</span></div>
+
+  <div class="analogia">É como uma criança no carro perguntando "já chegou?" a cada 3 segundos. Simples e funciona. A alternativa (SSE/WebSocket) seria o motorista avisar sozinho quando chegar: mais eficiente, mas mais complicado de montar.</div>
+
+  <div class="diagrama">
+    <svg viewBox="0 0 760 210" role="img" aria-label="A tela pergunta ao servidor a cada 3 segundos">
+      <defs><marker id="pt3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
+      <rect class="caixa-azul" x="20" y="20" width="140" height="170" rx="16"/><text class="t-tit" x="90" y="110" text-anchor="middle">🖥️ Tela</text>
+      <rect class="caixa" x="600" y="20" width="140" height="170" rx="16"/><text class="t-tit" x="670" y="110" text-anchor="middle">⚙️ Servidor</text>
+      <path class="fio" d="M160 45 H600" marker-end="url(#pt3)"/><text class="t-peq" x="380" y="38" text-anchor="middle">0 s — mudou algo?</text>
+      <path class="fio" d="M600 65 H160" marker-end="url(#pt3)"/><text class="t-peq" x="380" y="80" text-anchor="middle">igual → não redesenha</text>
+      <path class="fio" d="M160 120 H600" marker-end="url(#pt3)"/><text class="t-peq" x="380" y="113" text-anchor="middle">3 s — mudou algo?</text>
+      <path class="fio" d="M600 140 H160" marker-end="url(#pt3)" style="stroke:var(--ok)"/><text x="380" y="160" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--ok)">chegou orçamento novo → redesenha com destaque</text>
+    </svg>
+  </div>
+
+  <h3>Por que polling e não SSE/WebSocket?</h3>
+  <div class="comparar">
+    <div class="cartao escolhido"><h4>Polling</h4><ul class="mini"><li>Usa a mesma rota que a tela já usava</li><li>Funciona igual no site e no app</li><li>Se a internet cair, a próxima pergunta simplesmente tenta de novo</li><li>Fácil de explicar e de manter</li><li>Custo: uma chamada a cada 3 s por tela aberta (pequeno com poucos usuários)</li></ul></div>
+    <div class="cartao"><h4>SSE / WebSocket</h4><ul class="mini"><li>O servidor avisa na hora (mais eficiente)</li><li>Precisa manter uma conexão aberta por pessoa</li><li>Precisa reconectar quando cai, e o plano grátis do Render derruba conexões ao dormir</li><li>Mais código e mais coisa para dar errado no prazo</li></ul></div>
+  </div>
+
+  <h3>Cuidados para não atrapalhar quem está usando</h3>
+  <div class="grade">
+    <div class="cartao"><h4>👀 Só com a tela visível</h4><p class="mini">Se a aba está escondida ou o app minimizado (<code>document.hidden</code>), não pergunta. Quando a pessoa volta, atualiza na hora.</p></div>
+    <div class="cartao"><h4>🔍 Só redesenha se mudou</h4><p class="mini">Faz um "resumo" (assinatura) do pedido e compara com o anterior.</p></div>
+    <div class="cartao"><h4>⌨️ Não apaga o que a pessoa digita</h4><p class="mini">Se o fabricante está preenchendo o orçamento ou alguém está confirmando uma exclusão, aquela parte não é redesenhada.</p></div>
+    <div class="cartao"><h4>✨ Destaque no que é novo</h4><p class="mini">Pedido ou orçamento que acabou de chegar ganha a classe <code>novo</code>, que pisca a cor por 6 s (animação CSS <code>chegou</code>).</p></div>
+    <div class="cartao"><h4>💬 Chat só pede o que falta</h4><p class="mini"><code>?depois=ID</code>: o servidor devolve só mensagens com id maior que a última da tela.</p></div>
+    <div class="cartao"><h4>🗑️ Pedido excluído</h4><p class="mini">Se o pedido some enquanto a tela está aberta, aparece "Este pedido foi excluído" com link para voltar.</p></div>
+  </div>
+
+  <details><summary>Aprofundar: <code>atualizarSozinho</code> e a "assinatura" <span class="tipo">api.js + pedido.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="public/js/api.js">
+function atualizarSozinho(carregar, segundos = 3) {
+  setInterval(() => { if (!document.hidden) carregar(); }, segundos * 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) carregar(); });
+}
+</script>
+    <ol class="linhas">
+      <li><b>2</b><span><code>setInterval</code> roda a função de novo a cada 3000 milissegundos, mas só se a tela estiver visível.</span></li>
+      <li><b>3</b><span>Quando a pessoa volta para a aba/app, atualiza na hora, sem esperar os 3 s.</span></li>
+    </ol>
+<script type="text/plain" class="cod" data-arquivo="public/js/pedido.js">
+const resumir = (p) => JSON.stringify([p.status, p.fabricante_id, p.anexos.length,
+  p.orcamentos.map((o) => [o.id, o.status, o.preco, o.prazo_dias])]);
+
+async function atualizarAoVivo() {
+  const novo = await api("/pedidos/" + pedidoId);
+  if (!novo || resumir(novo) === assinatura) return;
+  pedido = novo;
+  assinatura = resumir(novo);
+  const confirmando = document.querySelector("#confirmar-excluir:not([hidden])");
+  if (!confirmando) desenharPedido();
+  const formOrc = document.querySelector("#form-orcamento");
+  const digitando = formOrc && [...formOrc.elements].some((c) => c.value);
+  if (!digitando) desenharOrcamentosNaTela();
+}
+</script>
+    <ol class="linhas">
+      <li><b>1–2</b><span>A "assinatura" é um texto com só o que importa para a tela. Os links dos anexos ficam de fora, porque mudam a cada busca (são temporários) e fariam a tela piscar à toa.</span></li>
+      <li><b>6</b><span>Assinatura igual = nada mudou: sai sem fazer nada.</span></li>
+      <li><b>9–10</b><span>Se a caixa "Apagar pedido?" está aberta, não redesenha o pedido (senão ela sumiria).</span></li>
+      <li><b>11–13</b><span>Se algum campo do formulário de orçamento tem texto, não redesenha os orçamentos (senão apagaria o que o fabricante digitou).</span></li>
+    </ol>
+  </div></details>
+
+  <div class="banca">"As telas se atualizam sozinhas com polling: a cada três segundos perguntam ao servidor se algo mudou. Escolhi isso em vez de WebSocket por ser mais simples e funcionar igual no site e no app. A tela só redesenha o que mudou e nunca apaga o que a pessoa está digitando."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="aovivo"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 9. VISUAL ================= -->
+<section class="sec" id="visual" data-sec>
+  <span class="selo">Assunto 9</span>
+  <h2>Visual (CSS)</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Todas as cores e tamanhos ficam em variáveis no topo do CSS; trocar a variável troca o site inteiro, inclusive no tema escuro.</span></div>
+
+  <div class="amostras">
+    <div class="amostra"><i style="background:#3550D6"></i><span><b>Azul cobalto</b><br><code>#3550D6</code><br>cliente</span></div>
+    <div class="amostra"><i style="background:#7A3FD1"></i><span><b>Roxo</b><br><code>#7A3FD1</code><br>Oficina (fabricante)</span></div>
+    <div class="amostra"><i style="background:linear-gradient(135deg,#3550D6,#7A3FD1)"></i><span><b>Degradê</b><br>azul → roxo<br>ícone e abertura</span></div>
+    <div class="amostra"><i style="background:#1F8A57"></i><span><b>Verde</b><br><code>#1F8A57</code><br>ok / entregue</span></div>
+    <div class="amostra"><i style="background:#C9373A"></i><span><b>Vermelho</b><br><code>#C9373A</code><br>erro / excluir</span></div>
+  </div>
+
+  <div class="analogia">Variáveis CSS são como uma <b>paleta de tintas com etiqueta</b>. Em vez de escrever "#3550D6" em 40 lugares, todo mundo usa a tinta "destaque". Quer mudar a cor? Troca só a tinta.</div>
+
+  <details><summary>Aprofundar: tokens, tema escuro e tema da Oficina <span class="tipo">public/css/estilo.css</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="public/css/estilo.css (resumido)" data-lang="css">
+:root {
+  --fundo: #F3F4FA;
+  --texto: #1B1E2E;
+  --roxo: #7A3FD1;        /* roxo principal: botões, balões, linha do tempo */
+  --destaque: #3550D6;    /* cor de destaque (cliente) */
+  --raio-g: 22px;         /* cantos dos cartões */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --fundo: #10121B; --texto: #ECEEF6; --destaque: #8C9DFF; }
+}
+
+.tema-oficina { --destaque: var(--roxo); }
+</script>
+    <ol class="linhas">
+      <li><b>1–7</b><span><code>:root</code> é a página inteira. Ali ficam os <b>tokens</b> (variáveis com <code>--</code> na frente).</span></li>
+      <li><b>9–11</b><span>Se o celular/computador está no modo escuro, as mesmas variáveis ganham outros valores. Nenhuma outra linha do CSS precisa mudar.</span></li>
+      <li><b>13</b><span>Quando quem está logado é fabricante, o JavaScript coloca a classe <code>tema-oficina</code> no <code>body</code>. Ela troca só o "destaque" para roxo, e a tela inteira vira roxa.</span></li>
+    </ol>
+    <p>Outros detalhes: botões em pílula (<code>--pilula: 999px</code>), sombras suaves, fontes Bricolage Grotesque (títulos), Figtree (texto) e IBM Plex Mono (números), e a animação de destaque respeita quem pediu "menos movimento" (<code>prefers-reduced-motion</code>).</p>
+  </div></details>
+
+  <label class="estudei"><input type="checkbox" data-estudei="visual"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 10. APP ================= -->
+<section class="sec" id="app" data-sec>
+  <span class="selo">Assunto 10</span>
+  <h2>App Android</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O Capacitor coloca as mesmas telas da pasta <code>public/</code> dentro de um app Android; o app usa a mesma API e o mesmo banco do site.</span></div>
+
+  <div class="analogia">O Capacitor é uma <b>moldura</b>: pega o "quadro" (as páginas web) e coloca numa moldura de app Android, com acesso a coisas do celular (câmera, login nativo). O quadro é o mesmo que está na parede do site.</div>
+
+  <div class="diagrama">
+    <svg viewBox="0 0 760 230" role="img" aria-label="Capacitor empacota public dentro do APK; o app chama a API do Render">
+      <defs><marker id="pt4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
+      <rect class="caixa" x="20" y="60" width="160" height="110" rx="16"/><text class="t-tit" x="100" y="105" text-anchor="middle">📁 public/</text><text class="t-peq" x="100" y="128" text-anchor="middle">HTML, CSS, JS</text>
+      <rect class="caixa-roxa" x="270" y="20" width="220" height="190" rx="20"/><text class="t-tit" x="380" y="50" text-anchor="middle">📱 APK</text>
+      <rect class="caixa" x="290" y="65" width="180" height="50" rx="12"/><text x="380" y="95" text-anchor="middle" font-size="13">cópia de public/ (WebView)</text>
+      <rect class="caixa" x="290" y="130" width="180" height="60" rx="12"/><text x="380" y="155" text-anchor="middle" font-size="13">plugins nativos</text><text class="t-peq" x="380" y="175" text-anchor="middle">login Google · atualização</text>
+      <rect class="caixa-verde" x="580" y="60" width="160" height="110" rx="16"/><text class="t-tit" x="660" y="105" text-anchor="middle">⚙️ Render</text><text class="t-peq" x="660" y="128" text-anchor="middle">mesma API e banco</text>
+      <path class="fio" d="M180 115 H270" marker-end="url(#pt4)"/><text class="t-peq" x="225" y="105" text-anchor="middle">cap sync</text>
+      <path class="fio" d="M490 115 H580" marker-end="url(#pt4)"/><text class="t-peq" x="535" y="105" text-anchor="middle">só dados</text>
+    </svg>
+  </div>
+
+  <h3>O que muda no código para o app funcionar</h3>
+  <div class="grade">
+    <div class="cartao"><h4>🔍 Estou no app?</h4><p class="mini"><code>NO_APP</code> em <code>api.js</code>: o Capacitor cria <code>window.Capacitor</code>; no site isso não existe.</p></div>
+    <div class="cartao"><h4>🌍 Endereço do servidor</h4><p class="mini"><code>SERVIDOR</code>: vazio no site (mesmo endereço), e <code>https://printhub3d-hqb0.onrender.com</code> no app, porque as telas estão dentro do celular.</p></div>
+    <div class="cartao"><h4>🚪 CORS</h4><p class="mini">No app, as telas abrem em <code>https://localhost</code>, outro "endereço". O navegador só deixa chamar a API se o servidor liberar. O <code>server.js</code> libera <b>só</b> essa origem.</p></div>
+    <div class="cartao"><h4>📷 Câmera</h4><p class="mini">No novo pedido aparece "Ou tire uma foto agora" (<code>data-so-app</code>), um <code>&lt;input type="file" capture="environment"&gt;</code> que abre a câmera traseira. Permissão <code>CAMERA</code> no AndroidManifest.</p></div>
+    <div class="cartao"><h4>🐙 Ícone e abertura</h4><p class="mini">Polvo desenhado em <code>polvo.svg</code>. O script <code>gerar-icones.py</code> usa o Chrome para gerar todos os tamanhos (ícone adaptável, quadrado, redondo) e a tela de abertura com o degradê.</p></div>
+    <div class="cartao"><h4>🔢 APK numerado</h4><p class="mini"><code>npm run apk</code>: <code>versao-apk.js</code> aumenta a versão, o Gradle compila e <code>copiar-apk.js</code> salva como <code>apks/PrintHub3D-v7-22-11-15h40.apk</code>.</p></div>
+  </div>
+
+  <details><summary>Aprofundar: o CORS no servidor <span class="tipo">server.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="server.js">
+const ORIGENS_DO_APP = ["https://localhost", "capacitor://localhost"];
+app.use("/api", (req, res, next) => {
+  const origem = req.headers.origin;
+  if (ORIGENS_DO_APP.includes(origem)) {
+    res.set("Access-Control-Allow-Origin", origem);
+    res.set("Vary", "Origin");
+    res.set("Access-Control-Allow-Headers", "Authorization, Content-Type");
+    res.set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+  }
+  next();
+});
+</script>
+    <ol class="linhas">
+      <li><b>1</b><span>Lista de quem pode chamar a API "de fora": só o app (no Android é <code>https://localhost</code>).</span></li>
+      <li><b>3–4</b><span>O navegador informa de onde vem a chamada (<code>Origin</code>). Se for da lista, libera.</span></li>
+      <li><b>5–8</b><span>Cabeçalhos que dizem ao navegador do app: "pode chamar, pode mandar o token, pode usar esses métodos".</span></li>
+      <li><b>9</b><span>Antes de algumas chamadas, o navegador pergunta "posso?" com <code>OPTIONS</code>. Respondemos 204 (sim, sem conteúdo).</span></li>
+      <li><b>11</b><span>Outros sites não recebem esses cabeçalhos, então o navegador deles bloqueia.</span></li>
+    </ol>
+  </div></details>
+
+  <details><summary>Aprofundar: como o APK é gerado <span class="tipo">app-android/package.json</span></summary><div class="dentro">
+    <div class="fluxo">
+      <div class="passo"><span class="n">1</span><br><b>versao-apk.js</b><small>Olha a pasta <code>apks/</code>, pega o maior número e soma 1. Grava em <code>versionCode</code> e <code>versionName</code> do <code>build.gradle</code>.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">2</span><br><b>cap sync</b><small>Copia <code>public/</code> e os plugins para o projeto Android.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">3</span><br><b>gradlew assembleDebug</b><small>O Gradle (com Java 21 e Android SDK) compila o app.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><span class="n">4</span><br><b>copiar-apk.js</b><small>Copia para <code>apks/</code> com número e data no nome.</small></div>
+    </div>
+    <p>O APK é instalado no celular por cabo, Drive ou WhatsApp (o Android pede para permitir "apps desconhecidos"). É um APK de <b>debug</b>, não publicado na Play Store.</p>
+  </div></details>
+
+  <div class="banca">"O app Android foi feito com Capacitor, que empacota as mesmas telas do site. Ele usa a mesma API no Render e o mesmo banco, então um pedido feito no app aparece no site na hora. No servidor, liberei o CORS só para a origem do app."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="app"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 11. ATUALIZAÇÃO ================= -->
+<section class="sec" id="atualizacao" data-sec>
+  <span class="selo">Assunto 11</span>
+  <h2>Atualização do app pelo ar</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Quando mudamos as telas, o app baixa um .zip novo do servidor sozinho, sem precisar instalar outro APK.</span></div>
+
+  <div class="analogia">É como um jogo de celular que baixa "atualização de conteúdo" ao abrir, sem passar pela loja. O "motor" (APK) continua o mesmo; só as "fases" (telas) são trocadas.</div>
+
+  <div class="fluxo">
+    <div class="passo"><span class="n">1</span><br><b>Servidor liga</b><small>Junta <code>public/</code> num .zip e calcula a <b>versão</b> (hash do conteúdo) e o <b>checksum</b>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">2</span><br><b>App abre</b><small>Avisa "abri bem" (<code>notifyAppReady</code>) e pergunta <code>GET /api/app/versao</code>.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">3</span><br><b>Versão diferente?</b><small>Baixa o .zip e confere o checksum.</small></div>
+    <div class="seta">→</div>
+    <div class="passo azul"><span class="n">4</span><br><b>Troca depois</b><small><code>next</code>: a versão nova entra quando o app for minimizado ou reaberto.</small></div>
+    <div class="seta">→</div>
+    <div class="passo" style="border-color:var(--erro)"><span class="n" style="background:var(--erro)">!</span><br><b>Deu ruim?</b><small>Se a versão nova não chamar <code>notifyAppReady</code> em 10 s, o plugin volta para a anterior (rollback).</small></div>
+  </div>
+
+  <div class="grade">
+    <div class="cartao"><h4>🧮 Versão = hash</h4><p class="mini">Um <b>hash</b> é uma "impressão digital" de um conteúdo. Mudou uma vírgula em qualquer tela, o hash muda. Usamos os 12 primeiros caracteres do SHA-256 como número de versão. Ninguém precisa lembrar de aumentar a versão.</p></div>
+    <div class="cartao"><h4>✅ Checksum</h4><p class="mini">Hash SHA-256 do próprio .zip. O app confere se o arquivo chegou inteiro e sem alteração antes de usar.</p></div>
+    <div class="cartao"><h4>🔧 Modo manual</h4><p class="mini">No <code>capacitor.config.json</code>: <code>"autoUpdate": false</code> e <code>"appReadyTimeout": 10000</code>. Nós controlamos quando conferir (uma vez por abertura, marcado em <code>sessionStorage</code>).</p></div>
+    <div class="cartao"><h4>🔢 Por que o APK tem versão própria</h4><p class="mini">O plugin só percebe que um APK novo foi instalado quando o <code>versionCode</code> muda. Aí ele descarta as telas baixadas antes e usa as que vieram no APK novo. Sem isso, o app continuaria com telas antigas baixadas.</p></div>
+  </div>
+
+  <details><summary>Aprofundar: o servidor montando o pacote <span class="tipo">src/rotas/app.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="src/rotas/app.js">
+const zip = new AdmZip();
+const resumo = crypto.createHash("sha256");
+for (const arquivo of listarArquivos(PASTA_PUBLIC)) {
+  const conteudo = fs.readFileSync(path.join(PASTA_PUBLIC, arquivo));
+  zip.addFile(arquivo, conteudo);
+  resumo.update(arquivo).update(conteudo);
+}
+const VERSAO = resumo.digest("hex").slice(0, 12);
+const PACOTE = zip.toBuffer();
+const CHECKSUM = crypto.createHash("sha256").update(PACOTE).digest("hex");
+
+rotas.get("/versao", (req, res) => {
+  res.json({ versao: VERSAO, url: "/api/app/pacote.zip?v=" + VERSAO, checksum: CHECKSUM });
+});
+</script>
+    <ol class="linhas">
+      <li><b>1–2</b><span>Cria um .zip vazio e começa um cálculo de hash.</span></li>
+      <li><b>3–7</b><span>Para cada arquivo de <code>public/</code> (sempre na mesma ordem): coloca no zip e "alimenta" o hash com o nome e o conteúdo.</span></li>
+      <li><b>8</b><span>A versão é o hash em hexadecimal, cortado em 12 caracteres (ex.: <code>a3f9c0e1b2d4</code>).</span></li>
+      <li><b>9–10</b><span>O zip vira bytes na memória, e calculamos o checksum dele.</span></li>
+      <li><b>12–14</b><span>A rota responde com a versão, onde baixar e o checksum. Isso tudo é feito <b>uma vez</b>, quando o servidor liga; as telas só mudam com um deploy novo, e aí o servidor liga de novo.</span></li>
+    </ol>
+  </div></details>
+
+  <div class="banca">"Para não precisar reinstalar o app a cada mudança, o servidor monta um .zip das telas com uma versão que é o hash do conteúdo. O app confere a versão ao abrir, baixa se mudou, valida com checksum, e se a versão nova falhar ele volta sozinho para a anterior."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="atualizacao"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 12. SEGURANÇA ================= -->
+<section class="sec" id="seguranca" data-sec>
+  <span class="selo">Assunto 12</span>
+  <h2>Segurança</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Segurança em camadas: mesmo que uma falhe, a próxima segura.</span></div>
+
+  <div class="analogia">Como uma casa com <b>portão, porta, chave e cofre</b>. Passar pelo portão não abre o cofre.</div>
+
+  <div class="grade">
+    <div class="cartao"><h4>🎫 Token JWT</h4><p class="mini">Toda rota protegida exige o token. Falso, vencido ou de outro segredo: 401.</p></div>
+    <div class="cartao"><h4>🔄 Papel conferido no banco</h4><p class="mini">A cada chamada, <code>exigirLogin</code> busca o papel atual. Tirou o cargo? Vale na hora.</p></div>
+    <div class="cartao"><h4>🚧 Permissões</h4><p class="mini">Só cliente cria pedido, só fabricante orça, só o escolhido avança, só o cliente aceita e confirma recebimento. Pedido de outro cliente: 403/404.</p></div>
+    <div class="cartao"><h4>🧾 Validação</h4><p class="mini">O servidor confere tudo que chega, mesmo que a tela já confira. Alguém pode chamar a API sem usar a tela.</p></div>
+    <div class="cartao"><h4>🛡️ XSS: função <code>esc</code></h4><p class="mini">Todo texto digitado por usuários passa por <code>esc()</code> antes de ir para a tela, trocando <code>&lt;</code> por <code>&amp;lt;</code>. Assim, se alguém escrever <code>&lt;script&gt;</code> no título, aparece como texto e não roda.</p></div>
+    <div class="cartao"><h4>📎 Arquivos</h4><p class="mini">Só extensões permitidas, até 5 arquivos de 20 MB, nome limpo + código aleatório, bucket privado e links que expiram em 1 hora.</p></div>
+    <div class="cartao"><h4>🔐 Chaves em variáveis de ambiente</h4><p class="mini">A chave secreta do Supabase e o <code>JWT_SECRET</code> ficam no <code>.env</code> (local) e no Render. O <code>.env</code> está no <code>.gitignore</code>: nunca vai para o GitHub.</p></div>
+    <div class="cartao"><h4>🌍 Repositório público</h4><p class="mini">O código é público, mas isso não é problema: a segurança não depende de esconder o código, e sim das chaves, que não estão nele. A chave "publishable" é feita para ficar no navegador.</p></div>
+    <div class="cartao"><h4>🗄️ RLS no banco</h4><p class="mini">Mesmo com a chave pública, ninguém lê as tabelas direto: o RLS está ligado sem regras públicas.</p></div>
+    <div class="cartao"><h4>🔑 Senhas</h4><p class="mini">Ninguém cadastra senha: o login é Google. As contas de teste guardam só o hash bcrypt.</p></div>
+    <div class="cartao"><h4>🚪 CORS fechado</h4><p class="mini">Só a origem do app é liberada para chamar a API de fora.</p></div>
+    <div class="cartao"><h4>🙈 Não revela o que existe</h4><p class="mini">Tentar excluir pedido que não é seu dá 404 "não encontrado", e não "existe mas é de outro".</p></div>
+  </div>
+
+  <details><summary>Aprofundar: a função <code>esc</code> <span class="tipo">public/js/api.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="public/js/api.js">
+function esc(texto) {
+  return String(texto ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+</script>
+    <ol class="linhas">
+      <li><b>2</b><span><code>?? ""</code>: se vier vazio (<code>null</code>), usa texto vazio. A regex encontra os 5 caracteres "perigosos" do HTML.</span></li>
+      <li><b>3</b><span>Troca cada um pelo seu "código de escape". O navegador mostra o símbolo, mas não o entende como HTML.</span></li>
+    </ol>
+    <p>Exemplo: <code>&lt;b&gt;oi&lt;/b&gt;</code> vira <code>&amp;lt;b&amp;gt;oi...</code> e aparece na tela literalmente como "&lt;b&gt;oi&lt;/b&gt;", sem negrito.</p>
+  </div></details>
+
+  <label class="estudei"><input type="checkbox" data-estudei="seguranca"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 13. TESTES ================= -->
+<section class="sec" id="testes" data-sec>
+  <span class="selo">Assunto 13</span>
+  <h2>Testes de falhas</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>31 testes automáticos tentam "quebrar" o sistema de propósito e conferem que ele responde com o erro certo e uma mensagem clara, nunca "erro interno".</span></div>
+
+  <div class="analogia">É como um <b>teste de batida</b> de carro: batemos de propósito para ver se o airbag abre. Aqui, mandamos dados errados e ações proibidas para ver se o servidor se defende.</div>
+
+  <div class="grade">
+    <div class="cartao"><h4>🎫 Login e token (7)</h4><p class="mini">Sem login, token inventado, assinado com outro segredo, vencido, de conta que não existe, login de teste com campos errados, Google sem token válido.</p></div>
+    <div class="cartao"><h4>🚧 Papéis e permissões (10)</h4><p class="mini">Fabricante criando pedido, cliente orçando, cliente vendo/excluindo pedido de outro, fabricante comum vendo "Todos" ou "Equipe", quem não é o escolhido avançando produção, recebimento de pedido que não está pronto...</p></div>
+    <div class="cartao"><h4>🧾 Dados errados (8)</h4><p class="mini">Título só com espaços, quantidade zero/negativa/letras, medidas negativas, data inexistente ou no passado, arquivo proibido, mais de 5 arquivos, preço gigante, mensagem vazia.</p></div>
+    <div class="cartao"><h4>🔍 Endereços e formatos (6)</h4><p class="mini">Id que não é número, pedido/orçamento que não existe, <code>?depois=</code> inválido, JSON quebrado, rota de API que não existe.</p></div>
+  </div>
+
+  <div class="cartao">
+    <h4 style="margin-top:0">Como rodar</h4>
+    <p><code>npm test</code> na pasta do projeto. O teste:</p>
+    <ol class="mini">
+      <li>Pega contas reais do banco para cada papel (cliente, outro cliente, fabricante, dono) e cria tokens de 10 minutos para elas.</li>
+      <li>Liga o servidor numa porta separada (3988).</li>
+      <li>Cria <b>um</b> pedido de teste, marcado com <code>[TESTE AUTOMÁTICO]</code>.</li>
+      <li>Roda os 31 testes.</li>
+      <li>No fim, apaga tudo que tem essa marca e desliga o servidor.</li>
+    </ol>
+  </div>
+
+  <details><summary>Aprofundar: como é um teste <span class="tipo">testes/falhas.test.js</span></summary><div class="dentro">
+<script type="text/plain" class="cod" data-arquivo="testes/falhas.test.js">
+function esperarErro(resposta, status) {
+  assert.strictEqual(resposta.status, status, `esperava ${status}, veio ${resposta.status}`);
+  assert.ok(resposta.dados && typeof resposta.dados.erro === "string", "a resposta deve ter { erro: '...' }");
+}
+
+test("token vencido é recusado (401)", async () => {
+  const vencido = jwt.sign({ id: 1, tipo: "cliente", exp: Math.floor(Date.now() / 1000) - 60 }, process.env.JWT_SECRET);
+  esperarErro(await chamar("GET", "/pedidos", { cabecalhos: { Authorization: "Bearer " + vencido } }), 401);
+});
+</script>
+    <ol class="linhas">
+      <li><b>1–4</b><span>Ajudante: confere o código (ex.: 401) e se veio uma mensagem <code>{ erro: "..." }</code> em JSON. <code>assert</code> = "garanta que é verdade, senão o teste falha".</span></li>
+      <li><b>6</b><span><code>test("nome", função)</code> declara um teste.</span></li>
+      <li><b>7</b><span>Cria um token que venceu há 60 segundos (<code>exp</code> no passado).</span></li>
+      <li><b>8</b><span>Chama a API com ele e exige 401.</span></li>
+    </ol>
+  </div></details>
+
+  <div class="banca">"Criei 31 testes de falhas que simulam o usuário errando ou tentando algo proibido: token falso, cliente tentando agir como fabricante, dados inválidos. Todos conferem que o servidor responde com o código certo e uma mensagem clara."</div>
+  <label class="estudei"><input type="checkbox" data-estudei="testes"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 14. DEPLOY ================= -->
+<section class="sec" id="deploy" data-sec>
+  <span class="selo">Assunto 14</span>
+  <h2>Publicação (deploy)</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>Tudo que entra na branch <code>main</code> do GitHub o Render publica sozinho em uns 3 minutos.</span></div>
+
+  <div class="fluxo">
+    <div class="passo"><span class="n">1</span><br><b>Muda o código</b><small>no computador</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">2</span><br><b>git commit</b><small>"fotografa" a mudança com uma mensagem</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">3</span><br><b>git push</b><small>manda para a <code>main</code> no GitHub</small></div>
+    <div class="seta">→</div>
+    <div class="passo"><span class="n">4</span><br><b>Render percebe</b><small>roda <code>npm install</code> e <code>npm start</code></small></div>
+    <div class="seta">→</div>
+    <div class="passo" style="border-color:var(--ok)"><span class="n" style="background:var(--ok)">✓</span><br><b>No ar</b><small>printhub3d-hqb0.onrender.com · e o app se atualiza na próxima abertura</small></div>
+  </div>
+
+  <div class="grade">
+    <div class="cartao"><h4>🔐 Variáveis de ambiente</h4><p class="mini">Configuradas no painel do Render (não no código): <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_KEY</code>, <code>SUPABASE_PUBLISHABLE_KEY</code>, <code>GOOGLE_WEB_CLIENT_ID</code>, <code>DONO_EMAIL</code>, <code>JWT_SECRET</code>. A porta (<code>PORT</code>) o Render define sozinho.</p></div>
+    <div class="cartao"><h4>😴 O Render grátis "dorme"</h4><p class="mini">Depois de 15 minutos sem uso ele desliga. A primeira abertura demora uns 50 segundos. <b>Na banca: abra o site uns 2 minutos antes.</b></p></div>
+    <div class="cartao"><h4>🌿 Branches</h4><p class="mini">Mudanças são feitas em outra branch e só vão para a <code>main</code> quando estão prontas, porque a <code>main</code> vai direto para o ar.</p></div>
+  </div>
+  <label class="estudei"><input type="checkbox" data-estudei="deploy"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 15. HISTÓRIA ================= -->
+<section class="sec" id="historia" data-sec>
+  <span class="selo">Assunto 15</span>
+  <h2>A história do projeto no Git</h2>
+  <div class="frase"><b class="rot">Em uma frase</b><span>O <code>git log</code> conta como o projeto cresceu: primeiro o site completo, depois o app, depois as telas ao vivo e os testes.</span></div>
+  <div class="historia">
+    <div class="dia">21/11 — O site</div>
+    <ul>
+      <li><span class="h">16:27</span><code>7374d54</code>PrintHub 3D: plataforma de pedidos de impressão 3D (a base inteira)</li>
+      <li><span class="h">17:19</span><code>1b8e1e5</code>Dono pode remover o cargo de fabricante</li>
+      <li><span class="h">17:39</span><code>6da5e8c</code>Visual novo arredondado e exclusão de pedidos pelo cliente</li>
+      <li><span class="h">17:41</span><code>7285c1f</code>Remove brilho colorido dos botões principais</li>
+      <li><span class="h">17:44</span><code>440642c</code>Logotipo só com o nome e Oficina em roxo</li>
+      <li><span class="h">18:22</span><code>c9665b7</code>App Android com Capacitor usando a mesma API do site</li>
+    </ul>
+    <div class="dia">22/11 — App, ao vivo e testes</div>
+    <ul>
+      <li><span class="h">13:22</span><code>ccf19a6</code>Painéis atualizam sozinhos, sem recarregar a página</li>
+      <li><span class="h">13:29</span><code>6c4288d</code>App Android se atualiza pelo ar, sem reinstalar</li>
+      <li><span class="h">14:13</span><code>7df65cd</code>APK gerado com número e data no nome</li>
+      <li><span class="h">14:24</span><code>b258c12</code>Ícone do app: polvo minimalista no degradê azul → roxo</li>
+      <li><span class="h">14:27</span><code>fe66c6e</code>Tela de abertura com o polvo</li>
+      <li><span class="h">14:42</span><code>1f83262</code>Status "pronto" e telas ao vivo</li>
+      <li><span class="h">14:55</span><code>0f064bf</code>Painel do cliente nunca esconde um pedido</li>
+      <li><span class="h">14:59</span><code>1459c47</code>Orçamento novo chega com destaque na tela do cliente</li>
+      <li><span class="h">15:08</span><code>06a548e</code>Corrige a atualização do app pelo ar</li>
+      <li><span class="h">15:15</span><code>523cad9</code>Dono da plataforma pode excluir qualquer pedido</li>
+      <li><span class="h">15:32</span><code>3600634</code>Voltar em botão, roxo único e testes de falhas de usuário</li>
+      <li><span class="h">15:42</span><code>cdac045</code>Voltar só com a seta e APK com versão numerada</li>
+      <li><span class="h">15:43</span><code>82cc9a7</code>Seta do voltar centralizada</li>
+    </ul>
+  </div>
+  <p class="mini">Cada linha é um <b>commit</b>: um "ponto salvo" com uma mensagem dizendo o que mudou. O código de 7 letras é o identificador (hash) do commit. Para ver: <code>git log --oneline</code>.</p>
+  <label class="estudei"><input type="checkbox" data-estudei="historia"> Já estudei este assunto</label>
+</section>
+
+<!-- ================= 16. ROTEIRO ================= -->
+<section class="sec" id="roteiro" data-sec>
+  <span class="selo">Apresentar</span>
+  <h2>Roteiro de fala (cerca de 12 minutos)</h2>
+  <p>Ajuste os tempos ao limite da banca. As frases em itálico são sugestões: fale com as suas palavras.</p>
+  <ol class="roteiro">
+    <li><span class="tempo">0:00<br>1 min</span><div><b>Abertura e problema</b>
+      <p class="fala">"Boa tarde. Meu projeto é o PrintHub 3D. Muita gente precisa de uma peça impressa em 3D, mas não tem impressora nem sabe quem faz. E quem tem impressora não tem um lugar organizado para receber pedidos. O PrintHub conecta essas duas pontas."</p>
+      <p class="mostrar">tela inicial do site com o logotipo.</p></div></li>
+    <li><span class="tempo">1:00<br>1 min</span><div><b>Papéis e fluxo</b>
+      <p class="fala">"São três papéis: cliente, fabricante e o dono, que convida os fabricantes. Todo pedido passa por seis etapas: aberto, com orçamento, aceito, em produção, pronto e entregue."</p>
+      <p class="mostrar">diagrama do fluxo (<code>docs/diagramas.md</code>, seção 1) ou a linha do tempo deste guia.</p></div></li>
+    <li><span class="tempo">2:00<br>4 min</span><div><b>Demonstração ao vivo</b>
+      <p class="fala">"Vou mostrar funcionando. Aqui estou como cliente..."</p>
+      <p class="mostrar">① cliente entra com Google e cria um pedido com foto; ② no outro navegador (ou no celular), o fabricante vê o pedido aparecer sozinho e manda orçamento; ③ o cliente vê o orçamento chegar com destaque e aceita; ④ mensagem no chat; ⑤ fabricante inicia produção e marca pronto; ⑥ cliente toca "Recebi o pedido".</p></div></li>
+    <li><span class="tempo">6:00<br>2 min</span><div><b>Arquitetura e tecnologias</b>
+      <p class="fala">"As telas são HTML, CSS e JavaScript. O servidor é Node.js com Express, publicado no Render. O banco é PostgreSQL no Supabase, e os arquivos ficam no Storage privado. O navegador nunca acessa o banco direto: tudo passa pelo servidor, que confere o token, o papel e a permissão."</p>
+      <p class="mostrar">diagrama de arquitetura (seção 5 deste guia) e, rapidamente, <code>src/autenticacao.js</code>.</p></div></li>
+    <li><span class="tempo">8:00<br>1,5 min</span><div><b>App Android</b>
+      <p class="fala">"O app foi feito com Capacitor, que reaproveita as mesmas telas. Usa a mesma API e o mesmo banco. O login no app é nativo, porque o Google bloqueia login dentro de WebView. E o app se atualiza pelo ar: o servidor entrega um .zip das telas com uma versão calculada por hash."</p>
+      <p class="mostrar">o app no celular (ícone do polvo, abertura, câmera no novo pedido).</p></div></li>
+    <li><span class="tempo">9:30<br>1,5 min</span><div><b>Segurança e testes</b>
+      <p class="fala">"Na segurança: login com Google e token JWT, papel conferido no banco a cada chamada, validação de todos os dados, proteção contra XSS e chaves só em variáveis de ambiente. E criei 31 testes automáticos de falhas."</p>
+      <p class="mostrar">rodar <code>npm test</code> no terminal (ou um print com os 31 ✓).</p></div></li>
+    <li><span class="tempo">11:00<br>1 min</span><div><b>Fechamento</b>
+      <p class="fala">"Como melhorias futuras, eu colocaria pagamento dentro da plataforma, avaliação dos fabricantes, notificações no celular e a publicação na Play Store. Obrigado, fico à disposição para perguntas."</p>
+      <p class="mostrar">tela do pedido entregue.</p></div></li>
+  </ol>
+  <div class="atencao">Tenha um <b>plano B</b> para a demonstração: se a internet cair ou o Render demorar, mostre prints ou um vídeo curto gravado antes do fluxo completo.</div>
+  <label class="estudei"><input type="checkbox" data-estudei="roteiro"> Já treinei o roteiro</label>
+</section>
+
+<!-- ================= 17. PERGUNTAS ================= -->
+<section class="sec" id="perguntas" data-sec>
+  <span class="selo">Apresentar</span>
+  <h2>Perguntas prováveis da banca</h2>
+  <p>Tente responder em voz alta antes de abrir. As respostas são curtas de propósito: fale isso e, se pedirem mais, aprofunde.</p>
+  <div class="botoes"><button class="botao" type="button" id="abrir-todas">Abrir todas</button><button class="botao" type="button" id="fechar-todas">Fechar todas</button></div>
+  <div id="lista-perguntas">
+  <details class="pergunta"><summary>Por que não usou React, Vue ou outro framework? <span class="tipo">tecnologia</span></summary><div class="dentro"><p>Pelo prazo e para entender tudo o que está no código. HTML, CSS e JavaScript puro não precisam de compilação nem de biblioteca extra, e são a base que qualquer framework usa por baixo. O projeto tem poucas telas, então um framework não traria muito ganho.</p></div></details>
+  <details class="pergunta"><summary>Por que Capacitor e não React Native ou Flutter? <span class="tipo">app</span></summary><div class="dentro"><p>Capacitor reaproveita as mesmas telas do site. Com React Native ou Flutter eu teria que reescrever todas as telas em outra linguagem. Com o prazo curto, reaproveitar foi a melhor escolha, e qualquer melhoria no site aparece no app também.</p></div></details>
+  <details class="pergunta"><summary>Por que o navegador não acessa o banco direto? <span class="tipo">arquitetura</span></summary><div class="dentro"><p>Porque as regras (quem pode ver, quem pode mudar) ficariam no navegador, e qualquer pessoa pode mexer no navegador. Com o servidor no meio, as regras ficam num lugar que o usuário não controla, e a chave secreta do banco nunca sai de lá.</p></div></details>
+  <details class="pergunta"><summary>O que é um JWT e por que usou? <span class="tipo">segurança</span></summary><div class="dentro"><p>É um token, um texto assinado que diz "este é o usuário X". O servidor cria no login e o navegador manda em toda chamada. Como é assinado com um segredo que só o servidor conhece, ninguém consegue falsificar. Vale por 7 dias.</p></div></details>
+  <details class="pergunta"><summary>Se o token diz "fabricante" e o dono remove o cargo, a pessoa continua fabricante por 7 dias? <span class="tipo">segurança</span></summary><div class="dentro"><p>Não. A cada chamada o <code>exigirLogin</code> busca o papel atual no banco, então a mudança vale na hora. O token só prova quem a pessoa é; o que ela pode fazer vem do banco.</p></div></details>
+  <details class="pergunta"><summary>Por que o login do app é diferente do site? <span class="tipo">login</span></summary><div class="dentro"><p>O Google bloqueia login dentro de WebView (o navegador embutido do app), por segurança. No app usamos a janela nativa do Android, que devolve um idToken. Esse idToken vai para o Supabase e daí em diante o fluxo é igual ao do site.</p></div></details>
+  <details class="pergunta"><summary>O que é o nonce no login do app? <span class="tipo">login</span></summary><div class="dentro"><p>Um número aleatório de uso único. O Google recebe ele resumido e coloca dentro do token; o Supabase recebe o original e confere se bate. Isso impede que alguém reaproveite um token antigo ou roubado.</p></div></details>
+  <details class="pergunta"><summary>Por que polling e não WebSocket? <span class="tipo">ao vivo</span></summary><div class="dentro"><p>Polling é mais simples: usa as mesmas rotas, funciona igual no site e no app e se recupera sozinho se a internet cair. Para poucos usuários o custo de uma chamada a cada 3 segundos é pequeno. Com muitos usuários, eu trocaria por WebSocket ou pelo Realtime do Supabase.</p></div></details>
+  <details class="pergunta"><summary>Como você garante que um fabricante não vê pedidos de outro? <span class="tipo">permissões</span></summary><div class="dentro"><p>Pela regra em <code>permissoes.js</code>: fabricantes só veem pedidos ainda abertos (para orçar). Depois que o cliente aceita um orçamento, só o fabricante escolhido continua vendo. E cada fabricante só vê o próprio orçamento, não o dos concorrentes.</p></div></details>
+  <details class="pergunta"><summary>O que acontece se dois fabricantes mandarem orçamento ao mesmo tempo? E se o mesmo mandar dois? <span class="tipo">banco</span></summary><div class="dentro"><p>Dois fabricantes diferentes: tudo certo, os dois ficam salvos e o cliente compara. O mesmo fabricante duas vezes: o banco recusa por causa do <code>unique (pedido_id, fabricante_id)</code>, e a API responde 409 "Você já enviou um orçamento para este pedido".</p></div></details>
+  <details class="pergunta"><summary>Onde ficam os arquivos 3D e fotos? São públicos? <span class="tipo">storage</span></summary><div class="dentro"><p>No Supabase Storage, num bucket privado. O banco guarda só o caminho. Para mostrar, o servidor gera um link temporário que expira em 1 hora, e só para quem tem permissão de ver aquele pedido.</p></div></details>
+  <details class="pergunta"><summary>O que é XSS e como você evitou? <span class="tipo">segurança</span></summary><div class="dentro"><p>É quando alguém escreve código (ex.: <code>&lt;script&gt;</code>) num campo, e esse código roda no navegador de outra pessoa. Evitei com a função <code>esc()</code>, que transforma os caracteres especiais do HTML em texto antes de mostrar qualquer coisa digitada por usuários.</p></div></details>
+  <details class="pergunta"><summary>O repositório é público. Isso não é perigoso? <span class="tipo">segurança</span></summary><div class="dentro"><p>Não, porque nenhuma chave secreta está no código. Elas ficam em variáveis de ambiente (<code>.env</code> no computador, painel do Render na nuvem), e o <code>.env</code> está no <code>.gitignore</code>. Um código seguro não depende de ficar escondido.</p></div></details>
+  <details class="pergunta"><summary>Como o app se atualiza sem a Play Store? <span class="tipo">app</span></summary><div class="dentro"><p>O servidor junta as telas num .zip e calcula uma versão pelo hash do conteúdo. O app pergunta a versão ao abrir; se mudou, baixa, confere o checksum e troca na próxima abertura. Se a versão nova falhar em 10 segundos, ele volta para a anterior. Só mudanças nativas (plugin, permissão, ícone) exigem APK novo.</p></div></details>
+  <details class="pergunta"><summary>O que os testes testam? Por que só falhas? <span class="tipo">testes</span></summary><div class="dentro"><p>Testam o que acontece quando o usuário erra ou tenta algo proibido: 31 casos de token, permissões, dados inválidos e endereços errados. Foquei em falhas porque o caminho feliz eu testo usando o sistema, mas os erros são onde costuma ter brecha de segurança ou "erro interno".</p></div></details>
+  <details class="pergunta"><summary>Por que existe o status "pronto" antes de "entregue"? <span class="tipo">regra</span></summary><div class="dentro"><p>Para quem confirma a entrega ser o cliente, não o fabricante. O fabricante marca "pronto" quando a peça está feita, e o cliente toca em "Recebi o pedido". Assim ninguém diz que entregou sem o cliente confirmar.</p></div></details>
+  <details class="pergunta"><summary>Por que o cliente não pode excluir um pedido em produção? <span class="tipo">regra</span></summary><div class="dentro"><p>Porque um fabricante já está trabalhando nele (e gastando material). O cliente só exclui quando ninguém está trabalhando: aberto, com orçamentos ainda não aceitos, ou já entregue. Nas outras etapas a tela pede para conversar com o fabricante pelo chat. Só o dono da plataforma pode excluir em qualquer etapa, para administrar.</p></div></details>
+  <details class="pergunta"><summary>Como alguém vira fabricante? <span class="tipo">papéis</span></summary><div class="dentro"><p>Só por convite do dono. Na aba Equipe ele cadastra um e-mail; quando essa pessoa entra com o Google usando aquele e-mail, a conta já vira fabricante. Qualquer outra pessoa entra como cliente. Isso evita que qualquer um se diga fabricante.</p></div></details>
+  <details class="pergunta"><summary>O que acontece se o servidor cair? <span class="tipo">deploy</span></summary><div class="dentro"><p>As telas mostram "Sem conexão com o servidor" e tentam de novo sozinhas no próximo ciclo. Os dados não se perdem, porque ficam no Supabase, separado do servidor. No plano grátis do Render, o servidor dorme depois de 15 minutos e acorda em uns 50 segundos.</p></div></details>
+  <details class="pergunta"><summary>Isso aguenta muitos usuários? O que você mudaria para crescer? <span class="tipo">futuro</span></summary><div class="dentro"><p>Para uma escala de projeto acadêmico, sim. Para crescer eu trocaria o polling por tempo real (WebSocket/Supabase Realtime), sairia do plano grátis do Render, colocaria paginação nas listas e usaria transações no aceite de orçamento.</p></div></details>
+  <details class="pergunta"><summary>Quais melhorias futuras você faria? <span class="tipo">futuro</span></summary><div class="dentro"><p>Pagamento dentro da plataforma, avaliação e reputação dos fabricantes, notificações push no celular, visualizador 3D do arquivo .stl, publicação na Play Store e versão para iPhone (o Capacitor também gera iOS).</p></div></details>
+  <details class="pergunta"><summary>O que é uma migração no banco? <span class="tipo">banco</span></summary><div class="dentro"><p>Um arquivo SQL que muda um banco que já tem dados, sem apagar nada. Tive duas: uma para o login com Google e os convites, outra para acrescentar o status "pronto".</p></div></details>
+  <details class="pergunta"><summary>Qual foi a maior dificuldade? <span class="tipo">pessoal</span></summary><div class="dentro"><p>Sugestão (adapte à sua experiência): o login com Google no app, porque o Google bloqueia login em WebView e foi preciso usar o login nativo, configurar um cliente Android com o SHA-1 e entender o nonce. Outra foi a atualização pelo ar, que exigiu versionar o APK.</p></div></details>
+  </div>
+  <label class="estudei"><input type="checkbox" data-estudei="perguntas"> Já treinei as perguntas</label>
+</section>
+
+<!-- ================= 18. GLOSSÁRIO ================= -->
+<section class="sec" id="glossario" data-sec>
+  <span class="selo">Consulta</span>
+  <h2>Glossário</h2>
+  <input class="busca" id="busca" type="search" placeholder="🔍 Procurar um termo (ex.: token, CORS, hash)" aria-label="Procurar termo">
+  <dl class="glossario" id="termos">
+    <div><dt>API</dt><dd>A lista de "pedidos" que o servidor aceita. Cada um é uma rota.</dd></div>
+    <div><dt>Rota</dt><dd>Método + endereço que o servidor entende. Ex.: <code>GET /api/pedidos</code>.</dd></div>
+    <div><dt>JSON</dt><dd>Formato de texto para dados: <code>{ "nome": "Ana" }</code>.</dd></div>
+    <div><dt>Token / JWT</dt><dd>"Crachá" assinado que prova quem você é. Vai em toda chamada.</dd></div>
+    <div><dt>Middleware</dt><dd>Função que roda antes da rota e pode barrar. Ex.: <code>exigirLogin</code>.</dd></div>
+    <div><dt>Polling</dt><dd>Perguntar de tempos em tempos se algo mudou (aqui, a cada 3 s).</dd></div>
+    <div><dt>SSE / WebSocket</dt><dd>Conexão aberta em que o servidor avisa sozinho. Alternativa ao polling.</dd></div>
+    <div><dt>CORS</dt><dd>Regra do navegador: uma página só chama API de outro endereço se o servidor liberar.</dd></div>
+    <div><dt>Origem (origin)</dt><dd>O "endereço de onde a página veio" (protocolo + domínio + porta).</dd></div>
+    <div><dt>Deploy</dt><dd>Publicar a nova versão na internet.</dd></div>
+    <div><dt>Hash</dt><dd>"Impressão digital" de um conteúdo. Mudou um caractere, muda o hash.</dd></div>
+    <div><dt>SHA-256</dt><dd>O algoritmo de hash usado no projeto.</dd></div>
+    <div><dt>Checksum</dt><dd>Hash usado para conferir se um arquivo chegou inteiro.</dd></div>
+    <div><dt>bcrypt</dt><dd>Jeito seguro de guardar senha: guarda o hash, não a senha.</dd></div>
+    <div><dt>OAuth</dt><dd>Padrão para "entrar com Google/Facebook" sem dar a senha ao site.</dd></div>
+    <div><dt>PKCE</dt><dd>Versão mais segura do OAuth para navegador: um código que só quem pediu consegue trocar.</dd></div>
+    <div><dt>idToken</dt><dd>Token que o Google entrega dizendo "esta pessoa é fulano@gmail.com".</dd></div>
+    <div><dt>Nonce</dt><dd>Número aleatório de uso único que impede reaproveitar token.</dd></div>
+    <div><dt>WebView</dt><dd>Navegador embutido dentro de um app.</dd></div>
+    <div><dt>Capacitor</dt><dd>Ferramenta que transforma páginas web num app Android/iOS.</dd></div>
+    <div><dt>Plugin</dt><dd>Pedaço de código nativo que o JavaScript do app pode chamar (câmera, login).</dd></div>
+    <div><dt>APK</dt><dd>O arquivo de instalação de um app Android.</dd></div>
+    <div><dt>Gradle</dt><dd>Ferramenta que compila o projeto Android e gera o APK.</dd></div>
+    <div><dt>SHA-1 (do app)</dt><dd>Impressão digital da chave que assina o APK. O Google usa para reconhecer o app.</dd></div>
+    <div><dt>Banco relacional</dt><dd>Banco com tabelas ligadas por ids (PostgreSQL).</dd></div>
+    <div><dt>Chave primária (PK)</dt><dd>Coluna que identifica cada linha (o <code>id</code>).</dd></div>
+    <div><dt>Chave estrangeira (FK)</dt><dd>Coluna que aponta para o id de outra tabela.</dd></div>
+    <div><dt>Constraint / check</dt><dd>Regra que o banco obriga. Ex.: preço &gt; 0.</dd></div>
+    <div><dt>Cascade</dt><dd>Apagou o "pai", apaga os "filhos" junto.</dd></div>
+    <div><dt>Migração</dt><dd>Arquivo SQL que muda um banco existente sem perder dados.</dd></div>
+    <div><dt>RLS</dt><dd>Row Level Security: regra do banco sobre quem lê cada linha.</dd></div>
+    <div><dt>Bucket</dt><dd>"Pasta" do Storage onde ficam os arquivos.</dd></div>
+    <div><dt>Link assinado</dt><dd>Link temporário para um arquivo privado (aqui, 1 hora).</dd></div>
+    <div><dt>Variável de ambiente</dt><dd>Configuração fora do código (chaves, senhas). Fica no <code>.env</code> ou no Render.</dd></div>
+    <div><dt>.gitignore</dt><dd>Lista de arquivos que o Git não envia (ex.: <code>.env</code>).</dd></div>
+    <div><dt>Commit</dt><dd>Um "ponto salvo" no histórico do Git.</dd></div>
+    <div><dt>Branch</dt><dd>Uma linha de trabalho separada. A <code>main</code> é a que vai para o ar.</dd></div>
+    <div><dt>Push</dt><dd>Enviar commits para o GitHub.</dd></div>
+    <div><dt>XSS</dt><dd>Ataque em que texto digitado vira código na página de outra pessoa.</dd></div>
+    <div><dt>Status HTTP</dt><dd>Número da resposta: 200 ok, 400 dado errado, 401 sem login, 403 proibido, 404 não existe.</dd></div>
+    <div><dt>async / await</dt><dd>Jeito de esperar uma resposta da internet sem travar a tela.</dd></div>
+    <div><dt>fetch</dt><dd>Função do navegador que faz uma chamada para um endereço.</dd></div>
+    <div><dt>Regex</dt><dd>Expressão regular: um "molde" para conferir textos. Ex.: <code>/^\d+$/</code> = só dígitos.</dd></div>
+    <div><dt>Token de design (CSS)</dt><dd>Variável CSS com uma cor ou tamanho, usada no site inteiro.</dd></div>
+    <div><dt>Rollback</dt><dd>Voltar para a versão anterior quando a nova falha.</dd></div>
+    <div><dt>localStorage / sessionStorage</dt><dd>Memória do navegador. O token fica no localStorage; "já conferi atualização" fica no sessionStorage (some ao fechar).</dd></div>
+  </dl>
+  <p class="mini" id="nada" hidden>Nenhum termo encontrado.</p>
+</section>
+
+<!-- ================= 19. CHECKLIST ================= -->
+<section class="sec" id="checklist" data-sec>
+  <span class="selo">Dia 24/11</span>
+  <h2>Checklist do dia da banca</h2>
+  <p>As marcações ficam salvas neste navegador.</p>
+  <h3>Na véspera</h3>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-check="v1"><span>Fazer o fluxo completo uma vez (cliente cria → fabricante orça → aceita → produção → pronto → recebi).</span></label></li>
+    <li><label><input type="checkbox" data-check="v2"><span>Rodar <code>npm test</code> e tirar um print dos 31 testes passando.</span></label></li>
+    <li><label><input type="checkbox" data-check="v3"><span>Gravar um vídeo curto do fluxo completo (plano B se a internet falhar).</span></label></li>
+    <li><label><input type="checkbox" data-check="v4"><span>Celular com o APK mais novo instalado e o login Google funcionando no app.</span></label></li>
+    <li><label><input type="checkbox" data-check="v5"><span>Ter duas contas Google prontas: a do dono/fabricante e uma de cliente.</span></label></li>
+    <li><label><input type="checkbox" data-check="v6"><span>Deixar um ou dois pedidos de exemplo prontos em etapas diferentes.</span></label></li>
+    <li><label><input type="checkbox" data-check="v7"><span>Ler o roteiro em voz alta cronometrando, e as perguntas da banca.</span></label></li>
+    <li><label><input type="checkbox" data-check="v8"><span>Confirmar que a <code>main</code> está com a versão final e o Render publicou.</span></label></li>
+  </ul>
+  <h3>Na hora</h3>
+  <ul class="checklist">
+    <li><label><input type="checkbox" data-check="h1"><span>Abrir <b>printhub3d-hqb0.onrender.com</b> uns 2 minutos antes (o Render grátis "dorme").</span></label></li>
+    <li><label><input type="checkbox" data-check="h2"><span>Já estar logado: cliente numa janela normal e fabricante numa janela anônima (ou no celular).</span></label></li>
+    <li><label><input type="checkbox" data-check="h3"><span>Abrir o app no celular uma vez (para baixar a versão das telas mais nova).</span></label></li>
+    <li><label><input type="checkbox" data-check="h4"><span>Celular com bateria, internet (dados móveis de reserva) e espelhamento testado, se for projetar.</span></label></li>
+    <li><label><input type="checkbox" data-check="h5"><span>VS Code aberto com <code>src/autenticacao.js</code>, <code>src/permissoes.js</code> e <code>docs/diagramas.md</code>.</span></label></li>
+    <li><label><input type="checkbox" data-check="h6"><span>Terminal pronto para <code>npm test</code>.</span></label></li>
+    <li><label><input type="checkbox" data-check="h7"><span>Este guia aberto numa aba, para consultar se precisar.</span></label></li>
+    <li><label><input type="checkbox" data-check="h8"><span>Respirar. Você sabe como funciona. 🙂</span></label></li>
+  </ul>
+  <div class="botoes"><button class="botao" type="button" id="limpar-check">Desmarcar tudo</button></div>
+</section>
+
+<p class="mini" style="text-align:center">PrintHub 3D · guia de estudo · <code>docs/guia-de-estudo.html</code></p>
+</main>
+</div>
+
+<script>
+// ---------- Memória do navegador (pode não existir: tudo em try/catch) ----------
+const memoria = {
+  ler(chave) { try { return JSON.parse(localStorage.getItem("guia-" + chave)); } catch { return null; } },
+  gravar(chave, valor) { try { localStorage.setItem("guia-" + chave, JSON.stringify(valor)); } catch { /* sem memória: tudo bem */ } },
+};
+
+// ---------- Código: transforma os blocos <script type="text/plain"> em código colorido ----------
+function colorir(texto, lang) {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const comentario = lang === "sql" ? "--[^\\n]*" : lang === "css" ? "\\/\\*[\\s\\S]*?\\*\\/" : "\\/\\/[^\\n]*";
+  const palavras = lang === "sql"
+    ? "\\b(create|table|if|not|exists|references|on|delete|cascade|primary|key|unique|check|default|in|null|text|bigint|integer|numeric|timestamptz|generated|always|as|identity)\\b"
+    : lang === "css" ? "(@media|:root)"
+    : "\\b(const|let|function|async|await|return|if|else|try|catch|throw|new|for|of|require|true|false|null)\\b";
+  const regex = new RegExp(`(${comentario})|("(?:[^"\\\\\\n]|\\\\.)*"|'(?:[^'\\\\\\n]|\\\\.)*'|\`[^\`]*\`)|${palavras}`, "g");
+  let saida = "", ultimo = 0, m;
+  while ((m = regex.exec(texto))) {
+    saida += esc(texto.slice(ultimo, m.index));
+    const classe = m[1] ? "c" : m[2] ? "s" : "k";
+    saida += `<span class="${classe}">${esc(m[0])}</span>`;
+    ultimo = regex.lastIndex;
+  }
+  return saida + esc(texto.slice(ultimo));
+}
+document.querySelectorAll("script.cod").forEach((bloco) => {
+  const texto = bloco.textContent.replace(/^\n/, "").replace(/\s+$/, "");
+  const html = colorir(texto, bloco.dataset.lang || "js").split("\n").map((l) => `<span class="ln">${l || " "}</span>`).join("");
+  const caixa = document.createElement("div");
+  caixa.className = "codigo";
+  caixa.innerHTML = `<div class="arquivo">📄 ${bloco.dataset.arquivo || ""}</div><pre><code>${html}</code></pre>`;
+  bloco.replaceWith(caixa);
+});
+
+// ---------- Tema claro/escuro ----------
+const raiz = document.documentElement;
+const temaSalvo = memoria.ler("tema");
+if (temaSalvo) raiz.dataset.theme = temaSalvo;
+document.querySelector("#tema").onclick = () => {
+  const escuroAgora = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = escuroAgora ? "light" : "dark";
+  memoria.gravar("tema", raiz.dataset.theme);
+};
+
+// ---------- Progresso: "Já estudei" ----------
+const estudados = memoria.ler("estudados") || {};
+const caixas = document.querySelectorAll("[data-estudei]");
+document.querySelectorAll("#sumario a").forEach((a) => a.insertAdjacentHTML("beforeend", '<span class="feito">✓</span>'));
+function atualizarProgresso() {
+  let feitos = 0;
+  caixas.forEach((c) => {
+    const id = c.closest("section").id;
+    const marcado = !!estudados[c.dataset.estudei];
+    c.checked = marcado;
+    if (marcado) feitos++;
+    document.querySelector(`#sumario a[href="#${id}"]`)?.classList.toggle("estudado", marcado);
+  });
+  document.querySelector("#txt-progresso").textContent = `${feitos} de ${caixas.length} assuntos estudados`;
+  document.querySelector("#barra").style.width = (feitos / caixas.length) * 100 + "%";
+}
+caixas.forEach((c) => (c.onchange = () => { estudados[c.dataset.estudei] = c.checked; memoria.gravar("estudados", estudados); atualizarProgresso(); }));
+atualizarProgresso();
+
+// ---------- Menu: destaca a seção que está na tela ----------
+const links = [...document.querySelectorAll("#sumario a")];
+const observador = new IntersectionObserver((itens) => {
+  itens.forEach((it) => {
+    if (it.isIntersecting) links.forEach((a) => a.classList.toggle("ativo", a.getAttribute("href") === "#" + it.target.id));
+  });
+}, { rootMargin: "-20% 0px -70% 0px" });
+document.querySelectorAll("[data-sec], #comecar").forEach((s) => observador.observe(s));
+
+// ---------- Perguntas: abrir/fechar todas ----------
+const perguntas = document.querySelectorAll("#lista-perguntas details");
+document.querySelector("#abrir-todas").onclick = () => perguntas.forEach((d) => (d.open = true));
+document.querySelector("#fechar-todas").onclick = () => perguntas.forEach((d) => (d.open = false));
+
+// ---------- Glossário: busca ----------
+document.querySelector("#busca").oninput = (e) => {
+  const termo = e.target.value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+  let achou = 0;
+  document.querySelectorAll("#termos > div").forEach((d) => {
+    const ok = d.textContent.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").includes(termo);
+    d.hidden = !ok;
+    if (ok) achou++;
+  });
+  document.querySelector("#nada").hidden = achou > 0;
+};
+
+// ---------- Checklist ----------
+const marcados = memoria.ler("checklist") || {};
+const checks = document.querySelectorAll("[data-check]");
+checks.forEach((c) => {
+  c.checked = !!marcados[c.dataset.check];
+  c.onchange = () => { marcados[c.dataset.check] = c.checked; memoria.gravar("checklist", marcados); };
+});
+document.querySelector("#limpar-check").onclick = () => {
+  checks.forEach((c) => { c.checked = false; marcados[c.dataset.check] = false; });
+  memoria.gravar("checklist", marcados);
+};
+
+// ---------- Imprimir: abre todas as partes "Aprofundar" ----------
+addEventListener("beforeprint", () => document.querySelectorAll("details").forEach((d) => (d.dataset.antes = d.open, d.open = true)));
+addEventListener("afterprint", () => document.querySelectorAll("details").forEach((d) => (d.open = d.dataset.antes === "true")));
+</script>
+</body>
+</html>
