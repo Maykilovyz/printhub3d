@@ -72,8 +72,16 @@ function montarPagina() {
   desenharOrcamentosNaTela();
 }
 
+let orcamentosVistos = null; // orçamentos que já estavam na tela
+
 function desenharOrcamentosNaTela() {
   document.querySelector("#orcamentos").innerHTML = desenharOrcamentos();
+  // Orçamento que acabou de chegar ganha um destaque colorido (só depois da 1ª vez)
+  if (orcamentosVistos) {
+    pedido.orcamentos.filter((o) => !orcamentosVistos.has(o.id)).forEach((o) =>
+      document.querySelector(`[data-orc="${o.id}"]`)?.classList.add("novo"));
+  }
+  orcamentosVistos = new Set(pedido.orcamentos.map((o) => o.id));
   ligarBotoes();
 }
 
@@ -134,7 +142,7 @@ function desenharOrcamentos() {
 
   let html = lista.length
     ? lista.map((o) => `
-      <div class="orcamento ${o.status === "aceito" ? "aceito" : ""}">
+      <div class="orcamento ${o.status === "aceito" ? "aceito" : ""}" data-orc="${o.id}">
         <div><h3>${esc(o.fabricante?.nome)}</h3>
           <p class="apagado" style="font-size:14px">${o.prazo_dias} dias${o.fabricante?.cidade ? " · " + esc(o.fabricante.cidade) : ""}</p>
           ${o.observacao ? `<p style="font-size:14px;margin-top:6px">${esc(o.observacao)}</p>` : ""}</div>

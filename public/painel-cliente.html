@@ -40,6 +40,10 @@
       { titulo: "Entregues", status: ["entregue"] },
     ];
 
+    // Quantos orçamentos cada pedido tinha na última vez. Serve para destacar
+    // o pedido que acabou de receber orçamento novo (ou mudou de etapa).
+    let antes = null;
+
     async function carregar() {
       try {
         const pedidos = await api("/pedidos");
@@ -64,6 +68,14 @@
               return itemPedido(p, n ? `${n} orçamento${n > 1 ? "s" : ""}` : "");
             }).join("")}</ul></section>`;
         }).join("");
+
+        // Destaca o que mudou desde a última busca: orçamento novo ou etapa nova
+        const marca = (p) => p.status + "/" + (p.orcamentos?.[0]?.count ?? 0);
+        if (antes) {
+          pedidos.filter((p) => antes[p.id] && antes[p.id] !== marca(p)).forEach((p) =>
+            document.querySelectorAll(`a[href="/pedido.html?id=${p.id}"]`).forEach((a) => a.parentElement.classList.add("novo")));
+        }
+        antes = Object.fromEntries(pedidos.map((p) => [p.id, marca(p)]));
       } catch (e) {
         document.querySelector("#grupos").innerHTML = `<p class="vazio">${esc(e.message)}</p>`;
       }

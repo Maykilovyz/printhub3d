@@ -243,6 +243,6 @@ dl.ficha dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .aviso-cidade input { background: var(--cartao); }
 
 /* Pedido que acabou de chegar na Oficina: cartão com a cor de destaque, que volta ao normal devagar */
-.lista li.novo a { animation: chegou 6s ease-out; }
+.lista li.novo a, .orcamento.novo { animation: chegou 6s ease-out; }
 @keyframes chegou { from { background: var(--destaque-suave); box-shadow: 0 0 0 2px var(--destaque); } }
-@media (prefers-reduced-motion: reduce) { .lista li.novo a { animation: none; background: var(--destaque-suave); } }
+@media (prefers-reduced-motion: reduce) { .lista li.novo a, .orcamento.novo { animation: none; background: var(--destaque-suave); } }
