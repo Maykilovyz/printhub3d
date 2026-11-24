@@ -131,7 +131,7 @@ ol.linhas li b { font: 700 12px var(--mono); color: var(--roxo-letra); backgroun
 .passo small { display: block; color: var(--apagado); font-size: 13px; line-height: 1.45; margin-top: 4px; }
 .passo.azul .n { background: var(--azul); }
 .seta { align-self: center; color: var(--apagado); font-size: 22px; font-weight: 800; }
-@media (max-width: 700px) { .fluxo { flex-direction: column; } .seta { transform: rotate(90deg); align-self: center; } }
+@media (max-width: 700px) { .fluxo { flex-direction: column; } .passo { flex: none; } .seta { transform: rotate(90deg); align-self: center; } }
 
 /* Linha do tempo do status */
 .status-linha { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0; margin: 10px 0 22px; counter-reset: st; }
@@ -242,21 +242,87 @@ ol.linhas li b { font: 700 12px var(--mono); color: var(--roxo-letra); backgroun
 .capa .camadas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; position: relative; }
 .capa .camadas span { background: #ffffff26; border: 1px solid #ffffff40; padding: 6px 14px; border-radius: 99px; font-size: 14px; font-weight: 600; }
 
-/* Celular */
+/* ---------- Barra do topo, gaveta e botões flutuantes (só no celular) ---------- */
+.topo-celular, .fundo-gaveta, .subir, .so-celular { display: none; }
+.navega { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+.navega a { flex: 1 1 140px; display: block; padding: 12px 16px; border-radius: 16px; border: 1px solid var(--linha); background: var(--cartao); text-decoration: none; color: var(--texto); font-size: 15px; }
+.navega a small { display: block; font-size: 12px; color: var(--apagado); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.navega a.prox { text-align: right; }
+.navega a:hover { border-color: var(--roxo); }
+.dica-arrastar { display: none; font-size: 13px; color: var(--apagado); text-align: center; margin: 0 0 6px; }
+
+/* Celular e tablet */
 @media (max-width: 900px) {
   .pagina { grid-template-columns: minmax(0, 1fr); }
-  main { min-width: 0; }
-  nav.menu { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--linha); }
-  nav.menu ol { display: flex; flex-wrap: wrap; gap: 4px; }
-  nav.menu .grupo-menu { width: 100%; }
-  nav.menu a .feito { margin-left: 4px; }
+  main { min-width: 0; padding: 18px 16px 90px; }
+  body { font-size: 16px; }
+
+  /* Barra fixa no topo: polvo, título, progresso e botão do sumário */
+  .topo-celular { display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 30; padding: 10px 16px; background: color-mix(in srgb, var(--cartao) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--linha); }
+  .topo-celular svg { width: 32px; height: 32px; border-radius: 9px; flex: none; }
+  .topo-celular .meio { flex: 1; min-width: 0; }
+  .topo-celular .atual { display: block; font-weight: 800; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topo-celular .barra { margin-top: 4px; height: 4px; }
+  .topo-celular button { font: inherit; font-weight: 700; font-size: 15px; padding: 9px 14px; border-radius: 99px; border: 0; background: var(--roxo); color: #fff; cursor: pointer; flex: none; }
+  html { scroll-padding-top: 70px; }
+
+  /* Sumário vira uma gaveta que abre pela esquerda */
+  nav.menu { position: fixed; z-index: 50; top: 0; left: 0; bottom: 0; width: min(320px, 86vw); height: 100%; transform: translateX(-105%); transition: transform .25s ease; box-shadow: 0 0 40px rgba(0,0,0,.25); padding-bottom: 40px; }
+  body.gaveta-aberta nav.menu { transform: none; }
+  .fundo-gaveta { display: block; position: fixed; inset: 0; z-index: 40; background: rgba(10,12,20,.45); opacity: 0; pointer-events: none; transition: opacity .25s; }
+  body.gaveta-aberta .fundo-gaveta { opacity: 1; pointer-events: auto; }
+  body.gaveta-aberta { overflow: hidden; }
+  nav.menu a { padding: 11px 12px; font-size: 16px; }
+  .fechar-gaveta { display: block; margin: 0 0 10px auto; }
+
+  /* Botão de voltar ao topo */
+  .subir { display: grid; place-items: center; position: fixed; right: 16px; bottom: 18px; z-index: 30; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--roxo); color: #fff; font-size: 22px; box-shadow: 0 6px 20px rgba(0,0,0,.25); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .subir.visivel { opacity: 1; pointer-events: auto; }
+
+  /* Tamanhos menores */
+  section.sec { margin-bottom: 44px; }
+  h2 { font-size: 25px; }
+  h3 { font-size: 18px; }
+  .cartao { padding: 16px; border-radius: 18px; }
+  .frase { flex-direction: column; gap: 8px; font-size: 16.5px; padding: 16px; }
+  .analogia, .atencao, .banca { padding: 12px 14px; }
+  .capa { border-radius: 22px; padding: 22px 18px; margin-bottom: 22px; }
+  .capa p { font-size: 16px; }
+  .capa svg.polvo { width: 150px; right: -24px; bottom: -24px; }
+  .capa .camadas span { font-size: 13px; padding: 5px 12px; }
+  details > summary { padding: 13px 14px; }
+  details > .dentro { padding: 0 12px 14px; }
+  details > summary .tipo { margin-left: 22px; font-size: 11px; }
+  .codigo pre { font-size: 12px; }
+  .codigo pre .ln::before { width: 2.4em; padding-right: .7em; }
+  .http { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .http div { font-size: 13px; padding: 10px 12px; }
+  .http b { font-size: 19px; }
+  .amostras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .amostra { width: auto; }
+  th, td { padding: 8px 6px; font-size: 14px; }
+  .passo { padding: 12px 14px; }
+  .fluxo { gap: 4px; }
+  .seta { font-size: 18px; }
+
+  /* Diagramas largos: versão empilhada quando existe, senão arrastar para o lado */
+  .so-celular { display: block; }
+  .diagrama.tem-versao-celular { display: none; }
+  .dica-arrastar { display: block; }
+  .diagrama { padding: 10px; }
+  .estudei { width: 100%; justify-content: center; }
+
   ol.linhas li { grid-template-columns: 1fr; gap: 4px; }
   ol.linhas li b { width: fit-content; }
   .roteiro li { grid-template-columns: 1fr; gap: 8px; }
   .roteiro .tempo { width: fit-content; }
+  .roteiro .tempo br { display: none; }
 }
+@media (min-width: 901px) { .fechar-gaveta { display: none; } }
 @media print {
-  nav.menu, .botoes, .tema, .estudei { display: none; }
+  nav.menu, .botoes, .tema, .estudei, .topo-celular, .subir, .navega, .fundo-gaveta, .dica-arrastar { display: none !important; }
+  .so-celular { display: none !important; }
+  .diagrama.tem-versao-celular { display: block !important; }
   .pagina { display: block; }
   details { break-inside: avoid; }
   details:not([open]) > .dentro { display: block; }
@@ -265,10 +331,19 @@ ol.linhas li b { font: 700 12px var(--mono); color: var(--roxo-letra); backgroun
 </style>
 </head>
 <body>
+<!-- Só no celular: barra fixa no topo com o assunto atual e o botão do sumário -->
+<div class="topo-celular">
+  <svg viewBox="0 0 108 108" aria-hidden="true"><defs><linearGradient id="gt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3550D6"/><stop offset="1" stop-color="#7A3FD1"/></linearGradient></defs><rect width="108" height="108" fill="url(#gt)"/><g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M41 58c-3 8-7 13-3 19"/><path d="M50 61c-1 7-3 12 0 18"/><path d="M58 61c1 7 3 12 0 18"/><path d="M67 58c3 8 7 13 3 19"/></g><path d="M34 50a20 20 0 0 1 40 0v6c0 4-4 6-8 6H42c-4 0-8-2-8-6z" fill="#fff"/><circle cx="47" cy="49" r="3.2" fill="#7A3FD1"/><circle cx="61" cy="49" r="3.2" fill="#7A3FD1"/></svg>
+  <div class="meio"><span class="atual" id="assunto-atual">Guia PrintHub 3D</span><div class="barra"><i id="barra-topo"></i></div></div>
+  <button type="button" id="abrir-gaveta" aria-controls="sumario-menu" aria-expanded="false">☰ Assuntos</button>
+</div>
+<div class="fundo-gaveta" id="fundo-gaveta"></div>
+<button type="button" class="subir" id="subir" aria-label="Voltar ao topo">↑</button>
 <div class="pagina">
 
 <!-- ================= MENU LATERAL ================= -->
-<nav class="menu" aria-label="Sumário">
+<nav class="menu" id="sumario-menu" aria-label="Sumário">
+  <button type="button" class="botao fechar-gaveta" id="fechar-gaveta">✕ Fechar</button>
   <div class="marca">
     <svg viewBox="0 0 108 108" aria-hidden="true"><defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3550D6"/><stop offset="1" stop-color="#7A3FD1"/></linearGradient></defs><rect width="108" height="108" fill="url(#gm)"/><g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M41 58c-3 8-7 13-3 19"/><path d="M50 61c-1 7-3 12 0 18"/><path d="M58 61c1 7 3 12 0 18"/><path d="M67 58c3 8 7 13 3 19"/></g><path d="M34 50a20 20 0 0 1 40 0v6c0 4-4 6-8 6H42c-4 0-8-2-8-6z" fill="#fff"/><circle cx="47" cy="49" r="3.2" fill="#7A3FD1"/><circle cx="61" cy="49" r="3.2" fill="#7A3FD1"/></svg>
     Guia PrintHub 3D
@@ -526,7 +601,18 @@ rotas.patch("/:id/status", exigirTipo("fabricante"), async (req, res, next) => {
   <h2>Arquitetura e a API</h2>
   <div class="frase"><b class="rot">Em uma frase</b><span>O navegador e o app nunca falam direto com o banco: eles sempre pedem ao servidor, e o servidor confere quem é a pessoa e o que ela pode fazer.</span></div>
 
-  <div class="diagrama">
+  <div class="so-celular">
+    <div class="fluxo">
+      <div class="passo azul"><b>🖥️ Navegador ou 📱 App</b><small>As telas (HTML, CSS, JS). Mandam o pedido + o token.</small></div>
+      <div class="seta">→</div>
+      <div class="passo"><b>⚙️ Servidor no Render</b><small>Node.js + Express. Passa por 4 portões:</small>
+        <small>1. <code>exigirLogin</code> confere o token<br>2. <code>exigirTipo</code> / permissões<br>3. valida os dados<br>4. a rota faz o trabalho</small></div>
+      <div class="seta">→</div>
+      <div class="passo" style="border-color:var(--roxo)"><b>☁️ Supabase</b><small>PostgreSQL (tabelas) e Storage (arquivos). Só o servidor entra, com a chave secreta.</small></div>
+    </div>
+    <p class="atencao" style="font-size:15px">O navegador nunca acessa o banco direto.</p>
+  </div>
+  <div class="diagrama tem-versao-celular">
     <svg viewBox="0 -24 900 400" role="img" aria-label="Diagrama: navegador e app chamam o servidor no Render, que fala com o banco e o storage no Supabase">
       <defs><marker id="pt" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
       <!-- clientes -->
@@ -788,6 +874,7 @@ function dataValida(texto) {
   </div>
 
   <div class="diagrama">
+    <p class="dica-arrastar">↔ Arraste o desenho para o lado</p>
     <svg viewBox="0 0 760 250" role="img" aria-label="Relações: um usuário tem muitos pedidos; um pedido tem muitos orçamentos, mensagens e anexos">
       <defs><marker id="pt2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
       <rect class="caixa-azul" x="20" y="95" width="150" height="60" rx="14"/><text x="95" y="131" text-anchor="middle" font-weight="800">usuarios</text>
@@ -992,6 +1079,7 @@ await trocarPorTokenDoSite(data.session.access_token);
   <div class="analogia">É como uma criança no carro perguntando "já chegou?" a cada 3 segundos. Simples e funciona. A alternativa (SSE/WebSocket) seria o motorista avisar sozinho quando chegar: mais eficiente, mas mais complicado de montar.</div>
 
   <div class="diagrama">
+    <p class="dica-arrastar">↔ Arraste o desenho para o lado</p>
     <svg viewBox="0 0 760 210" role="img" aria-label="A tela pergunta ao servidor a cada 3 segundos">
       <defs><marker id="pt3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
       <rect class="caixa-azul" x="20" y="20" width="140" height="170" rx="16"/><text class="t-tit" x="90" y="110" text-anchor="middle">🖥️ Tela</text>
@@ -1110,6 +1198,7 @@ async function atualizarAoVivo() {
   <div class="analogia">O Capacitor é uma <b>moldura</b>: pega o "quadro" (as páginas web) e coloca numa moldura de app Android, com acesso a coisas do celular (câmera, login nativo). O quadro é o mesmo que está na parede do site.</div>
 
   <div class="diagrama">
+    <p class="dica-arrastar">↔ Arraste o desenho para o lado</p>
     <svg viewBox="0 0 760 230" role="img" aria-label="Capacitor empacota public dentro do APK; o app chama a API do Render">
       <defs><marker id="pt4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8a8fa8"/></marker></defs>
       <rect class="caixa" x="20" y="60" width="160" height="110" rx="16"/><text class="t-tit" x="100" y="105" text-anchor="middle">📁 public/</text><text class="t-peq" x="100" y="128" text-anchor="middle">HTML, CSS, JS</text>
@@ -1598,6 +1687,7 @@ function atualizarProgresso() {
   });
   document.querySelector("#txt-progresso").textContent = `${feitos} de ${caixas.length} assuntos estudados`;
   document.querySelector("#barra").style.width = (feitos / caixas.length) * 100 + "%";
+  document.querySelector("#barra-topo").style.width = (feitos / caixas.length) * 100 + "%";
 }
 caixas.forEach((c) => (c.onchange = () => { estudados[c.dataset.estudei] = c.checked; memoria.gravar("estudados", estudados); atualizarProgresso(); }));
 atualizarProgresso();
@@ -1606,10 +1696,53 @@ atualizarProgresso();
 const links = [...document.querySelectorAll("#sumario a")];
 const observador = new IntersectionObserver((itens) => {
   itens.forEach((it) => {
-    if (it.isIntersecting) links.forEach((a) => a.classList.toggle("ativo", a.getAttribute("href") === "#" + it.target.id));
+    if (!it.isIntersecting) return;
+    links.forEach((a) => a.classList.toggle("ativo", a.getAttribute("href") === "#" + it.target.id));
+    // No celular, a barra do topo mostra em qual assunto você está
+    const link = links.find((a) => a.getAttribute("href") === "#" + it.target.id);
+    document.querySelector("#assunto-atual").textContent = link ? link.firstChild.textContent.trim() : "Guia PrintHub 3D";
   });
 }, { rootMargin: "-20% 0px -70% 0px" });
 document.querySelectorAll("[data-sec], #comecar").forEach((s) => observador.observe(s));
+
+// ---------- Celular: sumário em gaveta ----------
+const botaoGaveta = document.querySelector("#abrir-gaveta");
+function gaveta(abrir) {
+  document.body.classList.toggle("gaveta-aberta", abrir);
+  botaoGaveta.setAttribute("aria-expanded", abrir);
+  if (abrir) document.querySelector("#sumario a.ativo, #sumario a")?.scrollIntoView({ block: "center" });
+}
+botaoGaveta.onclick = () => gaveta(true);
+document.querySelector("#fechar-gaveta").onclick = () => gaveta(false);
+document.querySelector("#fundo-gaveta").onclick = () => gaveta(false);
+// Com a gaveta aberta a página fica travada; por isso fechamos primeiro e só depois rolamos
+links.forEach((a) => a.addEventListener("click", (e) => {
+  if (!document.body.classList.contains("gaveta-aberta")) return;
+  e.preventDefault();
+  gaveta(false);
+  setTimeout(() => {
+    const alvo = document.querySelector(a.getAttribute("href"));
+    scrollTo({ top: alvo.getBoundingClientRect().top + scrollY - 64, behavior: "instant" });
+    history.replaceState(null, "", a.getAttribute("href"));
+  }, 30);
+}));
+addEventListener("keydown", (e) => { if (e.key === "Escape") gaveta(false); });
+
+// ---------- Celular: botão de voltar ao topo ----------
+const subir = document.querySelector("#subir");
+subir.onclick = () => scrollTo({ top: 0 });
+addEventListener("scroll", () => subir.classList.toggle("visivel", scrollY > 900), { passive: true });
+
+// ---------- Fim de cada assunto: botões "anterior" e "próximo" ----------
+const ordem = links.map((a) => ({ id: a.getAttribute("href").slice(1), nome: a.firstChild.textContent.trim() }));
+document.querySelectorAll("[data-sec]").forEach((secao) => {
+  const i = ordem.findIndex((o) => o.id === secao.id);
+  const ant = ordem[i - 1], prox = ordem[i + 1];
+  secao.insertAdjacentHTML("beforeend", `<div class="navega">
+    ${ant ? `<a href="#${ant.id}"><small>← Anterior</small>${ant.nome}</a>` : "<span></span>"}
+    ${prox ? `<a class="prox" href="#${prox.id}"><small>Próximo →</small>${prox.nome}</a>` : ""}
+  </div>`);
+});
 
 // ---------- Perguntas: abrir/fechar todas ----------
 const perguntas = document.querySelectorAll("#lista-perguntas details");
