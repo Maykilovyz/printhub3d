@@ -5,7 +5,7 @@ O cliente descreve a peça e anexa referências, os fabricantes enviam orçament
 
 Os diagramas do fluxo, da arquitetura e do banco estão em [docs/diagramas.md](docs/diagramas.md).
 
-Para estudar o projeto e se preparar para a apresentação, abra o guia visual [docs/guia-de-estudo.html](docs/guia-de-estudo.html) no navegador (baixe o arquivo e abra com dois cliques; funciona sem internet).
+Para estudar o projeto e se preparar para a apresentação, abra o guia visual em https://printhub3d-hqb0.onrender.com/guia (o arquivo é [docs/guia-de-estudo.html](docs/guia-de-estudo.html); também abre com dois cliques, sem internet).
 
 ---
 

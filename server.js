@@ -38,6 +38,9 @@ app.use("/api", (req, res, next) => {
 // Entrega os arquivos do site (HTML, CSS, JS) que estão em /public
 app.use(express.static(path.join(__dirname, "public")));
 
+// Guia de estudo do projeto (fica em docs/, fora de public/, para não entrar no app Android)
+app.get("/guia", (req, res) => res.sendFile(path.join(__dirname, "docs", "guia-de-estudo.html")));
+
 // Configuração PÚBLICA que o navegador precisa para o botão do Google.
 // (A chave "publishable" é feita para ficar no navegador; a secreta nunca sai daqui.)
 app.get("/api/config", (req, res) => {
