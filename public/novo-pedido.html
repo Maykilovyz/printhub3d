@@ -36,11 +36,15 @@
       <div class="secao-form">
         <h2>Detalhes <span class="apagado" style="font:400 14px var(--corpo)">opcional</span></h2>
         <div class="grade">
-          <div class="campo"><span class="lbl">Medidas (mm)</span>
+          <!-- Medidas: cada caixa com o nome em cima, para ninguém confundir largura, profundidade e altura -->
+          <div class="campo medidas"><span class="lbl">Medidas <span class="apagado" style="font-weight:400">em milímetros (1 cm = 10 mm)</span></span>
             <div class="dimensoes">
-              <input name="largura_mm" type="number" min="1" placeholder="L" aria-label="Largura em mm" class="mono">
-              <input name="profundidade_mm" type="number" min="1" placeholder="P" aria-label="Profundidade em mm" class="mono">
-              <input name="altura_mm" type="number" min="1" placeholder="A" aria-label="Altura em mm" class="mono">
+              <div class="campo"><label for="largura">Largura</label>
+                <input id="largura" name="largura_mm" type="number" min="1" inputmode="numeric" placeholder="mm" class="mono"></div>
+              <div class="campo"><label for="profundidade">Profundidade</label>
+                <input id="profundidade" name="profundidade_mm" type="number" min="1" inputmode="numeric" placeholder="mm" class="mono"></div>
+              <div class="campo"><label for="altura">Altura</label>
+                <input id="altura" name="altura_mm" type="number" min="1" inputmode="numeric" placeholder="mm" class="mono"></div>
             </div>
           </div>
           <div class="campo"><label for="quantidade">Quantidade</label><input id="quantidade" name="quantidade" type="number" min="1" value="1" class="mono"></div>

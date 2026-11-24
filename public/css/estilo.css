@@ -136,6 +136,10 @@ input[type=file] { padding: 10px 16px; }
 input[type=file]::file-selector-button { font: 600 14px var(--corpo); border: 0; border-radius: var(--pilula);
   padding: 8px 16px; margin-right: 12px; background: var(--destaque-suave); color: var(--destaque-letra); cursor: pointer; }
 .dimensoes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+/* Medidas ocupam a linha inteira; cada caixa tem o nome em cima (Largura, Profundidade, Altura) */
+.grade .medidas { grid-column: 1 / -1; }
+.dimensoes .campo { gap: 4px; }
+.dimensoes label { font-size: 13px; font-weight: 600; color: var(--apagado); }
 .secao-form { display: flex; flex-direction: column; gap: 16px; }
 .secao-form + .secao-form { border-top: 1px solid var(--linha); padding-top: 22px; }
 
